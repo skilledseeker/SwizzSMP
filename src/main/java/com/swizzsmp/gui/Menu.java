@@ -38,6 +38,15 @@ public abstract class Menu implements InventoryHolder {
     protected void onClose(Player player) {
     }
 
+    /** True if players may move items around in their own inventory while this is open. */
+    protected boolean allowsOwnInventory() {
+        return false;
+    }
+
+    /** Shift-clicks in the player's own inventory (already cancelled). */
+    protected void onOwnInventoryClick(Player player, InventoryClickEvent event) {
+    }
+
     // ── Item helpers ──────────────────────────────────────────────────────────
 
     public static ItemStack icon(Material material, Component name, List<Component> lore) {

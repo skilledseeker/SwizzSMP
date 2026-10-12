@@ -16,11 +16,22 @@ public final class MenuListener implements Listener {
         if (!(event.getView().getTopInventory().getHolder(false) instanceof Menu menu)) {
             return;
         }
+        boolean top = event.getClickedInventory() != null
+                && event.getClickedInventory().equals(event.getView().getTopInventory());
+        // Some menus let players pick items up in their own inventory (e.g. the recipe editor).
+        // Double-click collecting would also pull items out of the menu, so it's never allowed.
+        if (!top && menu.allowsOwnInventory() && !event.isShiftClick()
+                && event.getAction() != org.bukkit.event.inventory.InventoryAction.COLLECT_TO_CURSOR) {
+            return;
+        }
         event.setCancelled(true);
-        if (event.getWhoClicked() instanceof Player player
-                && event.getClickedInventory() != null
-                && event.getClickedInventory().equals(event.getView().getTopInventory())) {
+        if (!(event.getWhoClicked() instanceof Player player) || event.getClickedInventory() == null) {
+            return;
+        }
+        if (top) {
             menu.onClick(player, event.getSlot(), event);
+        } else {
+            menu.onOwnInventoryClick(player, event);
         }
     }
 

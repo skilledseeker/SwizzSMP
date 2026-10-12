@@ -57,6 +57,23 @@ public final class Domes {
     }
 
     /**
+     * True if a dome shell block may go here. The shell replaces whatever is in the way
+     * (it is all restored afterwards), except containers and other tile entities (their
+     * contents can't be restored), unbreakable blocks and multi-block structures.
+     */
+    public static boolean canShellReplace(Block block) {
+        Material type = block.getType();
+        if (type == Material.SCULK || type.getHardness() < 0) {
+            return false;
+        }
+        if (Tag.BEDS.isTagged(type) || Tag.DOORS.isTagged(type)
+                || type == Material.PISTON_HEAD || type == Material.MOVING_PISTON) {
+            return false;
+        }
+        return !(block.getState(false) instanceof TileState);
+    }
+
+    /**
      * True if a ground block may be turned into another full block and back:
      * a full solid cube, no tile entity, not unbreakable, not part of a multi-block.
      */

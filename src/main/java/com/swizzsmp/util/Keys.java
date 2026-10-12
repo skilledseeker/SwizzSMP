@@ -20,6 +20,7 @@ public final class Keys {
     public static final NamespacedKey MOD_FREEZE_SPEED = key("freeze_speed");
     public static final NamespacedKey MOD_FREEZE_JUMP = key("freeze_jump");
     public static final NamespacedKey MOD_ROLL_HEALTH = key("roll_health");
+    public static final NamespacedKey MOD_ROLL_SCALE = key("roll_scale");
     public static final NamespacedKey MOD_DRAG_SPEED = key("drag_speed");
     public static final NamespacedKey MOD_INVERT_SPEED = key("invert_speed");
 

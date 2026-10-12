@@ -102,10 +102,38 @@ public final class AquaHandler extends BaseHandler implements Listener {
 
     // ── Passive ───────────────────────────────────────────────────────────────
 
+    /** Vanilla trident melee values (player base + trident modifier). */
+    private static final double TRIDENT_SPEED = 1.1;
+    private static final double TRIDENT_DAMAGE = 9.0;
+    private static final org.bukkit.NamespacedKey TRIDENT_SPEED_KEY = com.swizzsmp.util.Keys.key("aqua_trident_speed");
+    private static final org.bukkit.NamespacedKey TRIDENT_DAMAGE_KEY = com.swizzsmp.util.Keys.key("aqua_trident_damage");
+
     @Override
     public void passiveBuffs(Player player, boolean upgraded, BuffSet out) {
         out.effect(PotionEffectType.WATER_BREATHING, 1);
         out.effect(PotionEffectType.DOLPHINS_GRACE, 1);
+        if (player.getInventory().getItemInMainHand().getType() == Material.TRIDENT) {
+            AbilityValues v = passiveValues();
+            out.attribute(TRIDENT_SPEED_KEY, org.bukkit.attribute.Attribute.ATTACK_SPEED, v.num("trident-attack-speed") - TRIDENT_SPEED);
+            out.attribute(TRIDENT_DAMAGE_KEY, org.bukkit.attribute.Attribute.ATTACK_DAMAGE, v.num("trident-attack-damage") - TRIDENT_DAMAGE);
+        }
+    }
+
+    /** Re-check the trident bonus as soon as the held item changes. */
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onHeldChange(org.bukkit.event.player.PlayerItemHeldEvent event) {
+        refreshSoon(event.getPlayer());
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onSwapHands(org.bukkit.event.player.PlayerSwapHandItemsEvent event) {
+        refreshSoon(event.getPlayer());
+    }
+
+    private void refreshSoon(Player player) {
+        if (plugin.swizz().has(player, SwizzType.AQUA)) {
+            later(1L, () -> plugin.passives().refresh(player));
+        }
     }
 
     @Override

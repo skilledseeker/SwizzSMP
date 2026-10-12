@@ -48,9 +48,9 @@ sculk:
   ability2:                  # Sculk Dome
     cooldown: 120
     duration: 15
-    radius: 15
+    radius: 10
     upgraded:
-      radius: 30
+      radius: 25
       wardens: 2
       warden-health: 40
       warden-max-damage: 6
@@ -91,20 +91,22 @@ fortune:
     radius: 6
     extra-absorption-levels: 1     # +1 level = +2 absorption hearts
     extra-saturation: 4.8
-    hunger-level: 1
+    hunger-level: 2
     upgraded:
       armor-repair-per-second: 1
   ability2:                  # Fortune Roll
     cooldown: 180
     duration: 15
     outcomes:
-      # type: REGENERATION | RESISTANCE | STRENGTH | MAX_HEALTH
+      # type: REGENERATION | RESISTANCE | STRENGTH | MAX_HEALTH | SMALL
+      # To turn an outcome off, set its weight to 0 (deleted ones are added back on restart).
       regen-1:      { type: REGENERATION, level: 1, weight: 25, seconds: 15 }
       regen-2:      { type: REGENERATION, level: 2, weight: 5,  seconds: 15 }
       resistance-1: { type: RESISTANCE,   level: 1, weight: 25, seconds: 15 }
       resistance-2: { type: RESISTANCE,   level: 2, weight: 5,  seconds: 15 }
       hearts:       { type: MAX_HEALTH,   amount: 10, weight: 25, seconds: 15 }
       strength-2:   { type: STRENGTH,     level: 2, weight: 5,  seconds: 10 }
+      small:        { type: SMALL,        scale: 0.5, weight: 15, seconds: 15 }   # half size, harder to hit
     upgraded:
       share-with-trusted: 2
       share-radius: 25
@@ -167,27 +169,33 @@ earth:
   passive:
     overworld-cooldown-rate: 1.3333   # = 25% shorter cooldowns
     overworld-bonus-health: 4         # 12 hearts total
+    knockback-resistance: 0.3         # 30% less knockback in the overworld
     upgraded:
       bonus-health-everywhere: 6      # 13 hearts total, every dimension
       weaving: true
+      knockback-resistance: 0.5       # 50% less knockback, every dimension
   ability1:                  # Fault Line
-    cooldown: 150
-    length: 15
+    cooldown: 120
+    length: 18
     width: 3
-    damage: 4
+    damage: 6
     knockback-horizontal: 1.4
     knockback-vertical: 0.5
+    slowness-level: 2                 # enemies hit are slowed
+    slowness-seconds: 3
     upgraded:
-      damage: 6
+      damage: 8
       break-webs: true
   ability2:                  # Root Grab
-    cooldown: 120
+    cooldown: 100
     radius: 30
     hold-ticks: 10
+    grab-damage: 3                    # damage when the roots grab (HP)
+    root-after-pull-ticks: 30         # victims stay rooted next to you after the pull
     upgraded:
       radius: 50
       drag-seconds: 6                 # time to drag from the edge to the middle
-      thorns-damage: 1                # per second while dragged
+      thorns-damage: 2                # per second while dragged
       max-seconds: 8
       release-distance: 2
 
@@ -195,6 +203,9 @@ aqua:
   passive:
     rain-cooldown-rate: 1.3333        # = 25% shorter cooldowns in rain/thunder
     trident-shield-disable-seconds: 5
+    # Melee with a trident swings like a diamond sword (vanilla trident: speed 1.1, damage 9).
+    trident-attack-speed: 1.6
+    trident-attack-damage: 7
     upgraded:
       water-mobs: [DROWNED, GUARDIAN, ELDER_GUARDIAN, PUFFERFISH]
       bottle-absorption-level: 2

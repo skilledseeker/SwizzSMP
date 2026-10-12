@@ -65,6 +65,7 @@ public final class PlayerListener implements Listener {
         plugin.cleanupPlayer(player, true);
         plugin.passives().onQuit(player);
         plugin.hud().forget(player);
+        plugin.tabColors().forget(player);
         plugin.store().unload(player.getUniqueId());
     }
 

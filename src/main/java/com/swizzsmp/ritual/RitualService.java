@@ -95,8 +95,10 @@ public final class RitualService {
             return;
         }
         Block anchor = clicked.getRelative(BlockFace.UP);
-        if (Math.abs(anchor.getX()) > s.ritualMaxAbsCoordinate || Math.abs(anchor.getZ()) > s.ritualMaxAbsCoordinate) {
-            plugin.messages().send(player, "ritual.out-of-bounds", Messages.text("max", s.ritualMaxAbsCoordinate));
+        org.bukkit.Location spawn = anchor.getWorld().getSpawnLocation();
+        int max = s.ritualMaxDistanceFromSpawn;
+        if (Math.abs(anchor.getX() - spawn.getBlockX()) > max || Math.abs(anchor.getZ() - spawn.getBlockZ()) > max) {
+            plugin.messages().send(player, "ritual.out-of-bounds", Messages.text("max", max));
             return;
         }
         long now = System.currentTimeMillis();

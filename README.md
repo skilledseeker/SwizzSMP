@@ -37,7 +37,8 @@ Fortune, Frost, Gleam, Sculk), energy, abilities, upgrade rituals and special it
 | `/giveenergy <player> [n]` | Give energy items |
 | `/givereroller <player> [n]` | Give rerollers |
 | `/giveupgrader <player> [n]` | Give upgraders |
-| `/giveswizz <swizz> <player>` | Set a player's swizz directly |
+| `/giveswizz <swizz> <player> [upgraded]` | Set a player's swizz directly (add `upgraded` to give it already upgraded) |
+| `/giveupgraded <player>` | Upgrade a player's current swizz without a ritual |
 | `/resetcooldown <player>` | Clear all cooldowns (handy for testing) |
 | `/swizzadmin reload` | Reload every config file |
 | `/swizzadmin give <item> <player> [n]` | Give any custom item: `swizz_<type>`, `energy`, `reroller`, `upgrader`, `swizz_sword`, `swizz_mace` |
@@ -45,9 +46,12 @@ Fortune, Frost, Gleam, Sculk), energy, abilities, upgrade rituals and special it
 | `/swizzadmin info <player>` | Everything about a player |
 | `/swizzadmin ritual list` · `start <player>` · `cancel <player>` | See rituals, start one where a player stands (no item needed, for events), or cancel one (returns the Upgrader) |
 | `/swizzadmin dragonegg reset` | Clear the server-wide Dragon Egg cooldown |
+| `/swizzadmin recipe <item>` | Edit an item's crafting recipe in game (saves to `items.yml`, works right away) |
 
 The **Swizz Sword** and **Swizz Mace** are admin-given only (`/swizzadmin give`). The
-**Dragon Egg** power uses the real dragon egg: right-click air while holding it.
+**Dragon Egg** uses the real dragon egg: right-click air to scramble everyone's swizz
+for 5 minutes, or **sneak + right-click air** to be the only player with a locator bar
+for 30 minutes (12 hour cooldown).
 
 ## Config files
 
@@ -55,7 +59,7 @@ The **Swizz Sword** and **Swizz Mace** are admin-given only (`/swizzadmin give`)
 |---|---|
 | `config.yml` | Energy rules, cooldown rules, ritual settings, dragon egg, mace, HUD, key combos |
 | `abilities.yml` | **Every balance number**: cooldowns, damage, radius, durations, combo hits, upgraded values |
-| `items.yml` | Item names, lore, looks (`item_model`) and **all crafting recipes** |
+| `items.yml` | Item names, lore, looks (`item_model`) and **all crafting recipes** (or edit them in game with `/swizzadmin recipe <item>`) |
 | `messages.yml` | Every message ([MiniMessage](https://docs.advntr.dev/minimessage) format) |
 | `guide.yml` | The `/swizzbook` book pages; numbers are filled in live from `abilities.yml` |
 

@@ -24,6 +24,7 @@ public final class Commands {
         plugin.registerCommand("givereroller", "Give rerollers", new GiveItemCommand(plugin, ItemIds.REROLLER, "givereroller"));
         plugin.registerCommand("giveupgrader", "Give upgraders", new GiveItemCommand(plugin, ItemIds.UPGRADER, "giveupgrader"));
         plugin.registerCommand("giveswizz", "Set a player's swizz", new GiveSwizzCommand(plugin));
+        plugin.registerCommand("giveupgraded", "Upgrade a player's swizz without a ritual", new GiveUpgradedCommand(plugin));
         plugin.registerCommand("resetcooldown", "Reset all of a player's cooldowns", new ResetCooldownCommand(plugin));
         plugin.registerCommand("swizzadmin", "SwizzSMP admin tools", new SwizzAdminCommand(plugin));
     }

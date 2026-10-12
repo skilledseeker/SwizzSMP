@@ -79,6 +79,9 @@ public final class ActionBarHud {
             long left = data.disabledUntil() - System.currentTimeMillis();
             return Component.text("✖ Swizz disabled " + Time.format(left), NamedTextColor.RED);
         }
+        if (plugin.settings().hudCooldownsOnly) {
+            return renderCooldowns(data, elements);
+        }
         TextComponent.Builder b = Component.text();
         for (int i = 0; i < elements.size(); i++) {
             SwizzType type = elements.get(i);
@@ -98,6 +101,37 @@ public final class ActionBarHud {
             b.append(passive(data, type));
         }
         return b.build();
+    }
+
+    /** Cooldown-only HUD: "Ability 1 » 1:42   Ability 2 » ✔" for unlocked abilities. */
+    private Component renderCooldowns(PlayerData data, List<SwizzType> elements) {
+        TextComponent.Builder b = Component.text();
+        boolean any = false;
+        for (int i = 0; i < elements.size(); i++) {
+            SwizzType type = elements.get(i);
+            String prefix = i == 0 ? "A" : "B";
+            for (int n = 1; n <= 2; n++) {
+                Perk perk = n == 1 ? Perk.ABILITY_1 : Perk.ABILITY_2;
+                if (!Loadout.isUnlocked(data.loadout(), data.energy(), perk)) {
+                    continue;
+                }
+                if (any) {
+                    b.append(Component.text("   "));
+                }
+                any = true;
+                int number = i * 2 + n;
+                long left = data.cooldown(prefix + n);
+                b.append(Component.text("Ability " + number + " » ", type.textColor()));
+                b.append(left > 0 ? Component.text(Time.format(left), NamedTextColor.RED) : plugin.messages().get("hud.ready"));
+            }
+            long reload = data.cooldown("P:" + type.name());
+            if (reload > 0) {
+                b.append(Component.text(any ? "   " : "")).append(Component.text("Passive » ", type.textColor()))
+                        .append(Component.text(Time.format(reload), NamedTextColor.YELLOW));
+                any = true;
+            }
+        }
+        return any ? b.build() : null;
     }
 
     private Component energyDots(int energy) {

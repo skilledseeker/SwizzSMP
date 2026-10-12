@@ -9,6 +9,7 @@ import com.swizzsmp.combat.TargetFilter;
 import com.swizzsmp.command.Commands;
 import com.swizzsmp.config.AbilityValues;
 import com.swizzsmp.config.ConfigFile;
+import com.swizzsmp.config.ConfigMigrations;
 import com.swizzsmp.config.Messages;
 import com.swizzsmp.config.Settings;
 import com.swizzsmp.data.PlayerDataStore;
@@ -35,6 +36,8 @@ import com.swizzsmp.ritual.RitualService;
 import com.swizzsmp.special.DragonEggService;
 import com.swizzsmp.special.SwizzMaceListener;
 import com.swizzsmp.special.SwizzSwordService;
+import com.swizzsmp.special.LocatorService;
+import com.swizzsmp.special.TabColorService;
 import com.swizzsmp.swizz.SwizzHandler;
 import com.swizzsmp.swizz.SwizzService;
 import com.swizzsmp.swizz.SwizzType;
@@ -85,6 +88,8 @@ public final class SwizzPlugin extends JavaPlugin {
     private ServerState serverState;
     private SwizzSwordService swords;
     private DragonEggService dragonEgg;
+    private TabColorService tabColors;
+    private LocatorService locator;
     private BukkitTask autosave;
 
     @Override
@@ -119,6 +124,8 @@ public final class SwizzPlugin extends JavaPlugin {
         rituals = new RitualService(this);
         serverState = new ServerState(this);
         swords = new SwizzSwordService(this);
+        tabColors = new TabColorService(this);
+        locator = new LocatorService(this, serverState);
         guide = new GuideBook(this, guideFile);
 
         registerHandlers();
@@ -153,6 +160,8 @@ public final class SwizzPlugin extends JavaPlugin {
         hud.start();
         rituals.start();
         swords.start();
+        tabColors.start();
+        locator.start();
         startAutosave();
 
         // Support /reload and late enables: load anyone already online.
@@ -180,6 +189,12 @@ public final class SwizzPlugin extends JavaPlugin {
         }
         if (swords != null) {
             swords.stop();
+        }
+        if (tabColors != null) {
+            tabColors.stop();
+        }
+        if (locator != null) {
+            locator.stop();
         }
         if (swizz != null) {
             swizz.shutdown();
@@ -255,6 +270,7 @@ public final class SwizzPlugin extends JavaPlugin {
         itemsFile.load();
         messagesFile.load();
         guideFile.load();
+        ConfigMigrations.run(configFile, abilitiesFile, messagesFile, getLogger());
         settings = new Settings(configFile.yaml());
         messages.reload();
     }
@@ -328,6 +344,23 @@ public final class SwizzPlugin extends JavaPlugin {
     /** The whole abilities.yml section of one swizz (used by the guide book). */
     public org.bukkit.configuration.ConfigurationSection abilitiesSection(SwizzType type) {
         return abilitiesFile.section(type.id());
+    }
+
+    /** The raw config.yml (for sections read live, like tab-colors). */
+    public org.bukkit.configuration.file.YamlConfiguration settingsFile() {
+        return configFile.yaml();
+    }
+
+    public ConfigFile itemsConfig() {
+        return itemsFile;
+    }
+
+    public LocatorService locator() {
+        return locator;
+    }
+
+    public TabColorService tabColors() {
+        return tabColors;
     }
 
     public DragonEggService dragonEgg() {

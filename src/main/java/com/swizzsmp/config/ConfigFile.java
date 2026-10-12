@@ -46,6 +46,19 @@ public final class ConfigFile {
         this.yaml = loaded;
     }
 
+    /** Writes the server's copy back to disk (comments are kept). */
+    public void save() {
+        try {
+            yaml.save(new File(plugin.getDataFolder(), name));
+        } catch (java.io.IOException e) {
+            plugin.getLogger().log(Level.SEVERE, "Could not save " + name, e);
+        }
+    }
+
+    public String name() {
+        return name;
+    }
+
     public YamlConfiguration yaml() {
         return yaml;
     }

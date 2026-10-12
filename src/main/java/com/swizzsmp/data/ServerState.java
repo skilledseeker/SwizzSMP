@@ -24,8 +24,21 @@ public final class ServerState {
         return yaml.getLong(key);
     }
 
+    public String getString(String key) {
+        return yaml.getString(key);
+    }
+
+    public void setString(String key, String value) {
+        yaml.set(key, value);
+        save();
+    }
+
     public void setLong(String key, long value) {
         yaml.set(key, value);
+        save();
+    }
+
+    private void save() {
         try {
             yaml.save(file);
         } catch (IOException e) {

@@ -76,6 +76,11 @@ admin:
   swizz-set: "<prefix><gray>Set <white><name></white>'s swizz to <swizz><gray>."
   cooldowns-reset: "<prefix><gray>Reset all cooldowns for <white><name></white>."
   upgrade-set: "<prefix><gray>Set <white><name></white> upgraded: <white><value>"
+  no-swizz: "<prefix><red><white><name></white> doesn't have a swizz yet."
+  recipe-saved: "<prefix><green>Saved the recipe for <white><item></white>. It works right away."
+  recipe-disabled: "<prefix><yellow>Crafting for <white><item></white> is now disabled."
+  recipe-empty: "<prefix><red>The recipe is empty. Add at least one ingredient."
+  you-were-upgraded: "<prefix><gold><b>★</b> <gray>An admin upgraded your <swizz><gray>!"
   your-swizz-set: "<prefix><gray>An admin set your swizz to <swizz><gray>."
   info: "<prefix><gray><name>: swizz=<white><swizz></white> energy=<white><energy></white> upgraded=<white><upgraded></white> loadout=<white><loadout></white> trusted=<white><trusted></white> cooldowns=<white><cooldowns></white>"
 
@@ -84,7 +89,9 @@ confusion:
   missed: "<prefix><gray>You swing at nothing… <#B05CE0>you are confused!"
   scrambled: "<prefix><#B05CE0>Your hotbar was scrambled!"
   scrambled-target: "<prefix><gray>You scrambled <white><name></white>'s hotbar."
-  dome-sealed: "<prefix><#B05CE0>The mirage holds you in!"
+
+dome:
+  no-escape: "<prefix><red>You can't escape the dome!"
 
 fortune:
   rolled: "<prefix><gray>Fortune rolled <result><gray> for <white><time></white>!"
@@ -125,7 +132,10 @@ dragon-egg:
   yours: "<prefix><gray>The Dragon Egg turned your swizz into <swizz><gray> for <white><time></white>."
   ended: "<prefix><gray>The Dragon Egg's chaos fades. Your swizz is back to normal."
   cooldown: "<prefix><red>The Dragon Egg is recharging: <white><time></white>."
-  admin-reset: "<prefix><gray>The Dragon Egg cooldown was reset."
+  admin-reset: "<prefix><gray>The Dragon Egg cooldowns were reset."
+  locator-on: "<prefix><dark_purple><b>⌖</b> <gray>Your locator bar now shows every player for <white><time></white>. Only you can see it."
+  locator-ended: "<prefix><gray>Your Dragon Egg tracker has faded."
+  locator-cooldown: "<prefix><red>The Dragon Egg tracker is recharging: <white><time></white>."
 
 mace:
   hit: "<prefix><gray>You disabled <white><name></white>'s swizz for <white><time></white>!"
@@ -144,7 +154,7 @@ ritual:
   need-swizz: "<prefix><red>You need a swizz to use an Upgrader."
   already-upgraded: "<prefix><red>Your swizz is already upgraded."
   already-running: "<prefix><red>You already have a ritual running."
-  out-of-bounds: "<prefix><red>Rituals only work within <white><max></white> blocks of 0, 0 (x and z)."
+  out-of-bounds: "<prefix><red>Rituals only work within <white><max></white> blocks of spawn."
   stay-close: "<prefix><gray>Be within <white><radius></white> blocks of the ritual when it ends, or the Upgrader drops!"
   no-stash: "<prefix><red>Upgraders can't be stored."
   admin-list-empty: "<prefix><gray>No rituals are running."

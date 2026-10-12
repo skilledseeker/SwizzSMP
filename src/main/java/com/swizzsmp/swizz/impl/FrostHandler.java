@@ -70,11 +70,17 @@ public final class FrostHandler extends BaseHandler implements Listener {
                           BukkitTask expiry) {
     }
 
+    private static final BlockData FAKE_SNOW = Material.SNOW_BLOCK.createBlockData();
+
     private final Map<UUID, Session> sessions = new HashMap<>();
     private final Map<UUID, Dagger> daggers = new HashMap<>();
+    /** Powder snow blocks each Frost player currently sees as solid snow. */
+    private final Map<UUID, java.util.Set<Block>> fakeSnow = new HashMap<>();
+    private final BukkitTask snowTask;
 
     public FrostHandler(SwizzPlugin plugin) {
         super(plugin, SwizzType.FROST);
+        snowTask = every(2L, this::tickPowderSnow);
     }
 
     // ── Passive ───────────────────────────────────────────────────────────────
@@ -100,7 +106,77 @@ public final class FrostHandler extends BaseHandler implements Listener {
         return isCold(player) ? passiveValues().num("cold-cooldown-rate") : 1.0;
     }
 
-    /** Can't sink into powder snow unless sneaking. */
+    /**
+     * Walking on powder snow: nearby powder snow under a Frost player's feet is shown to
+     * that player only as solid snow, so their own client lets them walk on it smoothly.
+     * Sneaking shows the real powder snow again so they can sink through on purpose.
+     */
+    private int snowTick;
+
+    private void tickPowderSnow() {
+        boolean resendAll = ++snowTick % 10 == 0; // every second, in case the server re-sent the real blocks
+        for (Player player : org.bukkit.Bukkit.getOnlinePlayers()) {
+            java.util.Set<Block> current = fakeSnow.getOrDefault(player.getUniqueId(), java.util.Set.of());
+            boolean active = !player.isSneaking() && player.getGameMode() != org.bukkit.GameMode.SPECTATOR
+                    && !player.isDead() && hasPassive(player) && passiveValues().bool("powder-snow-walk");
+            if (!active && current.isEmpty()) {
+                continue;
+            }
+            java.util.Set<Block> wanted = active ? powderSnowBelow(player) : java.util.Set.of();
+            for (Block block : current) {
+                if (!wanted.contains(block)) {
+                    player.sendBlockChange(block.getLocation(), block.getBlockData());
+                }
+            }
+            for (Block block : wanted) {
+                if (resendAll || !current.contains(block)) {
+                    player.sendBlockChange(block.getLocation(), FAKE_SNOW);
+                }
+            }
+            if (wanted.isEmpty()) {
+                fakeSnow.remove(player.getUniqueId());
+            } else {
+                fakeSnow.put(player.getUniqueId(), wanted);
+            }
+        }
+    }
+
+    /** Powder snow within 2 blocks sideways whose top is at or below the player's feet. */
+    private static java.util.Set<Block> powderSnowBelow(Player player) {
+        java.util.Set<Block> found = new java.util.HashSet<>();
+        Location feet = player.getLocation();
+        int fx = feet.getBlockX();
+        int fz = feet.getBlockZ();
+        int topY = (int) Math.floor(feet.getY() - 0.001); // highest block fully below the feet
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dz = -2; dz <= 2; dz++) {
+                for (int y = topY; y >= topY - 2; y--) {
+                    Block block = player.getWorld().getBlockAt(fx + dx, y, fz + dz);
+                    if (block.getType() == Material.POWDER_SNOW && block.getY() + 1 <= feet.getY() + 0.001) {
+                        found.add(block);
+                    }
+                }
+            }
+        }
+        return found;
+    }
+
+    /** The old world's chunks are gone on the client; just forget them. */
+    @EventHandler
+    public void onWorldChange(org.bukkit.event.player.PlayerChangedWorldEvent event) {
+        fakeSnow.remove(event.getPlayer().getUniqueId());
+    }
+
+    private void clearFakeSnow(Player player) {
+        java.util.Set<Block> current = fakeSnow.remove(player.getUniqueId());
+        if (current != null && player.isOnline()) {
+            for (Block block : current) {
+                player.sendBlockChange(block.getLocation(), block.getBlockData());
+            }
+        }
+    }
+
+    /** Fallback: if a Frost player is already inside powder snow, lift them to the top. */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onMove(PlayerMoveEvent event) {
         Location to = event.getTo();
@@ -323,10 +399,18 @@ public final class FrostHandler extends BaseHandler implements Listener {
     @Override
     public void cleanup(Player player) {
         endSession(player.getUniqueId(), false);
+        clearFakeSnow(player);
     }
 
     @Override
     public void shutdown() {
+        snowTask.cancel();
+        for (UUID id : Map.copyOf(fakeSnow).keySet()) {
+            Player player = org.bukkit.Bukkit.getPlayer(id);
+            if (player != null) {
+                clearFakeSnow(player);
+            }
+        }
         for (UUID id : Map.copyOf(sessions).keySet()) {
             endSession(id, false);
         }

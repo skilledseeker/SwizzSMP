@@ -22,22 +22,30 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.Event;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.entity.ThrownPotion;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 /**
- * Freeze (DESIGN.md §6.5): no walking, no jumping, no attacking, no item use.
- * Looking around and falling still work. Frost overlay through freeze ticks.
+ * Freeze (DESIGN.md §6.5): no walking, no jumping, no melee, no escape items. Eating,
+ * potions and shields still work. Looking around and falling still work.
  */
 public final class FreezeService implements Listener {
 
     private static final BlockData ICE = Material.ICE.createBlockData();
+    private static final Set<Material> BLOCKED_WHILE_FROZEN = EnumSet.of(Material.ENDER_PEARL, Material.CHORUS_FRUIT,
+            Material.WIND_CHARGE, Material.FIREWORK_ROCKET, Material.TRIDENT, Material.BOW, Material.CROSSBOW);
 
     private final SwizzPlugin plugin;
     /** Entity uuid -> freeze end, in server ticks. */
@@ -148,16 +156,33 @@ public final class FreezeService implements Listener {
         }
     }
 
+    /**
+     * Frozen players can still eat (golden apples), drink or throw potions and block with a
+     * shield. Only items that would let them escape or fight back at range are stopped.
+     */
     @EventHandler(priority = EventPriority.LOW)
     public void onInteract(PlayerInteractEvent event) {
-        if (event.getAction() != Action.PHYSICAL && isFrozen(event.getPlayer())) {
+        if (event.getAction() == Action.PHYSICAL || !isFrozen(event.getPlayer())) {
+            return;
+        }
+        ItemStack item = event.getItem();
+        if (item != null && BLOCKED_WHILE_FROZEN.contains(item.getType())) {
+            event.setUseItemInHand(Event.Result.DENY);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onPlace(BlockPlaceEvent event) {
+        if (isFrozen(event.getPlayer())) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onLaunch(ProjectileLaunchEvent event) {
-        if (event.getEntity().getShooter() instanceof Entity shooter && isFrozen(shooter)) {
+        // Splash and lingering potions are allowed; arrows, pearls, tridents etc. are not.
+        if (event.getEntity().getShooter() instanceof Entity shooter && isFrozen(shooter)
+                && !(event.getEntity() instanceof ThrownPotion)) {
             event.setCancelled(true);
         }
     }

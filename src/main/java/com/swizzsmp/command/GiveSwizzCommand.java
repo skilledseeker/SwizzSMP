@@ -11,7 +11,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-/** /giveswizz <swizz> <player>: sets the player's swizz directly (admin, D-27). */
+/** /giveswizz <swizz> <player> [upgraded]: sets the player's swizz directly (admin, D-27). */
 final class GiveSwizzCommand extends CommandBase {
 
     GiveSwizzCommand(SwizzPlugin plugin) {
@@ -20,8 +20,9 @@ final class GiveSwizzCommand extends CommandBase {
 
     @Override
     protected void run(CommandSender sender, String[] args) {
-        if (args.length != 2) {
-            usage(sender, "/giveswizz <swizz> <player>");
+        boolean upgraded = args.length == 3 && args[2].equalsIgnoreCase("upgraded");
+        if (args.length != 2 && !upgraded) {
+            usage(sender, "/giveswizz <swizz> <player> [upgraded]");
             return;
         }
         Optional<SwizzType> type = SwizzType.parse(args[0]);
@@ -32,6 +33,9 @@ final class GiveSwizzCommand extends CommandBase {
         findTarget(sender, args[1]).ifPresent(target -> {
             PlayerData data = plugin.store().loadAny(target.uuid());
             data.setSwizz(type.get());
+            if (upgraded) {
+                data.setUpgraded(true);
+            }
             if (target.online() != null) {
                 plugin.onStateChanged(target.online());
                 msg().send(target.online(), "admin.your-swizz-set", Messages.comp("swizz", type.get().displayComponent()));
@@ -47,6 +51,7 @@ final class GiveSwizzCommand extends CommandBase {
         return switch (args.length) {
             case 0, 1 -> filter(Arrays.stream(SwizzType.values()).map(SwizzType::id).toList(), last(args));
             case 2 -> onlineNames(last(args));
+            case 3 -> filter(List.of("upgraded"), last(args));
             default -> List.of();
         };
     }

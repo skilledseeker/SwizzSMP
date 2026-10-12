@@ -35,6 +35,7 @@ public final class Settings {
 
     public final boolean controlsDefault;
     public final boolean hudDefault;
+    public final boolean hudCooldownsOnly;
     public final int hudUpdateTicks;
 
     public final double comboTimeoutSeconds;
@@ -47,7 +48,7 @@ public final class Settings {
     public final double ritualLeakIntervalMinutes;
     public final List<String> ritualLeakOrder;
     public final double ritualRadius;
-    public final int ritualMaxAbsCoordinate;
+    public final int ritualMaxDistanceFromSpawn;
     public final double ritualConfirmSeconds;
 
     public final boolean dragonEggEnabled;
@@ -87,6 +88,7 @@ public final class Settings {
 
         controlsDefault = c.getBoolean("controls.default-enabled");
         hudDefault = c.getBoolean("hud.enabled-by-default");
+        hudCooldownsOnly = !"full".equalsIgnoreCase(c.getString("hud.mode", "cooldowns"));
         hudUpdateTicks = Math.max(1, c.getInt("hud.update-ticks"));
 
         comboTimeoutSeconds = c.getDouble("combo.timeout-seconds");
@@ -99,7 +101,7 @@ public final class Settings {
         ritualLeakIntervalMinutes = c.getDouble("ritual.leak-interval-minutes");
         ritualLeakOrder = c.getStringList("ritual.leak-order");
         ritualRadius = c.getDouble("ritual.radius");
-        ritualMaxAbsCoordinate = c.getInt("ritual.max-abs-coordinate");
+        ritualMaxDistanceFromSpawn = c.getInt("ritual.max-distance-from-spawn");
         ritualConfirmSeconds = c.getDouble("ritual.confirm-seconds");
 
         dragonEggEnabled = c.getBoolean("dragon-egg.enabled");

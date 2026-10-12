@@ -43,6 +43,8 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
@@ -309,7 +311,7 @@ public final class SculkHandler extends BaseHandler implements Listener {
             }
         }
         for (Block block : Domes.sphereShell(dome.center, dome.radius)) {
-            if (!Domes.canReplace(block) || plugin.blocks().isProtected(block)) {
+            if (!Domes.canShellReplace(block) || plugin.blocks().isProtected(block)) {
                 continue;
             }
             if (isOccupied(block, occupied)) {
@@ -482,7 +484,7 @@ public final class SculkHandler extends BaseHandler implements Listener {
         Iterator<Block> it = dome.pending.iterator();
         while (it.hasNext()) {
             Block block = it.next();
-            if (!Domes.canReplace(block)) {
+            if (!Domes.canShellReplace(block)) {
                 it.remove();
             } else if (!isOccupied(block, occupied)) {
                 dome.session.set(block, SCULK);
@@ -534,6 +536,43 @@ public final class SculkHandler extends BaseHandler implements Listener {
         dome.session.restore();
         dome.center.getWorld().playSound(dome.center, Sound.BLOCK_SCULK_BREAK, 3f, 0.5f);
         domes.remove(dome);
+    }
+
+    private Dome domeContaining(Location loc) {
+        for (Dome dome : domes) {
+            if (dome.inside(loc)) {
+                return dome;
+            }
+        }
+        return null;
+    }
+
+    /** No chorus fruit inside a sculk dome. */
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onChorus(PlayerItemConsumeEvent event) {
+        if (event.getItem().getType() == Material.CHORUS_FRUIT && !domes.isEmpty()
+                && domeContaining(event.getPlayer().getLocation()) != null) {
+            event.setCancelled(true);
+            plugin.messages().send(event.getPlayer(), "dome.no-escape");
+        }
+    }
+
+    /** No pearling or chorusing out of a sculk dome. */
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onEscapeTeleport(PlayerTeleportEvent event) {
+        if (domes.isEmpty() || !isEscapeCause(event.getCause())) {
+            return;
+        }
+        Dome dome = domeContaining(event.getFrom());
+        if (dome != null && !dome.inside(event.getTo())) {
+            event.setCancelled(true);
+            plugin.messages().send(event.getPlayer(), "dome.no-escape");
+        }
+    }
+
+    static boolean isEscapeCause(PlayerTeleportEvent.TeleportCause cause) {
+        String name = cause.name();
+        return name.equals("ENDER_PEARL") || name.equals("CONSUMABLE_EFFECT") || name.equals("CHORUS_FRUIT");
     }
 
     /** The dome shell zone can't be broken, so nobody tunnels out. */

@@ -340,8 +340,7 @@ public final class ConfusionHandler extends BaseHandler implements Listener, Com
             return;
         }
         PlayerTeleportEvent.TeleportCause cause = event.getCause();
-        if (cause != PlayerTeleportEvent.TeleportCause.ENDER_PEARL && cause != PlayerTeleportEvent.TeleportCause.CONSUMABLE_EFFECT
-                && cause != PlayerTeleportEvent.TeleportCause.PLUGIN) {
+        if (!SculkHandler.isEscapeCause(cause) && cause != PlayerTeleportEvent.TeleportCause.PLUGIN) {
             return; // admin /tp (COMMAND) is always allowed
         }
         Player player = event.getPlayer();
@@ -351,10 +350,20 @@ public final class ConfusionHandler extends BaseHandler implements Listener, Com
                     || (!participant && dome.blockEntry && dome.inside(event.getTo(), -0.4))) {
                 event.setCancelled(true);
                 if (participant) {
-                    plugin.messages().send(player, "confusion.dome-sealed");
+                    plugin.messages().send(player, "dome.no-escape");
                 }
                 return;
             }
+        }
+    }
+
+    /** No chorus fruit for anyone sealed in a Mirage Dome. */
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onChorus(org.bukkit.event.player.PlayerItemConsumeEvent event) {
+        if (event.getItem().getType() == org.bukkit.Material.CHORUS_FRUIT
+                && domes.stream().anyMatch(d -> d.sealed.contains(event.getPlayer().getUniqueId()))) {
+            event.setCancelled(true);
+            plugin.messages().send(event.getPlayer(), "dome.no-escape");
         }
     }
 

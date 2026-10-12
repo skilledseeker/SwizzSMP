@@ -49,12 +49,16 @@ public final class DragonEggService implements Listener {
                 || event.getItem() == null || event.getItem().getType() != Material.DRAGON_EGG) {
             return;
         }
-        Settings s = plugin.settings();
-        if (!s.dragonEggEnabled) {
-            return;
-        }
         Player user = event.getPlayer();
         if (plugin.freeze().isFrozen(user)) {
+            return;
+        }
+        if (user.isSneaking()) {
+            plugin.locator().activate(user);
+            return;
+        }
+        Settings s = plugin.settings();
+        if (!s.dragonEggEnabled) {
             return;
         }
         long now = System.currentTimeMillis();

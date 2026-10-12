@@ -45,6 +45,7 @@ import java.util.UUID;
 public final class EarthHandler extends BaseHandler {
 
     private static final NamespacedKey HEALTH_KEY = Keys.key("passive_health_earth");
+    private static final NamespacedKey KNOCKBACK_KEY = Keys.key("passive_knockback_earth");
     private static final Color BROWN = Color.fromRGB(0x7B4A2A);
     private static final BlockData ROOTS = Material.MANGROVE_ROOTS.createBlockData();
     private static final BlockData ROOTED_DIRT = Material.ROOTED_DIRT.createBlockData();
@@ -68,11 +69,13 @@ public final class EarthHandler extends BaseHandler {
         AbilityValues v = passiveValues();
         if (upgraded) {
             out.attribute(HEALTH_KEY, Attribute.MAX_HEALTH, v.upgradedNum("bonus-health-everywhere"));
+            out.attribute(KNOCKBACK_KEY, Attribute.KNOCKBACK_RESISTANCE, v.upgradedNum("knockback-resistance"));
             if (v.upgradedBool("weaving")) {
                 out.effect(PotionEffectType.WEAVING, 1);
             }
         } else if (player.getWorld().getEnvironment() == World.Environment.NORMAL) {
             out.attribute(HEALTH_KEY, Attribute.MAX_HEALTH, v.num("overworld-bonus-health"));
+            out.attribute(KNOCKBACK_KEY, Attribute.KNOCKBACK_RESISTANCE, v.num("knockback-resistance"));
         }
     }
 
@@ -101,6 +104,8 @@ public final class EarthHandler extends BaseHandler {
         double damage = v.up("damage", up);
         double kbH = v.num("knockback-horizontal");
         double kbV = v.num("knockback-vertical");
+        int slowTicks = Time.secondsToTicks(v.num("slowness-seconds"));
+        int slowAmp = Math.max(0, v.integer("slowness-level") - 1);
         boolean breakWebs = up && v.upgradedBool("break-webs");
 
         Vector dir = Locs.horizontalDirection(caster.getLocation());
@@ -137,6 +142,9 @@ public final class EarthHandler extends BaseHandler {
                     }
                     damage(living, damage, caster, DamageType.MAGIC);
                     living.setVelocity(dir.clone().multiply(kbH).setY(kbV));
+                    if (slowTicks > 0) {
+                        living.addPotionEffect(new org.bukkit.potion.PotionEffect(PotionEffectType.SLOWNESS, slowTicks, slowAmp));
+                    }
                     world.spawnParticle(Particle.EXPLOSION, living.getLocation(), 1);
                 }
             }
@@ -202,11 +210,15 @@ public final class EarthHandler extends BaseHandler {
     private AbilityResult rootGrab(AbilityContext ctx) {
         Player caster = ctx.player();
         AbilityValues v = ctx.values();
+        // Roots can't reach through walls: only players the caster can see are grabbed.
         List<LivingEntity> targets = targets(caster, caster.getLocation(), v.num("radius"), TargetFilter.Mode.PLAYERS);
+        targets.removeIf(target -> !caster.hasLineOfSight(target));
         if (targets.isEmpty()) {
             return AbilityResult.fail("ability.no-targets");
         }
         int hold = Math.max(1, v.integer("hold-ticks"));
+        double grabDamage = v.num("grab-damage");
+        int rootAfter = Math.max(0, v.integer("root-after-pull-ticks"));
         caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_ROOTED_DIRT_PLACE, 1.5f, 0.5f);
         dust(caster.getLocation().add(0, 0.2, 0), 30, 1.0, 1.4f);
         List<Player> held = new ArrayList<>();
@@ -214,6 +226,7 @@ public final class EarthHandler extends BaseHandler {
             Player victim = (Player) target;
             held.add(victim);
             root(victim);
+            damage(victim, grabDamage, caster, DamageType.MAGIC);
             victim.getWorld().spawnParticle(Particle.BLOCK, victim.getLocation().add(0, 0.5, 0), 40, 0.3, 0.6, 0.3, 0, ROOTS);
             victim.getWorld().playSound(victim.getLocation(), Sound.BLOCK_HANGING_ROOTS_PLACE, 1.5f, 0.6f);
         }
@@ -221,12 +234,24 @@ public final class EarthHandler extends BaseHandler {
         BukkitTask task = later(hold, () -> {
             grabs.remove(casterId);
             int i = 0;
+            List<Player> pulled = new ArrayList<>();
             for (Player victim : held) {
                 unroot(victim);
                 if (!caster.isOnline() || caster.isDead() || !victim.isOnline() || victim.isDead()) {
                     continue;
                 }
                 pullTo(victim, caster, i++, held.size());
+                if (rootAfter > 0) {
+                    root(victim); // held in place next to the caster for a moment
+                    pulled.add(victim);
+                }
+            }
+            if (!pulled.isEmpty()) {
+                BukkitTask release = later(rootAfter, () -> {
+                    grabs.remove(casterId);
+                    pulled.forEach(this::unroot);
+                });
+                grabs.put(casterId, new Grab(release, pulled));
             }
         });
         Grab previous = grabs.put(casterId, new Grab(task, held));
@@ -267,7 +292,6 @@ public final class EarthHandler extends BaseHandler {
         final double thorns;
         final double release;
         final int maxTicks;
-        final Map<UUID, Location> lastCheck = new HashMap<>();
         final Set<UUID> victims = new HashSet<>();
         BukkitTask task;
         int age;
@@ -288,8 +312,10 @@ public final class EarthHandler extends BaseHandler {
         AbilityValues v = ctx.values();
         RootField field = new RootField(caster, caster.getLocation().clone(), v);
         for (LivingEntity target : targets(caster, field.center, field.radius, TargetFilter.Mode.PLAYERS)) {
+            if (!caster.hasLineOfSight(target)) {
+                continue; // roots can't reach through walls
+            }
             field.victims.add(target.getUniqueId());
-            field.lastCheck.put(target.getUniqueId(), target.getLocation());
             root((Player) target);
         }
         if (field.victims.isEmpty()) {
@@ -344,20 +370,8 @@ public final class EarthHandler extends BaseHandler {
             if (ahead.getType().isSolid() && ahead.getRelative(0, 1, 0).isPassable()) {
                 y = 0.42;
             }
+            // Velocity only: a wall in the way stops the drag (no pulling through blocks).
             victim.setVelocity(dir.clone().multiply(Math.min(field.speed, dist)).setY(Math.max(-0.6, y)));
-
-            if (field.age % 10 == 0) {
-                Location last = field.lastCheck.get(id);
-                if (last != null && last.getWorld().equals(pos.getWorld()) && last.distanceSquared(pos) < 0.09) {
-                    Location stepTo = Locs.findSafe(pos.clone().add(dir.clone().multiply(1.5)), 4);
-                    if (stepTo != null) {
-                        stepTo.setYaw(pos.getYaw());
-                        stepTo.setPitch(pos.getPitch());
-                        victim.teleport(stepTo);
-                    }
-                }
-                field.lastCheck.put(id, victim.getLocation());
-            }
             if (field.age % 20 == 0) {
                 damage(victim, field.thorns, caster, DamageType.THORNS);
             }

@@ -81,6 +81,7 @@ public final class FortuneHandler extends BaseHandler implements Listener {
 
     private final Map<UUID, Circle> circles = new HashMap<>();
     private final Map<UUID, BukkitTask> rollHealth = new HashMap<>();
+    private final Map<UUID, BukkitTask> rollScale = new HashMap<>();
 
     public FortuneHandler(SwizzPlugin plugin) {
         super(plugin, SwizzType.FORTUNE);
@@ -107,7 +108,7 @@ public final class FortuneHandler extends BaseHandler implements Listener {
      * holding or carrying (picked-up items, donkey chests) is skipped, and so are containers
      * and bundles, so nothing can be duplicated this way.
      */
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onMobDeath(EntityDeathEvent event) {
         LivingEntity dead = event.getEntity();
         Player killer = dead.getKiller();
@@ -134,7 +135,17 @@ public final class FortuneHandler extends BaseHandler implements Listener {
                 extra.add(drop.clone());
             }
         }
-        event.getDrops().addAll(extra);
+        if (!extra.isEmpty()) {
+            event.getDrops().addAll(extra);
+            lootSparkle(killer, dead.getLocation().add(0, 0.5, 0));
+        }
+    }
+
+    /** A little burst so players can see the triple loot happen. */
+    private static void lootSparkle(Player player, Location at) {
+        at.getWorld().spawnParticle(Particle.HAPPY_VILLAGER, at, 12, 0.35, 0.35, 0.35, 0);
+        at.getWorld().spawnParticle(Particle.DUST, at, 8, 0.3, 0.3, 0.3, 0, new Particle.DustOptions(GOLD, 1.2f));
+        player.playSound(at, Sound.BLOCK_AMETHYST_BLOCK_CHIME, 0.7f, 1.8f);
     }
 
     /** Everything a mob wears, holds or carries in an inventory. */
@@ -174,7 +185,7 @@ public final class FortuneHandler extends BaseHandler implements Listener {
     }
 
     /** Triple loot from ores (never for Silk Touch, where the drop is the ore itself). */
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onOreDrop(BlockDropItemEvent event) {
         Player player = event.getPlayer();
         Material ore = event.getBlockState().getType();
@@ -184,6 +195,7 @@ public final class FortuneHandler extends BaseHandler implements Listener {
         }
         int multiplier = Math.max(1, v.integer("loot-multiplier"));
         Location at = event.getBlock().getLocation().add(0.5, 0.5, 0.5);
+        boolean multiplied = false;
         for (Item item : event.getItems()) {
             ItemStack stack = item.getItemStack();
             if (stack.getType() == ore || CustomItems.isCustom(stack)) {
@@ -193,11 +205,15 @@ public final class FortuneHandler extends BaseHandler implements Listener {
             int max = stack.getMaxStackSize();
             stack.setAmount(Math.min(max, total));
             item.setItemStack(stack);
+            multiplied = true;
             for (int left = total - max; left > 0; left -= max) {
                 ItemStack overflow = stack.clone();
                 overflow.setAmount(Math.min(max, left));
                 at.getWorld().dropItemNaturally(at, overflow);
             }
+        }
+        if (multiplied) {
+            lootSparkle(player, at);
         }
     }
 
@@ -353,6 +369,7 @@ public final class FortuneHandler extends BaseHandler implements Listener {
         String describe() {
             return switch (type) {
                 case "MAX_HEALTH" -> "<red>+" + trim(amount / 2) + " Hearts";
+                case "SMALL" -> "<aqua>Tiny size (harder to hit)";
                 case "STRENGTH" -> "<dark_red>Strength " + roman(level);
                 case "RESISTANCE" -> "<gray>Resistance " + roman(level);
                 default -> "<light_purple>Regeneration " + roman(level);
@@ -386,8 +403,9 @@ public final class FortuneHandler extends BaseHandler implements Listener {
                 if (o == null || o.getDouble("weight") <= 0) {
                     continue;
                 }
-                options.add(new Outcome(o.getString("type", "REGENERATION").toUpperCase(Locale.ROOT),
-                        Math.max(1, o.getInt("level", 1)), o.getDouble("amount"), o.getDouble("seconds", v.num("duration"))));
+                String type = o.getString("type", "REGENERATION").toUpperCase(Locale.ROOT);
+                double amount = type.equals("SMALL") ? o.getDouble("scale", 0.5) : o.getDouble("amount");
+                options.add(new Outcome(type, Math.max(1, o.getInt("level", 1)), amount, o.getDouble("seconds", v.num("duration"))));
                 weights.add(o.getDouble("weight"));
                 total += o.getDouble("weight");
             }
@@ -442,6 +460,15 @@ public final class FortuneHandler extends BaseHandler implements Listener {
                     previous.cancel();
                 }
             }
+            case "SMALL" -> {
+                // Scale is 1.0 normally; e.g. scale 0.5 = half size.
+                Attrs.apply(player, Attribute.SCALE, Keys.MOD_ROLL_SCALE, outcome.amount() - 1.0, AttributeModifier.Operation.ADD_NUMBER);
+                player.getWorld().spawnParticle(Particle.POOF, player.getLocation().add(0, 0.5, 0), 20, 0.3, 0.3, 0.3, 0.02);
+                BukkitTask previous = rollScale.put(player.getUniqueId(), later(ticks, () -> removeRollScale(player)));
+                if (previous != null) {
+                    previous.cancel();
+                }
+            }
             case "STRENGTH" -> player.addPotionEffect(new PotionEffect(PotionEffectType.STRENGTH, ticks, outcome.level() - 1));
             case "RESISTANCE" -> player.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, ticks, outcome.level() - 1));
             default -> player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, ticks, outcome.level() - 1));
@@ -459,6 +486,16 @@ public final class FortuneHandler extends BaseHandler implements Listener {
         }
     }
 
+    private void removeRollScale(Player player) {
+        BukkitTask task = rollScale.remove(player.getUniqueId());
+        if (task != null) {
+            task.cancel();
+        }
+        if (player.isOnline()) {
+            Attrs.remove(player, Attribute.SCALE, Keys.MOD_ROLL_SCALE);
+        }
+    }
+
     @Override
     public void cleanup(Player player) {
         Circle circle = circles.get(player.getUniqueId());
@@ -467,6 +504,9 @@ public final class FortuneHandler extends BaseHandler implements Listener {
         }
         if (rollHealth.containsKey(player.getUniqueId())) {
             removeRollHealth(player);
+        }
+        if (rollScale.containsKey(player.getUniqueId())) {
+            removeRollScale(player);
         }
     }
 
@@ -481,6 +521,14 @@ public final class FortuneHandler extends BaseHandler implements Listener {
                 removeRollHealth(player);
             } else {
                 rollHealth.remove(id).cancel();
+            }
+        }
+        for (UUID id : new ArrayList<>(rollScale.keySet())) {
+            Player player = Bukkit.getPlayer(id);
+            if (player != null) {
+                removeRollScale(player);
+            } else {
+                rollScale.remove(id).cancel();
             }
         }
     }

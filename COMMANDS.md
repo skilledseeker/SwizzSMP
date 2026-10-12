@@ -31,6 +31,8 @@
 | Command | What it does |
 |---|---|
 | `/giveswizz <swizz> <player>` | Set a player's swizz directly |
+| `/giveswizz <swizz> <player> upgraded` | Set a player's swizz, already upgraded |
+| `/giveupgraded <player>` | Upgrade a player's current swizz without a ritual |
 | `/energy set <player> <amount>` | Set a player's energy |
 | `/energy add <player> <amount>` | Add energy |
 | `/energy remove <player> <amount>` | Remove energy |
@@ -48,6 +50,7 @@
 | `/swizzadmin ritual start <player>` | Start a ritual where the player is standing (no upgrader needed) |
 | `/swizzadmin ritual cancel <player>` | Cancel a player's ritual and give the upgrader back |
 | `/swizzadmin dragonegg reset` | Reset the server-wide Dragon Egg cooldown |
+| `/swizzadmin recipe <item>` | Edit an item's crafting recipe in game (click a grid slot while holding an item; Save) |
 
 ## Names you can type
 
@@ -81,7 +84,7 @@
 | Upgrader | Right-click a block twice to start a 20-minute ritual there |
 | Swizz Sword | Right-click the first time to choose 2 elements. Keep it in your inventory to use both. |
 | Swizz Mace | Hit a player to disable their swizz for 60 seconds (3 minute cooldown) |
-| Dragon Egg (the real one) | Right-click air to scramble everyone else's swizz for 5 minutes (30 minute server cooldown) |
+| Dragon Egg (the real one) | Right-click air to scramble everyone else's swizz for 5 minutes (30 minute server cooldown). Sneak + right-click air: only you see the locator bar for 30 minutes (12 hour cooldown) |
 
 ## Quick test setup
 

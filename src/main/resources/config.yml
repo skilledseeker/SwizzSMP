@@ -5,6 +5,9 @@
 #  Run /swizzadmin reload after editing.
 # ─────────────────────────────────────────────────────────────
 
+# Used to update older config files automatically. Don't change it.
+config-version: 3
+
 energy:
   start: 2            # energy a brand-new player has
   min: 1              # you can never go below this
@@ -51,7 +54,19 @@ low-health:
   flash-ticks: 6             # how long the red stays on per beat
   volume: 1.0
 
+tab-colors:
+  # Name colour in the tab list, by the special item a player carries.
+  # Priority: dragon egg > swizz sword > swizz mace > upgrader > default.
+  enabled: true
+  dragon-egg: "#AA00AA"     # purple
+  swizz-sword: "#FFFF55"    # yellow
+  swizz-mace: "#AA0000"     # dark red
+  upgrader: "#FFFFFF"       # white
+  default: "#AAAAAA"        # gray
+
 hud:
+  # cooldowns = only show ability cooldowns, full = swizz name, energy, all perks
+  mode: cooldowns
   enabled-by-default: true
   update-ticks: 10
 
@@ -79,16 +94,25 @@ ritual:
   leak-order: [X, Z]
   # The owner must be within this many blocks of the ritual when it ends.
   radius: 5
-  # Rituals only work where |x| and |z| are both <= this (every dimension).
-  max-abs-coordinate: 750
+  # Rituals only work within this many blocks of the world spawn (x and z),
+  # in every dimension.
+  max-distance-from-spawn: 1500
   # Players must right-click twice within this many seconds to start a ritual.
   confirm-seconds: 5
 
 dragon-egg:
+  # Right-click air with the dragon egg: scramble everyone else's swizz.
   enabled: true
   duration-minutes: 5
   cooldown-minutes: 30
   exclude-user: true
+  # Sneak + right-click air with the dragon egg: only you see the locator bar.
+  locator:
+    enabled: true
+    duration-minutes: 30
+    cooldown-hours: 12
+    # Hide the locator bar for everyone who isn't using the dragon egg tracker.
+    hide-for-everyone-else: true
 
 swizz-mace:
   disable-seconds: 60

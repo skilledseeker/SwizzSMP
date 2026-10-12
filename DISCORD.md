@@ -32,7 +32,7 @@ Paste each block below as its own Discord message (each is under 2000 characters
 **Reroller** — right-click to pick a new swizz (you keep your energy)
 **Upgrader** — right-click a block twice to start a 20 min ritual. The whole server is told where it is! Be within 5 blocks when it ends or it drops.
 **Swizz Mace** — hit a player to turn off their swizz for 60s
-**Dragon Egg** — right-click air to scramble everyone's swizz for 5 min
+**Dragon Egg** — right-click air to scramble everyone's swizz for 5 min. Sneak + right-click air: only YOU see the locator bar for 30 min
 
 # 🔋 Energy
 Start at **2**, max **5**. Kill a player = **+1**, die = **-1**.

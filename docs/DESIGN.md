@@ -224,9 +224,11 @@ same check vanilla uses for snowfall, height included.
 ### 6.5 Status effects (shared engine)
 - **Freeze:** transient attribute modifiers set `MOVEMENT_SPEED` ×0 and
   `JUMP_STRENGTH` to 0. Horizontal moves in `PlayerMoveEvent` are cancelled (looking
-  around is allowed; falling is allowed so it can't be used to fly). Melee hits and item
-  use are cancelled. Freeze ticks stay at maximum for the frost screen overlay; freeze
-  damage is cancelled. Removed on expiry, quit and death.
+  around is allowed; falling is allowed so it can't be used to fly). Melee hits, block
+  placing and escape items (ender pearls, chorus fruit, wind charges, rockets, tridents,
+  bows, crossbows) are blocked. **Eating (golden apples), potions (drunk or thrown) and
+  shields still work** (owner change). Freeze ticks stay at maximum for the frost screen
+  overlay; freeze damage is cancelled. Removed on expiry, quit and death.
 - **Ability lock:** frozen players can't use abilities.
 - All attribute changes are **transient modifiers** with namespaced keys. They are never
   saved to player.dat, so removing the plugin leaves nothing behind.
@@ -295,9 +297,12 @@ in spec).
   damage type, so armor doesn't reduce it (like the warden).
 - *Upgraded:* hit radius 1.0 (twice as wide), **8 HP (4 hearts)**.
 
-**Ability 2 — Sculk Dome** (cd 120 s, lasts 15 s, radius 15).
-- A sphere shell of `SCULK` blocks, built only into air, replaceable plants, snow layers
-  and liquids. The ground below acts as the lower half.
+**Ability 2 — Sculk Dome** (cd 120 s, lasts 15 s, radius **10**; owner change from 15).
+- A sphere shell of `SCULK` blocks. It **replaces whatever it passes through** (air,
+  plants, liquids and solid terrain) and everything is put back afterwards. Containers
+  and other tile entities, unbreakable blocks, beds, doors and pistons are skipped.
+- **No escaping:** ender pearl and chorus teleports out of the dome are cancelled, and
+  chorus fruit can't be eaten inside it.
 - During the dome, nobody can break a block in the shell zone (distance ≥ r−1.5), so
   you can't tunnel out. Explosions, pistons, fire and endermen are blocked there too.
 - Spots where a player is standing are skipped, then filled once they are clear
@@ -305,7 +310,7 @@ in spec).
 - All changes are recorded in `BlockRestorer` and restored at the end (and on crash
   recovery).
 - *Upgraded:*
-  - Radius **30**.
+  - Radius **25** (owner change from 30).
   - **Darkness** for untrusted players inside.
   - **2 wardens** spawn (40 HP, max 6 damage per hit). They only target untrusted
     players. They drop nothing and are removed at the end.
@@ -347,6 +352,7 @@ in spec).
 | Resistance II | 5 | 15 s |
 | +5 max hearts (+10 HP, healed on apply) | 25 | 15 s |
 | Strength II (rare) | 5 | 10 s |
+| **Tiny size** (scale 0.5, harder to hit) | 15 | 15 s |
 
 - *Upgraded:* the same result is also given to the **2 nearest trusted players within 25 blocks**.
 
@@ -379,8 +385,11 @@ for **15 s**, and you get **Haste V** for 15 s.
 **Passive.**
 - Cooldowns run 1.25× faster in cold biomes.
 - **Speed I in cold biomes.**
-- **Can't sink in powder snow** unless sneaking. Each tick, if your feet are in powder
-  snow you are lifted to the top and your downward velocity is zeroed.
+- **Can't sink in powder snow** unless sneaking. Powder snow within 2 blocks under the
+  player's feet is shown **to that player only** as solid snow blocks (fake block
+  changes, refreshed every 2 ticks and re-sent every second), so their own client lets
+  them walk on it smoothly. Sneaking shows the real powder snow so they sink through on
+  purpose. If they are already inside powder snow they are lifted to the top once.
 - *Upgraded:* **+3 hearts** (+6 HP max) in cold biomes.
 
 **Ability 1 — Icicles** (cd 180 s).
@@ -401,28 +410,32 @@ for **15 s**, and you get **Haste V** for 15 s.
 ### 7.6 EARTH — brown (DUST #7B4A2A, BLOCK_CRUMBLE of the ground block, FALLING_DUST dirt)
 **Passive.**
 - Cooldowns run 1.333× faster (25% shorter) in the overworld.
-- **12 hearts in the overworld** (+4 HP max).
-- *Upgraded:* **13 hearts everywhere** (+6 HP, replacing the +4) and permanent **Weaving**.
+- **12 hearts in the overworld** (+4 HP max) and **30% knockback resistance** there
+  (owner buff).
+- *Upgraded:* **13 hearts everywhere** (+6 HP, replacing the +4), **50% knockback
+  resistance everywhere** and permanent **Weaving**.
 
-**Ability 1 — Fault Line** (cd 150 s).
-- A quake 15 blocks long and 3 wide in your horizontal look direction. It moves forward
-  1 block per tick with rising ground particles and a rumble.
-- Each ENEMIES target in it is hit once: **4 HP (2 hearts)** and pushed along the line
-  (horizontal 1.4, up 0.5).
-- *Upgraded:* **6 HP (3 hearts)**, and cobwebs in the path (3 wide, 3 tall) are broken.
+**Ability 1 — Fault Line** (cd **120 s**, buffed from 150).
+- A quake **18** blocks long and 3 wide in your horizontal look direction. It moves
+  forward 1 block per tick with rising ground particles and a rumble.
+- Each ENEMIES target in it is hit once: **6 HP (3 hearts)**, pushed along the line
+  (horizontal 1.4, up 0.5) and given **Slowness II for 3 s**.
+- *Upgraded:* **8 HP (4 hearts)**, and cobwebs in the path (3 wide, 3 tall) are broken.
 
-**Ability 2 — Root Grab** (cd 120 s).
-- Untrusted players within **30** blocks are held by roots for 0.5 s (root particles,
-  can't move).
+**Ability 2 — Root Grab** (cd **100 s**, buffed from 120). The roots deal **3 HP (1.5
+hearts)** when they grab, and after the pull the victims stay **rooted next to you for
+1.5 s**.
+- Untrusted players within **30** blocks **that the caster can see** (line of sight;
+  roots don't reach through walls) are held by roots for 0.5 s (root particles, can't move).
 - Then they are **pulled to you**: teleported to safe spots in a ring 1.5–2.5 blocks
   around you, facing you.
 - *Upgraded:* **Root Field**, radius **50**.
-  - Every untrusted player in range is dragged towards the centre (your position when
-    you cast).
+  - Every untrusted player in range that you can see is dragged towards the centre
+    (your position when you cast).
   - Speed = radius ÷ 6 s, so about 6 s from the edge, as the spec says.
-  - Their own movement is disabled while dragged; velocity pulls them, with a teleport
-    step if stuck for 10 ticks.
-  - They take 1 HP of `THORNS` damage per second until they reach the middle (within
+  - Their own movement is disabled while dragged; only velocity pulls them, so a wall
+    in the way stops the drag (never pulled through blocks).
+  - They take **2 HP** of `THORNS` damage per second until they reach the middle (within
     2 blocks) or 8 s pass.
   - A ring of particles marks the edge.
 
@@ -431,6 +444,9 @@ for **15 s**, and you get **Haste V** for 15 s.
 - Permanent Water Breathing and Dolphin's Grace.
 - **Tridents break shields:** a melee trident hit on a blocking player disables their
   shield for 5 s, like an axe.
+- **Trident melee = diamond sword:** while holding a trident, attack speed 1.6 and attack
+  damage 7 (vanilla trident: 1.1 and 9), via transient attribute modifiers
+  (`trident-attack-speed`, `trident-attack-damage`). Thrown tridents are unchanged.
 - Cooldowns run 1.333× faster while it rains or thunders in your world.
 - *Upgraded:*
   - **Immune to water mobs** (drowned, guardian, elder guardian, pufferfish): they can't
@@ -465,9 +481,9 @@ for **15 s**, and you get **Haste V** for 15 s.
 - **Requirements:**
   - You have a swizz and you aren't upgraded.
   - You have no ritual of your own running.
-  - The anchor is within the allowed area in **every dimension**:
-    `|x| ≤ 750 && |z| ≤ 750` (**D-23**: "a 1,500 by 1,500 area from 0,0" read as ±750;
-    config `ritual.max-abs-coordinate: 750`).
+  - The anchor is within **1,500 blocks of that world's spawn** on x and z, in every
+    dimension (**D-23**, owner change: was ±750 around 0,0; config
+    `ritual.max-distance-from-spawn: 1500`).
 - **On start:** the upgrader is consumed into the ritual. A broadcast follows (the world
   name is written as Overworld / Nether / End):
   `<name> has started a ritual for an Upgrader at x: §k####§r y: 64 z: §k####§r in the Overworld`
@@ -577,12 +593,16 @@ Custom items may **not**:
 | `/swizzadmin info <player>` | `swizz.admin` | full data dump |
 | `/swizzadmin ritual list\|start <player>\|cancel <player>` | `swizz.admin` | `start` begins a ritual where the player stands (no item) |
 | `/swizzadmin dragonegg reset` | `swizz.admin` | clears the server-wide dragon egg cooldown |
+| `/swizzadmin recipe <item>` | `swizz.admin` | in-game recipe editor; saves to items.yml and reloads |
+| `/giveupgraded <player>` | `swizz.admin` | upgrades the player's current swizz without a ritual |
 
 ---
 
 ## 11. HUD and feedback
 
-- **Action bar** every 10 ticks (when on):
+- **Action bar** every 10 ticks (when on). Default `hud.mode: cooldowns` (owner request)
+  shows only `Ability 1 » 1:42   Ability 2 » ✔` for unlocked abilities, plus a passive
+  reload while it counts down. `hud.mode: full` shows the line below:
   `◆ Frost ●●●○○  A1 ✔  A2 1:42  P ⟳8s`. Shows locked perks as `✖`, and `UPG` when upgraded.
 - **Sounds:** a unique sound for each ability, a "not ready" click, and an ability-ready ding.
 - **Messages** use a MiniMessage prefix (`messages.yml`).
@@ -619,12 +639,29 @@ Custom items may **not**:
 - **30 min cooldown for the whole server** (`server-state.yml`).
 - Logging out and back in is handled through the expiry time.
 
-### 13.3 Swizz Mace
+**Locator bar tracker (owner request):** **Sneak + right-click air** with the egg. For
+**30 minutes** only that player sees the locator bar (every player shown on the XP
+bar); everyone else's locator bar is hidden all the time (waypoint receive range set
+to 0 with a transient modifier). **12 hour** server-wide cooldown. User, end time and
+cooldown are kept in `server-state.yml`. Config: `dragon-egg.locator`.
+
+### 13.3 Tab-list colours
+Name colour in the tab list by carried item (priority order): dragon egg **purple**,
+Swizz Sword **yellow**, Swizz Mace **dark red**, upgrader **white**, nothing **gray**.
+Checked every second. Colours in `config.yml → tab-colors`.
+
+### 13.4 Swizz Mace
 - A real mace. A melee hit on a player, when ready, **disables their swizz for 60 s**:
   no abilities and no passives (buffs are removed). One target per hit.
 - **180 s cooldown** for the attacker.
 
 ---
+
+**Config migration:** `config.yml` has `config-version`. On start (and on reload), older
+server copies are updated by `ConfigMigrations`: a value is only changed if it still has
+the old default, so admins' own edits are kept. Any option missing from the server's
+`config.yml`, `abilities.yml` or `messages.yml` is copied in from the bundled defaults
+(never `items.yml`, so removed recipes stay removed).
 
 ## 14. Code architecture (`com.swizzsmp`)
 
@@ -761,7 +798,7 @@ D-12 cold = temperature < 0.15 · D-13 upgraded passives keep old passive ·
 D-14 Confusion miss = 1 hit · D-15 Confusion dome radius 10 · D-16 dome sealed both ways ·
 D-17 Swift Sneak via attribute, not enchant · D-18 sculk beam blocked by walls ·
 D-19 no triple on silk-touch drops; no ancient debris · D-20 flash 4 s on / 1 s off ·
-D-21 drown ignores water breathing · D-22 ritual confirm click · D-23 ritual area ±750 ·
+D-21 drown ignores water breathing · D-22 ritual confirm click · D-23 ritual within 1500 of spawn ·
 D-24 leak X then Z · D-25 neutral base item + item_model · D-26 placeholder recipes ·
 D-27 /giveswizz sets the swizz directly · D-28 dragon egg excludes the user ·
 D-29 ability damage ignores armor/Protection (`abilities.true-damage`) · D-30 shields don't block ability damage (icicles excepted)

@@ -6,6 +6,7 @@ import com.swizzsmp.data.PlayerData;
 import com.swizzsmp.items.ItemIds;
 import com.swizzsmp.util.Time;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.Collection;
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.stream.Collectors;
 /** /swizzadmin reload | give | upgrade | info | ritual (admin). */
 final class SwizzAdminCommand extends CommandBase {
 
-    private static final String USAGE = "/swizzadmin <reload | give <item> <player> [amount] | upgrade <player> <true|false> | info <player> | ritual <list | start <player> | cancel <player>> | dragonegg reset>";
+    private static final String USAGE = "/swizzadmin <reload | give <item> <player> [amount] | upgrade <player> <true|false> | info <player> | ritual <list | start <player> | cancel <player>> | dragonegg reset | recipe <item>>";
 
     SwizzAdminCommand(SwizzPlugin plugin) {
         super(plugin, "swizz.admin");
@@ -35,9 +36,22 @@ final class SwizzAdminCommand extends CommandBase {
             case "upgrade" -> upgrade(sender, args);
             case "info" -> info(sender, args);
             case "ritual" -> plugin.rituals().adminCommand(sender, args);
+            case "recipe" -> {
+                Player admin = requirePlayer(sender);
+                if (admin == null) {
+                    return;
+                }
+                if (args.length != 2 || !ItemIds.all().contains(args[1].toLowerCase())) {
+                    msg().send(sender, "admin.unknown-item", Messages.text("input", args.length > 1 ? args[1] : ""),
+                            Messages.text("options", String.join(", ", ItemIds.all())));
+                    return;
+                }
+                new com.swizzsmp.gui.RecipeEditMenu(plugin, args[1].toLowerCase()).open(admin);
+            }
             case "dragonegg" -> {
                 if (args.length >= 2 && args[1].equalsIgnoreCase("reset")) {
                     plugin.dragonEgg().resetCooldown();
+                    plugin.locator().resetCooldown();
                     msg().send(sender, "dragon-egg.admin-reset");
                 } else {
                     usage(sender, "/swizzadmin dragonegg reset");
@@ -111,7 +125,7 @@ final class SwizzAdminCommand extends CommandBase {
     @Override
     protected Collection<String> complete(CommandSender sender, String[] args) {
         if (args.length <= 1) {
-            return filter(List.of("reload", "give", "upgrade", "info", "ritual", "dragonegg"), last(args));
+            return filter(List.of("reload", "give", "upgrade", "info", "ritual", "dragonegg", "recipe"), last(args));
         }
         String sub = args[0].toLowerCase();
         return switch (sub) {
@@ -124,6 +138,7 @@ final class SwizzAdminCommand extends CommandBase {
             case "info" -> args.length == 2 ? onlineNames(last(args)) : List.of();
             case "ritual" -> args.length == 2 ? filter(List.of("list", "start", "cancel"), last(args)) : args.length == 3 ? onlineNames(last(args)) : List.of();
             case "dragonegg" -> args.length == 2 ? filter(List.of("reset"), last(args)) : List.of();
+            case "recipe" -> args.length == 2 ? filter(ItemIds.all(), last(args)) : List.of();
             default -> List.of();
         };
     }
