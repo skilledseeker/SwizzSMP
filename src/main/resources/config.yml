@@ -66,6 +66,10 @@ resource-pack:
   # see the vanilla look-alike items instead.
   required: false
   prompt: "<gradient:#B05CE0:#3498DB><b>SwizzSMP</b></gradient> <gray>needs its texture pack so the swizz items look right."
+  # Keep false so packs from other plugins (kill effects etc.) stay loaded next to ours.
+  replace-other-packs: false
+  # Ticks after joining before the pack is sent (lets other plugins' packs go first).
+  send-delay-ticks: 40
 
 tab-colors:
   # Name colour in the tab list, by the special item a player carries.

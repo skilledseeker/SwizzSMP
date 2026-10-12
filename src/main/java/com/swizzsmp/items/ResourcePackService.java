@@ -98,13 +98,22 @@ public final class ResourcePackService implements Listener {
                 .packs(current)
                 .required(c.getBoolean("required"))
                 .prompt(Messages.MM.deserialize(c.getString("prompt", "")))
-                .replace(true)
+                // false = keep other plugins' packs (e.g. kill effects) loaded next to ours
+                .replace(c.getBoolean("replace-other-packs"))
                 .build();
         player.sendResourcePacks(request);
     }
 
+    /** Sent a moment after join so a pack another plugin sends on join can't wipe ours. */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onJoin(PlayerJoinEvent event) {
-        send(event.getPlayer());
+        ConfigurationSection c = cfg();
+        long delay = c == null ? 40 : Math.max(0, c.getLong("send-delay-ticks", 40));
+        Player player = event.getPlayer();
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            if (player.isOnline()) {
+                send(player);
+            }
+        }, delay);
     }
 }
