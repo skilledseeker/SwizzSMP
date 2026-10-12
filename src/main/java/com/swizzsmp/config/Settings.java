@@ -26,6 +26,13 @@ public final class Settings {
     public final long activationDebounceMs;
     public final boolean trueDamage;
 
+    public final boolean lowHealthEnabled;
+    public final double lowHealthThreshold;
+    public final int lowHealthSlowTicks;
+    public final int lowHealthFastTicks;
+    public final int lowHealthFlashTicks;
+    public final double lowHealthVolume;
+
     public final boolean controlsDefault;
     public final boolean hudDefault;
     public final int hudUpdateTicks;
@@ -70,6 +77,13 @@ public final class Settings {
         disabledWorlds = new HashSet<>(c.getStringList("abilities.disabled-worlds"));
         activationDebounceMs = c.getLong("abilities.activation-debounce-ms");
         trueDamage = c.getBoolean("abilities.true-damage");
+
+        lowHealthEnabled = c.getBoolean("low-health.enabled");
+        lowHealthThreshold = Math.max(0.5, c.getDouble("low-health.threshold-hearts")) * 2.0;
+        lowHealthSlowTicks = Math.max(2, c.getInt("low-health.slow-beat-ticks"));
+        lowHealthFastTicks = Math.max(2, c.getInt("low-health.fast-beat-ticks"));
+        lowHealthFlashTicks = Math.max(1, c.getInt("low-health.flash-ticks"));
+        lowHealthVolume = c.getDouble("low-health.volume");
 
         controlsDefault = c.getBoolean("controls.default-enabled");
         hudDefault = c.getBoolean("hud.enabled-by-default");

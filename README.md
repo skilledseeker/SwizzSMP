@@ -25,7 +25,7 @@ Fortune, Frost, Gleam, Sculk), energy, abilities, upgrade rituals and special it
 | Choose perks | `/loadout` (GUI) or `/loadout a2 a1 passive` |
 | Protect friends | `/trust <player>`, `/trust list` |
 | Energy to items | `/withdraw <amount>` (you always keep 1) |
-| Status | `/swizz` · `/swizz hud` and `/swizz controls` toggle the action bar and the key combos |
+| Status | `/swizz` · `/swizz hud`, `/swizz controls` and `/swizz heartbeat` toggle the action bar, the key combos and the low-health warning |
 | Guide | `/swizzbook`: recipes and a book about every swizz |
 | Upgrade | Right-click a block with an **Upgrader** twice to start a 20-minute ritual |
 

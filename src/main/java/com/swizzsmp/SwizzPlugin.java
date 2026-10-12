@@ -16,6 +16,7 @@ import com.swizzsmp.data.ServerState;
 import com.swizzsmp.effects.BlockRestorer;
 import com.swizzsmp.effects.ControlInverter;
 import com.swizzsmp.effects.Flashbang;
+import com.swizzsmp.effects.LowHealthEffect;
 import com.swizzsmp.energy.EnergyListener;
 import com.swizzsmp.energy.EnergyService;
 import com.swizzsmp.gui.BookMenu;
@@ -76,6 +77,7 @@ public final class SwizzPlugin extends JavaPlugin {
     private BlockRestorer blocks;
     private Flashbang flashbang;
     private ControlInverter inverter;
+    private LowHealthEffect lowHealth;
     private CustomItems items;
     private RecipeService recipes;
     private ActionBarHud hud;
@@ -106,6 +108,7 @@ public final class SwizzPlugin extends JavaPlugin {
         blocks.recoverPending();
         flashbang = new Flashbang(this);
         inverter = new ControlInverter(this);
+        lowHealth = new LowHealthEffect(this);
         cooldowns = new CooldownService(this);
         abilities = new AbilityService(this);
         passives = new PassiveService(this);
@@ -137,12 +140,14 @@ public final class SwizzPlugin extends JavaPlugin {
         listen(blocks);
         listen(flashbang);
         listen(inverter);
+        listen(lowHealth);
         Commands.registerAll(this);
 
         freeze.start();
         combos.start();
         flashbang.start();
         inverter.start();
+        lowHealth.start();
         cooldowns.start();
         passives.start();
         hud.start();
@@ -190,6 +195,9 @@ public final class SwizzPlugin extends JavaPlugin {
         }
         if (inverter != null) {
             inverter.stop();
+        }
+        if (lowHealth != null) {
+            lowHealth.stop();
         }
         if (combos != null) {
             combos.stop();

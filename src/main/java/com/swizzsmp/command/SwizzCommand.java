@@ -15,7 +15,7 @@ import org.bukkit.entity.Player;
 import java.util.Collection;
 import java.util.List;
 
-/** /swizz [info|hud|controls]: your status and personal toggles. */
+/** /swizz [info|hud|controls|heartbeat]: your status and personal toggles. */
 final class SwizzCommand extends CommandBase {
 
     SwizzCommand(SwizzPlugin plugin) {
@@ -39,8 +39,12 @@ final class SwizzCommand extends CommandBase {
                 data.setControlsEnabled(!data.controlsEnabled());
                 msg().send(player, "swizz.controls-toggled", Messages.comp("state", state(data.controlsEnabled())));
             }
+            case "heartbeat" -> {
+                data.setHeartbeatEnabled(!data.heartbeatEnabled());
+                msg().send(player, "swizz.heartbeat-toggled", Messages.comp("state", state(data.heartbeatEnabled())));
+            }
             case "info" -> info(player, data);
-            default -> usage(sender, "/swizz [info|hud|controls]");
+            default -> usage(sender, "/swizz [info|hud|controls|heartbeat]");
         }
     }
 
@@ -79,6 +83,6 @@ final class SwizzCommand extends CommandBase {
 
     @Override
     protected Collection<String> complete(CommandSender sender, String[] args) {
-        return args.length <= 1 ? filter(List.of("info", "hud", "controls"), last(args)) : List.of();
+        return args.length <= 1 ? filter(List.of("info", "hud", "controls", "heartbeat"), last(args)) : List.of();
     }
 }

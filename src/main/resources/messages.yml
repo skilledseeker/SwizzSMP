@@ -27,6 +27,7 @@ swizz:
   disabled: "<prefix><red>Your swizz is disabled for <white><time></white>."
   hud-toggled: "<prefix><gray>Action bar HUD: <state>"
   controls-toggled: "<prefix><gray>Key combos (Sneak+F / Sneak+Q): <state>"
+  heartbeat-toggled: "<prefix><gray>Low-health heartbeat and red screen: <state>"
   state-on: "<green>ON"
   state-off: "<red>OFF"
 

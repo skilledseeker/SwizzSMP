@@ -16,6 +16,7 @@
 | `/swizz` | Show your swizz, energy, upgrade, loadout, cooldowns and trust count |
 | `/swizz hud` | Turn the action bar HUD on/off |
 | `/swizz controls` | Turn the Sneak+F / Sneak+Q shortcuts on/off |
+| `/swizz heartbeat` | Turn the low-health red screen + heartbeat on/off |
 | `/swizzbook` | Open the recipe book and guide for every swizz |
 
 ### Shortcuts

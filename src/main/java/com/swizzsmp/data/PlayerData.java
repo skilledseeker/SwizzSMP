@@ -29,6 +29,7 @@ public final class PlayerData {
     private long disabledUntil;
     private boolean hudEnabled;
     private boolean controlsEnabled;
+    private boolean heartbeatEnabled = true;
     /** Health at logout, so passive max-health bonuses don't cost hearts on relog. */
     private double lastHealth;
     private boolean dirty;
@@ -177,6 +178,15 @@ public final class PlayerData {
 
     public void setControlsEnabled(boolean controlsEnabled) {
         this.controlsEnabled = controlsEnabled;
+        dirty = true;
+    }
+
+    public boolean heartbeatEnabled() {
+        return heartbeatEnabled;
+    }
+
+    public void setHeartbeatEnabled(boolean heartbeatEnabled) {
+        this.heartbeatEnabled = heartbeatEnabled;
         dirty = true;
     }
 

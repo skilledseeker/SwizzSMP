@@ -17,6 +17,7 @@ Paste each block below as its own Discord message (each is under 2000 characters
 `/withdraw <amount>` — turn energy into items (you always keep 1)
 `/swizz hud` — turn the action bar on/off
 `/swizz controls` — turn the Sneak shortcuts on/off
+`/swizz heartbeat` — turn the low-health red screen + heartbeat on/off
 
 **Friends**
 `/trust <player>` — your abilities won't hit them (run it again to untrust)

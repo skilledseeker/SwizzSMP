@@ -40,6 +40,17 @@ controls:
   # Players can toggle this for themselves with /swizz controls.
   default-enabled: true
 
+low-health:
+  # Red flashing screen edges + heartbeat sound when you are about to die.
+  # The red edges need Fancy or Fabulous graphics on the player's client.
+  # Players can turn it off for themselves with /swizz heartbeat.
+  enabled: true
+  threshold-hearts: 4        # starts at or below this many hearts
+  slow-beat-ticks: 24        # time between beats at the threshold (20 ticks = 1 second)
+  fast-beat-ticks: 9         # time between beats at half a heart
+  flash-ticks: 6             # how long the red stays on per beat
+  volume: 1.0
+
 hud:
   enabled-by-default: true
   update-ticks: 10

@@ -188,6 +188,7 @@ public final class PlayerDataStore {
         data.setHudEnabled(yaml.getBoolean("hud", s.hudDefault));
         data.setControlsEnabled(yaml.getBoolean("controls", s.controlsDefault));
         data.setLastHealth(yaml.getDouble("last-health"));
+        data.setHeartbeatEnabled(yaml.getBoolean("heartbeat", true));
         data.clearDirty();
         return data;
     }
@@ -213,6 +214,7 @@ public final class PlayerDataStore {
         yaml.set("hud", data.hudEnabled());
         yaml.set("controls", data.controlsEnabled());
         yaml.set("last-health", data.lastHealth());
+        yaml.set("heartbeat", data.heartbeatEnabled());
         return yaml.saveToString();
     }
 
