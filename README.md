@@ -47,6 +47,7 @@ Fortune, Frost, Gleam, Sculk), energy, abilities, upgrade rituals and special it
 | `/swizzadmin ritual list` · `start <player>` · `cancel <player>` | See rituals, start one where a player stands (no item needed, for events), or cancel one (returns the Upgrader) |
 | `/swizzadmin dragonegg reset` | Clear the server-wide Dragon Egg cooldown |
 | `/swizzadmin recipe <item>` | Edit an item's crafting recipe in game (saves to `items.yml`, works right away) |
+| `/swizzadmin craftcheck <item>` | Verify that an item's recipe actually crafts with its own ingredients |
 
 The **Swizz Sword** and **Swizz Mace** are admin-given only (`/swizzadmin give`). The
 **Dragon Egg** uses the real dragon egg: right-click air to scramble everyone's swizz
@@ -70,6 +71,20 @@ apply on top, and no cooldown goes below `cooldowns.min-seconds`.
 With `abilities.true-damage: true`, armor doesn't reduce ability damage, so "3 hearts"
 means 3 hearts. Set it to `false` for vanilla armor reduction.
 
+## Recipes
+
+All recipes are in `items.yml` (or edit them in game with `/swizzadmin recipe <item>`).
+An ingredient is a material (`DIAMOND`), several materials (`GOLDEN_APPLE,ENCHANTED_GOLDEN_APPLE`
+= any of them), or a potion of an exact type (`POTION:LONG_WATER_BREATHING` = Water
+Breathing 8:00). Run `/swizzadmin craftcheck <item>` after editing to make sure it crafts.
+
+## Other plugins
+
+PlugManX is installed for plugin management. SwizzSMP is reload-safe: after uploading a
+new jar, `/plugman reload SwizzSMP` loads it without a restart (all effects are cleaned up
+and re-created; players keep their data). For config changes alone, `/swizzadmin reload`
+is enough.
+
 ## Data files
 
 - `players/<uuid>.yml`: each player's swizz, energy, upgrade, loadout, trust list and cooldowns
@@ -77,10 +92,23 @@ means 3 hearts. Set it to `false` for vanilla armor reduction.
 - `restore.yml`: blocks to restore if the server stopped in the middle of a Sculk dome
 - `server-state.yml`: the dragon egg cooldown
 
-## Resource pack (optional)
+## Resource pack (item textures)
 
-Items use vanilla models by default (e.g. Aqua looks like a Heart of the Sea). To use
-custom textures, set `model:` in `items.yml` to your pack's item model, e.g. `swizz:aqua`.
+The swizz items have their own textures. The pack lives in `resourcepack/` of this repo:
+`resourcepack/src/` is the source and `resourcepack/SwizzSMP-pack.zip` the built pack
+(`gradlew buildPack`, also done by `gradlew build`).
+
+The plugin sends the pack to players itself (`config.yml` → `resource-pack`): at startup it
+downloads the zip from `resource-pack.url` once to learn its SHA-1, then every joining
+player is asked to load it. By default players may decline (`required: false`); they then
+see the vanilla look-alike items (`model:` in `items.yml`). Set `required: true` to kick
+players who decline.
+
+**Updating a texture:** replace the PNG in `resourcepack/src/assets/swizz/textures/item/`
+(32×32, same file name), run `gradlew buildPack`, commit and push both the PNG and the
+zip, wait a minute for GitHub's cache, then `/swizzadmin reload` on the server. Earth has
+no custom texture yet (it uses the armadillo scute); drop a `swizz_earth.png` in the same
+folder and add the two JSON files like the other items to give it one.
 
 ## Building from source
 

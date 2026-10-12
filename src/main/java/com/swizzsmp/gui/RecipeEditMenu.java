@@ -16,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -26,7 +27,8 @@ import java.util.Map;
  * /swizzadmin recipe <item>: edit a custom item's crafting recipe in game.
  * The grid holds templates only: click a slot while holding any item to set that
  * ingredient, click with an empty hand to clear it. Nothing is taken from or given to
- * the admin. Save writes items.yml and reloads the recipes.
+ * the admin. Potions keep their type (e.g. a Water Breathing potion only matches that
+ * potion). Save writes items.yml and reloads the recipes.
  */
 public final class RecipeEditMenu extends Menu {
 
@@ -38,7 +40,7 @@ public final class RecipeEditMenu extends Menu {
 
     private final SwizzPlugin plugin;
     private final String itemId;
-    private final Material[] grid = new Material[9];
+    private final ItemStack[] grid = new ItemStack[9];
 
     public RecipeEditMenu(SwizzPlugin plugin, String itemId) {
         super(5, Component.text("Edit recipe: " + itemId, NamedTextColor.DARK_RED).decoration(TextDecoration.BOLD, true));
@@ -50,13 +52,17 @@ public final class RecipeEditMenu extends Menu {
             Map<Character, RecipeChoice> choices = shaped.getChoiceMap();
             for (int row = 0; row < shape.length && row < 3; row++) {
                 for (int col = 0; col < shape[row].length() && col < 3; col++) {
-                    if (choices.get(shape[row].charAt(col)) instanceof RecipeChoice.MaterialChoice m && !m.getChoices().isEmpty()) {
-                        grid[row * 3 + col] = m.getChoices().getFirst();
-                    }
+                    grid[row * 3 + col] = RecipeService.displayStack(choices.get(shape[row].charAt(col)));
                 }
             }
         }
         render();
+    }
+
+    private static ItemStack template(ItemStack source) {
+        ItemStack copy = source.clone();
+        copy.setAmount(1);
+        return copy;
     }
 
     private void render() {
@@ -66,9 +72,15 @@ public final class RecipeEditMenu extends Menu {
             if (grid[i] == null) {
                 getInventory().setItem(GRID[i], empty);
             } else {
-                getInventory().setItem(GRID[i], icon(grid[i], Component.text(grid[i].name(), NamedTextColor.WHITE),
-                        Component.text("Click with an item to replace", NamedTextColor.YELLOW),
-                        Component.text("Click with an empty hand to clear", NamedTextColor.YELLOW)));
+                ItemStack shown = grid[i].clone();
+                ItemMeta meta = shown.getItemMeta();
+                List<Component> lore = new ArrayList<>();
+                lore.add(Component.text(RecipeService.ingredientKey(grid[i]), NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false));
+                lore.add(Component.text("Click with an item to replace", NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false));
+                lore.add(Component.text("Click with an empty hand to clear", NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false));
+                meta.lore(lore);
+                shown.setItemMeta(meta);
+                getInventory().setItem(GRID[i], shown);
             }
         }
         getInventory().setItem(23, icon(Material.SPECTRAL_ARROW, Component.text("→", NamedTextColor.GRAY)));
@@ -77,6 +89,7 @@ public final class RecipeEditMenu extends Menu {
                 Component.text("Pick up an item in your inventory,", NamedTextColor.GRAY),
                 Component.text("then click a grid slot to set it.", NamedTextColor.GRAY),
                 Component.text("Shift-click an item to add it.", NamedTextColor.GRAY),
+                Component.text("Potions keep their exact type.", NamedTextColor.GRAY),
                 Component.text("Your items are never used up.", NamedTextColor.GRAY)));
         getInventory().setItem(DISABLE, icon(Material.BARRIER, Component.text("Disable crafting", NamedTextColor.RED),
                 Component.text("Removes this recipe", NamedTextColor.GRAY)));
@@ -98,7 +111,7 @@ public final class RecipeEditMenu extends Menu {
         }
         for (int i = 0; i < 9; i++) {
             if (grid[i] == null) {
-                grid[i] = clicked.getType();
+                grid[i] = template(clicked);
                 player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.5f);
                 render();
                 return;
@@ -111,7 +124,7 @@ public final class RecipeEditMenu extends Menu {
         for (int i = 0; i < 9; i++) {
             if (GRID[i] == slot) {
                 ItemStack cursor = event.getCursor();
-                grid[i] = cursor == null || cursor.isEmpty() ? null : cursor.getType();
+                grid[i] = cursor == null || cursor.isEmpty() ? null : template(cursor);
                 player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.5f);
                 render();
                 return;
@@ -127,13 +140,18 @@ public final class RecipeEditMenu extends Menu {
     }
 
     private void save(Player player) {
-        Map<Material, Character> letters = new LinkedHashMap<>();
+        Map<String, Character> letters = new LinkedHashMap<>();
         List<String> shape = new ArrayList<>();
         for (int row = 0; row < 3; row++) {
             StringBuilder line = new StringBuilder();
             for (int col = 0; col < 3; col++) {
-                Material m = grid[row * 3 + col];
-                line.append(m == null ? ' ' : letters.computeIfAbsent(m, k -> (char) ('A' + letters.size())));
+                ItemStack stack = grid[row * 3 + col];
+                if (stack == null) {
+                    line.append(' ');
+                } else {
+                    String key = RecipeService.ingredientKey(stack);
+                    line.append(letters.computeIfAbsent(key, k -> (char) ('A' + letters.size())));
+                }
             }
             shape.add(line.toString());
         }
@@ -142,7 +160,7 @@ public final class RecipeEditMenu extends Menu {
             return;
         }
         Map<String, Object> ingredients = new LinkedHashMap<>();
-        letters.forEach((material, letter) -> ingredients.put(String.valueOf(letter), material.name()));
+        letters.forEach((key, letter) -> ingredients.put(String.valueOf(letter), key));
         Map<String, Object> recipe = new LinkedHashMap<>();
         recipe.put("shape", shape);
         recipe.put("ingredients", ingredients);

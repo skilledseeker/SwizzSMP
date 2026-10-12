@@ -54,6 +54,19 @@ low-health:
   flash-ticks: 6             # how long the red stays on per beat
   volume: 1.0
 
+resource-pack:
+  # Custom item textures. The plugin downloads the zip once at startup to learn its
+  # SHA-1, then sends it to every player who joins. To update the textures, replace the
+  # zip at the URL and run /swizzadmin reload (or restart).
+  enabled: true
+  url: "https://raw.githubusercontent.com/skilledseeker/SwizzSMP/main/resourcepack/SwizzSMP-pack.zip"
+  # Optional: set the zip's SHA-1 here to skip the download at startup.
+  sha1: ""
+  # true = players who decline the pack are kicked. false = they can decline and will
+  # see the vanilla look-alike items instead.
+  required: false
+  prompt: "<gradient:#B05CE0:#3498DB><b>SwizzSMP</b></gradient> <gray>needs its texture pack so the swizz items look right."
+
 tab-colors:
   # Name colour in the tab list, by the special item a player carries.
   # Priority: dragon egg > swizz sword > swizz mace > upgrader > default.

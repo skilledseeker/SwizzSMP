@@ -4,6 +4,8 @@ import com.swizzsmp.config.ConfigFile;
 import com.swizzsmp.config.Messages;
 import com.swizzsmp.swizz.SwizzType;
 import com.swizzsmp.util.Keys;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.CustomModelData;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -65,6 +67,9 @@ public final class CustomItems {
             meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
         }
         item.setItemMeta(meta);
+        // The resource pack maps this string to the item's own texture; without the pack the
+        // vanilla "model" above is what players see.
+        item.setData(DataComponentTypes.CUSTOM_MODEL_DATA, CustomModelData.customModelData().addString(id).build());
         return item;
     }
 

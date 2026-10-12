@@ -519,11 +519,21 @@ hearts)** when they grab, and after the pull the victims stay **rooted next to y
 
 ## 9. Items, recipes and the item guard
 
-### 9.1 Item looks (D-25)
+### 9.1 Item looks (D-25, D-31)
 - Every "token" item uses a **neutral base material** (`ECHO_SHARD` by default) with an
-  **`item_model`** that points at a vanilla model.
+  **`item_model`** that points at a vanilla model (the look players get *without* the
+  resource pack).
 - That way they never trigger vanilla behaviour (eating, placing, throwing, beacons).
-- Server owners can set `item_model` to their own resource-pack models.
+- **D-31 — custom textures with graceful fallback.** Every custom item also carries
+  `custom_model_data` strings `[<item id>]`. The resource pack (`resourcepack/src`)
+  overrides the vanilla item definitions of the fallback models
+  (`assets/minecraft/items/<vanilla>.json`) with a `minecraft:select` on
+  `custom_model_data`: our id → `swizz:item/<id>` (32×32 texture), anything else → the
+  vanilla model, so real hearts of the sea etc. are unchanged and players without the
+  pack see the fallback. `ResourcePackService` downloads the zip at startup to compute
+  its SHA-1 and sends it to joining players (`config.yml → resource-pack`; not required
+  by default). The pack is hosted as a raw file of the public GitHub repo. Earth has no
+  custom texture yet (owner provided none).
 
 | Item | Default model | Name color |
 |---|---|---|
@@ -542,20 +552,26 @@ hearts)** when they grab, and after the pull the victims stay **rooted next to y
 
 All of them have the enchantment glint and lore explaining their use.
 
-### 9.2 Default recipes (D-26 — the spec gives none; all of them are in `items.yml` → `recipes`)
-Swizz pattern: `D E D / E C E / D E D`, with D = `DIAMOND`.
+### 9.2 Recipes (owner's recipes from the Season 5 screenshots; all in `items.yml` → `recipes`)
+Rows are top → bottom; `corners / edges-vertical / edges-horizontal / centre`.
 
-| Result | C (centre) | E (edges) |
-|---|---|---|
-| Aqua | HEART_OF_THE_SEA | NAUTILUS_SHELL |
-| Confusion | ENDER_EYE | FERMENTED_SPIDER_EYE |
-| Earth | DIAMOND_BLOCK | ROOTED_DIRT |
-| Fortune | EMERALD_BLOCK | GOLD_INGOT |
-| Frost | BLUE_ICE | POWDER_SNOW_BUCKET |
-| Gleam | GOLD_BLOCK | GLOW_INK_SAC |
-| Sculk | SCULK_CATALYST | ECHO_SHARD |
-| Reroller | TOTEM_OF_UNDYING | AMETHYST_SHARD (corners DIAMOND) |
-| Upgrader | NETHER_STAR | DIAMOND_BLOCK (corners NETHERITE_SCRAP) |
+| Result | Corners | Top & bottom middle | Left & right middle | Centre |
+|---|---|---|---|---|
+| Aqua | POTION of Water Breathing 8:00 (`POTION:LONG_WATER_BREATHING`) | PRISMARINE_SHARD | TURTLE_HELMET | HEART_OF_THE_SEA |
+| Confusion | END_CRYSTAL | FLOW_ARMOR_TRIM_SMITHING_TEMPLATE | GOAT_HORN (any) | NETHER_STAR |
+| Earth (placeholder, no screenshot) | DIAMOND | ROOTED_DIRT | ROOTED_DIRT | DIAMOND_BLOCK |
+| Fortune | TOTEM_OF_UNDYING | ENDER_EYE | GOLDEN_APPLE | RABBIT_FOOT |
+| Frost | TIDE_ARMOR_TRIM_SMITHING_TEMPLATE | VERDANT_FROGLIGHT | VERDANT_FROGLIGHT | BEACON |
+| Gleam | SEA_LANTERN | OXIDIZED_LIGHTNING_ROD (unwaxed) | TRIDENT | NETHER_STAR |
+| Sculk | SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE | ECHO_SHARD | CALIBRATED_SCULK_SENSOR | RECOVERY_COMPASS |
+| Reroller | DIAMOND | AMETHYST_SHARD | AMETHYST_SHARD | TOTEM_OF_UNDYING |
+| Upgrader | NETHERITE_SCRAP | DIAMOND_BLOCK | DIAMOND_BLOCK | NETHER_STAR |
+
+Ingredient syntax: `MATERIAL`, `MATERIAL,MATERIAL` (any of), or `POTION:TYPE` (a
+`PredicateChoice` matching the potion type, so renamed potions still work).
+`/swizzadmin craftcheck <item>` verifies a recipe crafts from its own ingredients.
+Config migration v4 replaces the 1.0 placeholder recipes on existing servers unless they
+were edited.
 
 Energy is never crafted; it only comes from kills and `/withdraw`.
 
@@ -801,4 +817,5 @@ D-19 no triple on silk-touch drops; no ancient debris · D-20 flash 4 s on / 1 s
 D-21 drown ignores water breathing · D-22 ritual confirm click · D-23 ritual within 1500 of spawn ·
 D-24 leak X then Z · D-25 neutral base item + item_model · D-26 placeholder recipes ·
 D-27 /giveswizz sets the swizz directly · D-28 dragon egg excludes the user ·
-D-29 ability damage ignores armor/Protection (`abilities.true-damage`) · D-30 shields don't block ability damage (icicles excepted)
+D-29 ability damage ignores armor/Protection (`abilities.true-damage`) · D-30 shields don't block ability damage (icicles excepted) ·
+D-31 custom textures via custom_model_data select with vanilla fallback; pack sent by the plugin

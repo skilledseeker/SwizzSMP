@@ -2,11 +2,11 @@ package com.swizzsmp.command;
 
 import com.swizzsmp.SwizzPlugin;
 import com.swizzsmp.config.Messages;
-import io.papermc.paper.command.brigadier.BasicCommand;
-import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -16,8 +16,11 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 
-/** Shared helpers for all commands. */
-abstract class CommandBase implements BasicCommand {
+/**
+ * Shared helpers for all commands. Commands are declared in plugin.yml and bound here,
+ * so plugin managers can unload and reload the plugin without leaving stale commands.
+ */
+abstract class CommandBase implements TabExecutor {
 
     protected final SwizzPlugin plugin;
     private final String permission;
@@ -28,23 +31,29 @@ abstract class CommandBase implements BasicCommand {
     }
 
     @Override
-    public final void execute(CommandSourceStack source, String[] args) {
-        CommandSender sender = source.getSender();
+    public final boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (!sender.hasPermission(permission)) {
+            msg().send(sender, "general.no-permission");
+            return true;
+        }
         run(sender, args);
+        return true;
     }
 
     protected abstract void run(CommandSender sender, String[] args);
 
     @Override
-    public Collection<String> suggest(CommandSourceStack source, String[] args) {
-        return complete(source.getSender(), args);
+    public final List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+        if (!sender.hasPermission(permission)) {
+            return List.of();
+        }
+        return new ArrayList<>(complete(sender, args));
     }
 
     protected Collection<String> complete(CommandSender sender, String[] args) {
         return List.of();
     }
 
-    @Override
     public String permission() {
         return permission;
     }
@@ -119,7 +128,7 @@ abstract class CommandBase implements BasicCommand {
         return options.stream().filter(o -> o.toLowerCase(Locale.ROOT).startsWith(lower)).toList();
     }
 
-    /** The argument being typed (Paper passes an empty last arg after a trailing space). */
+    /** The argument being typed (an empty last arg after a trailing space). */
     protected static String last(String[] args) {
         return args.length == 0 ? "" : args[args.length - 1];
     }

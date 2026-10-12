@@ -40,9 +40,9 @@ public final class RecipeMenu extends Menu {
             Map<Character, RecipeChoice> choices = shaped.getChoiceMap();
             for (int row = 0; row < shape.length && row < 3; row++) {
                 for (int col = 0; col < shape[row].length() && col < 3; col++) {
-                    RecipeChoice choice = choices.get(shape[row].charAt(col));
-                    if (choice instanceof RecipeChoice.MaterialChoice materials && !materials.getChoices().isEmpty()) {
-                        getInventory().setItem(GRID[row * 3 + col], new ItemStack(materials.getChoices().getFirst()));
+                    ItemStack shown = RecipeService.displayStack(choices.get(shape[row].charAt(col)));
+                    if (shown != null) {
+                        getInventory().setItem(GRID[row * 3 + col], shown);
                     }
                 }
             }

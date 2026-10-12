@@ -47,6 +47,16 @@ client. You need two players (or two accounts). Give yourself everything with:
       fully restored after 15 s); upgraded dome (ground turns to sculk, wardens only attack
       enemies, Darkness); eating sculk repairs armor; Swift Sneak speed.
 
+## Resource pack
+
+- [ ] On join you are asked to load the SwizzSMP pack; after accepting, the seven swizz
+      items in `/swizzbook` show the custom icons (Earth still shows the armadillo scute).
+- [ ] Decline the pack: the items show the vanilla look-alikes instead, nothing is broken.
+- [ ] A real Heart of the Sea / Echo Shard / Snowball / Emerald / Amethyst Shard /
+      Glowstone Dust still looks normal with the pack on.
+- [ ] Craft each swizz with the recipe shown in `/swizzbook` (Aqua needs Water Breathing
+      8:00 potions).
+
 ## Systems
 
 - [ ] HUD action bar looks right and updates (`/swizz hud` toggles it).

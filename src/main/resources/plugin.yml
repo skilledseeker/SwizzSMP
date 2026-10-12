@@ -5,6 +5,78 @@ api-version: '26.1'
 description: Swizz elements, energy, abilities and upgrade rituals for SwizzSMP Season 5.
 authors: [SAM aka SkilledMC]
 
+# Commands are declared here (Bukkit command map) rather than through Paper's Brigadier
+# lifecycle API, so plugin managers (PlugManX) can unload and reload the plugin cleanly.
+commands:
+  ability1:
+    description: Use swizz ability 1
+    usage: /ability1
+    permission: swizz.use
+  ability2:
+    description: Use swizz ability 2
+    usage: /ability2
+    permission: swizz.use
+  ability3:
+    description: Use ability 1 of your second element (Swizz Sword)
+    usage: /ability3
+    permission: swizz.use
+  ability4:
+    description: Use ability 2 of your second element (Swizz Sword)
+    usage: /ability4
+    permission: swizz.use
+  trust:
+    description: Trust a player so your abilities don't hit them
+    usage: /trust <player> | /trust list
+    permission: swizz.use
+  withdraw:
+    description: Withdraw energy as items
+    usage: /withdraw <amount>
+    permission: swizz.use
+  loadout:
+    description: Choose which perks your energy unlocks
+    usage: /loadout [a1|a2|passive] [a1|a2|passive] [a1|a2|passive]
+    permission: swizz.use
+  swizz:
+    description: Your swizz status and settings
+    usage: /swizz [info|hud|controls|heartbeat]
+    permission: swizz.use
+  swizzbook:
+    description: Recipes and guides for every swizz
+    usage: /swizzbook
+    permission: swizz.use
+  energy:
+    description: Manage a player's energy
+    usage: /energy <set|add|remove|view> <player> [amount]
+    permission: swizz.admin
+  giveenergy:
+    description: Give energy items
+    usage: /giveenergy <player> [amount]
+    permission: swizz.admin
+  givereroller:
+    description: Give rerollers
+    usage: /givereroller <player> [amount]
+    permission: swizz.admin
+  giveupgrader:
+    description: Give upgraders
+    usage: /giveupgrader <player> [amount]
+    permission: swizz.admin
+  giveswizz:
+    description: Set a player's swizz
+    usage: /giveswizz <swizz> <player> [upgraded]
+    permission: swizz.admin
+  giveupgraded:
+    description: Upgrade a player's swizz without a ritual
+    usage: /giveupgraded <player>
+    permission: swizz.admin
+  resetcooldown:
+    description: Reset all of a player's cooldowns
+    usage: /resetcooldown <player>
+    permission: swizz.admin
+  swizzadmin:
+    description: SwizzSMP admin tools
+    usage: /swizzadmin <reload|give|upgrade|info|ritual|dragonegg|recipe|craftcheck>
+    permission: swizz.admin
+
 permissions:
   swizz.use:
     description: Use swizz abilities and player commands.

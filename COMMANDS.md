@@ -50,7 +50,8 @@
 | `/swizzadmin ritual start <player>` | Start a ritual where the player is standing (no upgrader needed) |
 | `/swizzadmin ritual cancel <player>` | Cancel a player's ritual and give the upgrader back |
 | `/swizzadmin dragonegg reset` | Reset the server-wide Dragon Egg cooldown |
-| `/swizzadmin recipe <item>` | Edit an item's crafting recipe in game (click a grid slot while holding an item; Save) |
+| `/swizzadmin recipe <item>` | Edit an item's crafting recipe in game (click a grid slot while holding an item; Save). Potions keep their exact type |
+| `/swizzadmin craftcheck <item>` | Check that an item's recipe crafts with its own ingredients |
 
 ## Names you can type
 

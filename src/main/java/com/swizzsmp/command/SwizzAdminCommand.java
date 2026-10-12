@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 /** /swizzadmin reload | give | upgrade | info | ritual (admin). */
 final class SwizzAdminCommand extends CommandBase {
 
-    private static final String USAGE = "/swizzadmin <reload | give <item> <player> [amount] | upgrade <player> <true|false> | info <player> | ritual <list | start <player> | cancel <player>> | dragonegg reset | recipe <item>>";
+    private static final String USAGE = "/swizzadmin <reload | give <item> <player> [amount] | upgrade <player> <true|false> | info <player> | ritual <list | start <player> | cancel <player>> | dragonegg reset | recipe <item> | craftcheck <item>>";
 
     SwizzAdminCommand(SwizzPlugin plugin) {
         super(plugin, "swizz.admin");
@@ -36,6 +36,29 @@ final class SwizzAdminCommand extends CommandBase {
             case "upgrade" -> upgrade(sender, args);
             case "info" -> info(sender, args);
             case "ritual" -> plugin.rituals().adminCommand(sender, args);
+            case "craftcheck" -> {
+                if (args.length != 2 || !ItemIds.all().contains(args[1].toLowerCase())) {
+                    usage(sender, "/swizzadmin craftcheck <item>");
+                    return;
+                }
+                String id = args[1].toLowerCase();
+                org.bukkit.inventory.Recipe recipe = org.bukkit.Bukkit.getRecipe(com.swizzsmp.items.RecipeService.keyFor(id));
+                if (!(recipe instanceof org.bukkit.inventory.ShapedRecipe shaped)) {
+                    msg().send(sender, "admin.craftcheck-none", Messages.text("item", id));
+                    return;
+                }
+                org.bukkit.inventory.ItemStack[] matrix = new org.bukkit.inventory.ItemStack[9];
+                String[] shape = shaped.getShape();
+                for (int row = 0; row < shape.length; row++) {
+                    for (int col = 0; col < shape[row].length(); col++) {
+                        matrix[row * 3 + col] = com.swizzsmp.items.RecipeService.displayStack(shaped.getChoiceMap().get(shape[row].charAt(col)));
+                    }
+                }
+                org.bukkit.World world = sender instanceof Player p ? p.getWorld() : org.bukkit.Bukkit.getWorlds().getFirst();
+                org.bukkit.inventory.Recipe found = org.bukkit.Bukkit.getCraftingRecipe(matrix, world);
+                boolean ok = found instanceof org.bukkit.Keyed keyed && keyed.getKey().equals(shaped.getKey());
+                msg().send(sender, ok ? "admin.craftcheck-ok" : "admin.craftcheck-fail", Messages.text("item", id));
+            }
             case "recipe" -> {
                 Player admin = requirePlayer(sender);
                 if (admin == null) {
@@ -125,7 +148,7 @@ final class SwizzAdminCommand extends CommandBase {
     @Override
     protected Collection<String> complete(CommandSender sender, String[] args) {
         if (args.length <= 1) {
-            return filter(List.of("reload", "give", "upgrade", "info", "ritual", "dragonegg", "recipe"), last(args));
+            return filter(List.of("reload", "give", "upgrade", "info", "ritual", "dragonegg", "recipe", "craftcheck"), last(args));
         }
         String sub = args[0].toLowerCase();
         return switch (sub) {
@@ -138,7 +161,7 @@ final class SwizzAdminCommand extends CommandBase {
             case "info" -> args.length == 2 ? onlineNames(last(args)) : List.of();
             case "ritual" -> args.length == 2 ? filter(List.of("list", "start", "cancel"), last(args)) : args.length == 3 ? onlineNames(last(args)) : List.of();
             case "dragonegg" -> args.length == 2 ? filter(List.of("reset"), last(args)) : List.of();
-            case "recipe" -> args.length == 2 ? filter(ItemIds.all(), last(args)) : List.of();
+            case "recipe", "craftcheck" -> args.length == 2 ? filter(ItemIds.all(), last(args)) : List.of();
             default -> List.of();
         };
     }

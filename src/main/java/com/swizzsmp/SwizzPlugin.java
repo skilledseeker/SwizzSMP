@@ -29,6 +29,7 @@ import com.swizzsmp.hud.ActionBarHud;
 import com.swizzsmp.items.CustomItems;
 import com.swizzsmp.items.ItemGuardListener;
 import com.swizzsmp.items.RecipeService;
+import com.swizzsmp.items.ResourcePackService;
 import com.swizzsmp.items.TokenListener;
 import com.swizzsmp.items.UpgraderGuardListener;
 import com.swizzsmp.passive.PassiveService;
@@ -83,6 +84,7 @@ public final class SwizzPlugin extends JavaPlugin {
     private LowHealthEffect lowHealth;
     private CustomItems items;
     private RecipeService recipes;
+    private ResourcePackService resourcePack;
     private ActionBarHud hud;
     private RitualService rituals;
     private ServerState serverState;
@@ -120,6 +122,7 @@ public final class SwizzPlugin extends JavaPlugin {
         energy = new EnergyService(this);
         items = new CustomItems(itemsFile, getLogger());
         recipes = new RecipeService(itemsFile, items, getLogger());
+        resourcePack = new ResourcePackService(this);
         hud = new ActionBarHud(this);
         rituals = new RitualService(this);
         serverState = new ServerState(this);
@@ -137,6 +140,7 @@ public final class SwizzPlugin extends JavaPlugin {
         listen(new TokenListener(this));
         listen(new UpgraderGuardListener(this));
         listen(new MenuListener());
+        listen(resourcePack);
         listen(swords);
         dragonEgg = new DragonEggService(this, serverState);
         listen(dragonEgg);
@@ -163,6 +167,7 @@ public final class SwizzPlugin extends JavaPlugin {
         tabColors.start();
         locator.start();
         startAutosave();
+        resourcePack.load();
 
         // Support /reload and late enables: load anyone already online.
         for (Player player : Bukkit.getOnlinePlayers()) {
@@ -270,7 +275,7 @@ public final class SwizzPlugin extends JavaPlugin {
         itemsFile.load();
         messagesFile.load();
         guideFile.load();
-        ConfigMigrations.run(configFile, abilitiesFile, messagesFile, getLogger());
+        ConfigMigrations.run(configFile, abilitiesFile, messagesFile, itemsFile, getLogger());
         settings = new Settings(configFile.yaml());
         messages.reload();
     }
@@ -290,6 +295,7 @@ public final class SwizzPlugin extends JavaPlugin {
     public void reloadEverything() {
         loadConfigs();
         recipes.registerAll();
+        resourcePack.load();
         hud.stop();
         hud.start();
         startAutosave();
@@ -429,6 +435,10 @@ public final class SwizzPlugin extends JavaPlugin {
 
     public CustomItems items() {
         return items;
+    }
+
+    public ResourcePackService resourcePack() {
+        return resourcePack;
     }
 
     public RecipeService recipes() {

@@ -11,13 +11,13 @@ import java.util.logging.Logger;
  */
 public final class ConfigMigrations {
 
-    public static final int CURRENT = 3;
+    public static final int CURRENT = 4;
 
     private ConfigMigrations() {
     }
 
-    public static void run(ConfigFile config, ConfigFile abilities, ConfigFile messages, Logger logger) {
-        migrate(config, abilities, logger);
+    public static void run(ConfigFile config, ConfigFile abilities, ConfigFile messages, ConfigFile items, Logger logger) {
+        migrate(config, abilities, items, logger);
         // New options appear in the server's files so admins can see and edit them.
         // (Not items.yml: a recipe an admin removed must stay removed.)
         addMissing(config, logger);
@@ -45,7 +45,7 @@ public final class ConfigMigrations {
         }
     }
 
-    private static void migrate(ConfigFile config, ConfigFile abilities, Logger logger) {
+    private static void migrate(ConfigFile config, ConfigFile abilities, ConfigFile items, Logger logger) {
         YamlConfiguration c = config.yaml();
         int version = c.isSet("config-version") ? c.getInt("config-version") : 1;
         if (version >= CURRENT) {
@@ -62,6 +62,41 @@ public final class ConfigMigrations {
                 logger.info("Config update: rituals now work within 1500 blocks of spawn.");
             }
             abilities.save();
+        }
+        if (version < 4) {
+            // The placeholder recipes from 1.0 are replaced by the owner's recipes, but only
+            // where the server still has the placeholder (edited recipes are kept).
+            YamlConfiguration it = items.yaml();
+            org.bukkit.configuration.Configuration defaults = it.getDefaults();
+            String[][] old = {
+                    {"swizz_aqua", "DIAMOND", "NAUTILUS_SHELL", "HEART_OF_THE_SEA"},
+                    {"swizz_confusion", "DIAMOND", "FERMENTED_SPIDER_EYE", "ENDER_EYE"},
+                    {"swizz_fortune", "DIAMOND", "GOLD_INGOT", "EMERALD_BLOCK"},
+                    {"swizz_frost", "DIAMOND", "POWDER_SNOW_BUCKET", "BLUE_ICE"},
+                    {"swizz_gleam", "DIAMOND", "GLOW_INK_SAC", "GOLD_BLOCK"},
+                    {"swizz_sculk", "DIAMOND", "ECHO_SHARD", "SCULK_CATALYST"},
+            };
+            int replaced = 0;
+            for (String[] o : old) {
+                String path = "recipes." + o[0];
+                boolean placeholder = it.isConfigurationSection(path)
+                        && java.util.List.of("DED", "ECE", "DED").equals(it.getStringList(path + ".shape"))
+                        && o[1].equals(it.getString(path + ".ingredients.D"))
+                        && o[2].equals(it.getString(path + ".ingredients.E"))
+                        && o[3].equals(it.getString(path + ".ingredients.C"));
+                if (placeholder && defaults != null && defaults.isConfigurationSection(path)) {
+                    it.set(path, null);
+                    it.set(path + ".shape", defaults.getStringList(path + ".shape"));
+                    for (String key : defaults.getConfigurationSection(path + ".ingredients").getKeys(false)) {
+                        it.set(path + ".ingredients." + key, defaults.get(path + ".ingredients." + key));
+                    }
+                    replaced++;
+                }
+            }
+            if (replaced > 0) {
+                items.save();
+                logger.info("Config update: " + replaced + " recipe(s) updated to the Season 5 recipes.");
+            }
         }
         if (version < 3) {
             YamlConfiguration a = abilities.yaml();

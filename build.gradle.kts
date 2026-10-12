@@ -39,3 +39,18 @@ tasks.test {
 tasks.jar {
     archiveFileName.set("SwizzSMP-${project.version}.jar")
 }
+
+// The client resource pack (item textures). Source lives in resourcepack/src; the zip is
+// committed too, because the plugin sends players the GitHub raw URL of that file.
+val buildPack by tasks.registering(Zip::class) {
+    from("resourcepack/src")
+    archiveFileName.set("SwizzSMP-pack.zip")
+    destinationDirectory.set(file("resourcepack"))
+    isPreserveFileTimestamps = false
+    isReproducibleFileOrder = true
+    entryCompression = ZipEntryCompression.DEFLATED
+}
+
+tasks.build {
+    dependsOn(buildPack)
+}

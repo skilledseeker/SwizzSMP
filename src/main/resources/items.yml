@@ -97,27 +97,30 @@ items:
 # Shaped recipes. Each letter in "shape" maps to a vanilla material in "ingredients".
 # Delete a recipe block to disable crafting that item.
 recipes:
+  # Ingredient values: MATERIAL, or MATERIAL,MATERIAL for "any of these", or for potions
+  # POTION:TYPE (e.g. POTION:LONG_WATER_BREATHING = Water Breathing 8:00).
+  # You can also edit recipes in game: /swizzadmin recipe <item>
   swizz_aqua:
-    shape: ["DED", "ECE", "DED"]
-    ingredients: { D: DIAMOND, E: NAUTILUS_SHELL, C: HEART_OF_THE_SEA }
+    shape: ["WPW", "HCH", "WPW"]
+    ingredients: { W: "POTION:LONG_WATER_BREATHING", P: PRISMARINE_SHARD, H: TURTLE_HELMET, C: HEART_OF_THE_SEA }
   swizz_confusion:
-    shape: ["DED", "ECE", "DED"]
-    ingredients: { D: DIAMOND, E: FERMENTED_SPIDER_EYE, C: ENDER_EYE }
+    shape: ["EFE", "HNH", "EFE"]
+    ingredients: { E: END_CRYSTAL, F: FLOW_ARMOR_TRIM_SMITHING_TEMPLATE, H: GOAT_HORN, N: NETHER_STAR }
   swizz_earth:
     shape: ["DED", "ECE", "DED"]
     ingredients: { D: DIAMOND, E: ROOTED_DIRT, C: DIAMOND_BLOCK }
   swizz_fortune:
-    shape: ["DED", "ECE", "DED"]
-    ingredients: { D: DIAMOND, E: GOLD_INGOT, C: EMERALD_BLOCK }
+    shape: ["TET", "GRG", "TET"]
+    ingredients: { T: TOTEM_OF_UNDYING, E: ENDER_EYE, G: GOLDEN_APPLE, R: RABBIT_FOOT }
   swizz_frost:
-    shape: ["DED", "ECE", "DED"]
-    ingredients: { D: DIAMOND, E: POWDER_SNOW_BUCKET, C: BLUE_ICE }
+    shape: ["TST", "SBS", "TST"]
+    ingredients: { T: TIDE_ARMOR_TRIM_SMITHING_TEMPLATE, S: VERDANT_FROGLIGHT, B: BEACON }
   swizz_gleam:
-    shape: ["DED", "ECE", "DED"]
-    ingredients: { D: DIAMOND, E: GLOW_INK_SAC, C: GOLD_BLOCK }
+    shape: ["SLS", "TNT", "SLS"]
+    ingredients: { S: SEA_LANTERN, L: OXIDIZED_LIGHTNING_ROD, T: TRIDENT, N: NETHER_STAR }
   swizz_sculk:
-    shape: ["DED", "ECE", "DED"]
-    ingredients: { D: DIAMOND, E: ECHO_SHARD, C: SCULK_CATALYST }
+    shape: ["ATA", "CRC", "ATA"]
+    ingredients: { A: SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE, T: ECHO_SHARD, C: CALIBRATED_SCULK_SENSOR, R: RECOVERY_COMPASS }
   reroller:
     shape: ["DAD", "ATA", "DAD"]
     ingredients: { D: DIAMOND, A: AMETHYST_SHARD, T: TOTEM_OF_UNDYING }
