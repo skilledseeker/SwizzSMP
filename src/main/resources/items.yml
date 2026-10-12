@@ -1,0 +1,126 @@
+# ─────────────────────────────────────────────────────────────
+#  SwizzSMP — custom items and crafting recipes
+#
+#  material:  the real item underneath. Keep it something with no right-click
+#             behaviour of its own (ECHO_SHARD is a safe default).
+#  model:     the item_model to show. Any vanilla item id works, or your own
+#             resource pack model (e.g. "swizz:aqua").
+#  name/lore: MiniMessage text.
+# ─────────────────────────────────────────────────────────────
+
+items:
+  swizz_aqua:
+    material: ECHO_SHARD
+    model: "minecraft:heart_of_the_sea"
+    name: "<!i><gradient:#3498DB:#1A3C8C><b>Aqua Swizz</b></gradient>"
+    lore:
+      - "<!i><gray>Right-click to bind the power of <#3498DB>water</#3498DB>."
+      - "<!i><dark_gray>Only works if you have no swizz yet."
+  swizz_confusion:
+    material: ECHO_SHARD
+    model: "minecraft:amethyst_shard"
+    name: "<!i><gradient:#B05CE0:#6C2D91><b>Confusion Swizz</b></gradient>"
+    lore:
+      - "<!i><gray>Right-click to bind the power of <#B05CE0>confusion</#B05CE0>."
+      - "<!i><dark_gray>Only works if you have no swizz yet."
+  swizz_earth:
+    material: ECHO_SHARD
+    model: "minecraft:armadillo_scute"
+    name: "<!i><gradient:#A0703C:#5C3A1E><b>Earth Swizz</b></gradient>"
+    lore:
+      - "<!i><gray>Right-click to bind the power of <#A0703C>earth</#A0703C>."
+      - "<!i><dark_gray>Only works if you have no swizz yet."
+  swizz_fortune:
+    material: ECHO_SHARD
+    model: "minecraft:emerald"
+    name: "<!i><gradient:#2ECC71:#F1C40F><b>Fortune Swizz</b></gradient>"
+    lore:
+      - "<!i><gray>Right-click to bind the power of <#2ECC71>fortune</#2ECC71>."
+      - "<!i><dark_gray>Only works if you have no swizz yet."
+  swizz_frost:
+    material: ECHO_SHARD
+    model: "minecraft:snowball"
+    name: "<!i><gradient:#AEE6FF:#FFFFFF><b>Frost Swizz</b></gradient>"
+    lore:
+      - "<!i><gray>Right-click to bind the power of <#AEE6FF>frost</#AEE6FF>."
+      - "<!i><dark_gray>Only works if you have no swizz yet."
+  swizz_gleam:
+    material: ECHO_SHARD
+    model: "minecraft:glowstone_dust"
+    name: "<!i><gradient:#FFE36E:#FFFFFF><b>Gleam Swizz</b></gradient>"
+    lore:
+      - "<!i><gray>Right-click to bind the power of <#FFE36E>light</#FFE36E>."
+      - "<!i><dark_gray>Only works if you have no swizz yet."
+  swizz_sculk:
+    material: ECHO_SHARD
+    model: "minecraft:echo_shard"
+    name: "<!i><gradient:#1E6F8C:#0B2A4A><b>Sculk Swizz</b></gradient>"
+    lore:
+      - "<!i><gray>Right-click to bind the power of <#1E9FB0>the deep dark</#1E9FB0>."
+      - "<!i><dark_gray>Only works if you have no swizz yet."
+  energy:
+    material: ECHO_SHARD
+    model: "minecraft:nether_star"
+    name: "<!i><gradient:#F5A3FF:#9B59FF><b>Energy</b></gradient>"
+    lore:
+      - "<!i><gray>Right-click to gain <light_purple>+1 energy</light_purple>."
+  reroller:
+    material: ECHO_SHARD
+    model: "minecraft:recovery_compass"
+    name: "<!i><gradient:#FFD36E:#FF8C1A><b>Reroller</b></gradient>"
+    lore:
+      - "<!i><gray>Right-click to change your swizz."
+      - "<!i><gray>You keep your energy."
+  upgrader:
+    material: ECHO_SHARD
+    model: "minecraft:beacon"
+    max-stack: 1
+    name: "<!i><gradient:#FF5E5E:#B31217><b>Upgrader</b></gradient>"
+    lore:
+      - "<!i><gray>Right-click a block to start an <red>upgrade ritual</red>."
+      - "<!i><gray>The ritual lasts 20 minutes and its"
+      - "<!i><gray>location is <red>leaked</red> to the server."
+      - "<!i><dark_gray>Can't be stored in containers."
+  swizz_sword:
+    material: NETHERITE_SWORD
+    name: "<!i><gradient:#FF9AF5:#7AF0FF><b>Swizz Sword</b></gradient>"
+    lore:
+      - "<!i><gray>Hold two swizz at once."
+      - "<!i><gray>Right-click to choose your elements."
+  swizz_mace:
+    material: MACE
+    name: "<!i><gradient:#C0C0C0:#5E5E5E><b>Swizz Mace</b></gradient>"
+    lore:
+      - "<!i><gray>Hitting a player disables their swizz"
+      - "<!i><gray>for <white>60 seconds</white>. <dark_gray>(3 min cooldown)"
+
+# Shaped recipes. Each letter in "shape" maps to a vanilla material in "ingredients".
+# Delete a recipe block to disable crafting that item.
+recipes:
+  swizz_aqua:
+    shape: ["DED", "ECE", "DED"]
+    ingredients: { D: DIAMOND, E: NAUTILUS_SHELL, C: HEART_OF_THE_SEA }
+  swizz_confusion:
+    shape: ["DED", "ECE", "DED"]
+    ingredients: { D: DIAMOND, E: FERMENTED_SPIDER_EYE, C: ENDER_EYE }
+  swizz_earth:
+    shape: ["DED", "ECE", "DED"]
+    ingredients: { D: DIAMOND, E: ROOTED_DIRT, C: DIAMOND_BLOCK }
+  swizz_fortune:
+    shape: ["DED", "ECE", "DED"]
+    ingredients: { D: DIAMOND, E: GOLD_INGOT, C: EMERALD_BLOCK }
+  swizz_frost:
+    shape: ["DED", "ECE", "DED"]
+    ingredients: { D: DIAMOND, E: POWDER_SNOW_BUCKET, C: BLUE_ICE }
+  swizz_gleam:
+    shape: ["DED", "ECE", "DED"]
+    ingredients: { D: DIAMOND, E: GLOW_INK_SAC, C: GOLD_BLOCK }
+  swizz_sculk:
+    shape: ["DED", "ECE", "DED"]
+    ingredients: { D: DIAMOND, E: ECHO_SHARD, C: SCULK_CATALYST }
+  reroller:
+    shape: ["DAD", "ATA", "DAD"]
+    ingredients: { D: DIAMOND, A: AMETHYST_SHARD, T: TOTEM_OF_UNDYING }
+  upgrader:
+    shape: ["NBN", "BSB", "NBN"]
+    ingredients: { N: NETHERITE_SCRAP, B: DIAMOND_BLOCK, S: NETHER_STAR }

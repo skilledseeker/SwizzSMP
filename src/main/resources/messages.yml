@@ -1,0 +1,161 @@
+# ─────────────────────────────────────────────────────────────
+#  SwizzSMP — messages (MiniMessage format: https://docs.advntr.dev/minimessage)
+#  <prefix> is replaced with the prefix below.
+# ─────────────────────────────────────────────────────────────
+
+prefix: "<dark_gray>[<gradient:#B05CE0:#3498DB><b>Swizz</b></gradient><dark_gray>]</dark_gray> "
+
+general:
+  players-only: "<prefix><red>Only players can use this."
+  no-permission: "<prefix><red>You don't have permission."
+  player-not-found: "<prefix><red>Player <white><name></white> was not found."
+  invalid-number: "<prefix><red><input> is not a valid number."
+  invalid-swizz: "<prefix><red>Unknown swizz <white><input></white>. Options: <gray><options>"
+  usage: "<prefix><gray>Usage: <white><usage>"
+  reloaded: "<prefix><green>Configuration reloaded."
+
+swizz:
+  none: "<prefix><gray>You don't have a swizz yet. Craft one — see <white>/swizzbook</white>."
+  obtained: "<prefix><gray>You bound the <swizz> <gray>swizz! Use <white>/swizzbook</white> to learn it."
+  already-have: "<prefix><red>You already have a swizz. Use a <gold>Reroller</gold> to change it."
+  info-header: "<gray>━━━━━━━━ <swizz> <gray>━━━━━━━━"
+  info-energy: "<gray>Energy: <energy> <dark_gray>(<value>/<max>)"
+  info-upgraded: "<gray>Upgraded: <value>"
+  info-loadout: "<gray>Loadout: <value>"
+  info-perk: "<gray> • <perk>: <state>"
+  info-trusted: "<gray>Trusted players: <white><count>"
+  disabled: "<prefix><red>Your swizz is disabled for <white><time></white>."
+  hud-toggled: "<prefix><gray>Action bar HUD: <state>"
+  controls-toggled: "<prefix><gray>Key combos (Sneak+F / Sneak+Q): <state>"
+  state-on: "<green>ON"
+  state-off: "<red>OFF"
+
+ability:
+  locked: "<prefix><red><perk> is locked. <gray>You need <white><needed></white> energy, or change your <white>/loadout</white>."
+  cooldown: "<prefix><red><ability> <gray>is on cooldown: <white><time>"
+  ready: "<prefix><green><ability> <gray>is ready!"
+  no-swizz: "<prefix><red>You don't have a swizz."
+  no-second-element: "<prefix><red>Ability 3 and 4 need a <light_purple>Swizz Sword</light_purple> with two elements."
+  frozen: "<prefix><aqua>You are frozen!"
+  disabled-world: "<prefix><red>Swizz abilities are disabled in this world."
+  armed: "<prefix><gray><ability> is <yellow>armed</yellow> — hit a player within <white><time></white>."
+  arm-expired: "<prefix><gray><ability> wore off."
+  already-armed: "<prefix><yellow><ability> is already armed."
+  not-implemented: "<prefix><red>This ability is not available yet."
+  no-targets: "<prefix><gray>No targets in range."
+  no-block-in-range: "<prefix><red>No block in range."
+
+energy:
+  gained: "<prefix><light_purple>+<amount> energy <gray>(<value>/<max>)"
+  lost: "<prefix><red>-<amount> energy <gray>(<value>/<max>)"
+  at-max: "<prefix><gray>You are at max energy. The energy dropped on the ground."
+  item-at-max: "<prefix><red>You are already at max energy."
+  withdraw-success: "<prefix><gray>Withdrew <light_purple><amount> energy</light_purple>. <gray>(<value>/<max>)"
+  withdraw-too-much: "<prefix><red>You can withdraw at most <white><max></white> energy."
+  admin-view: "<prefix><white><name></white> <gray>has <light_purple><value></light_purple> energy."
+  admin-set: "<prefix><gray>Set <white><name></white>'s energy to <light_purple><value></light_purple>."
+
+trust:
+  added: "<prefix><green>You now trust <white><name></white>. <gray>Your harmful abilities won't hit them."
+  removed: "<prefix><yellow>You no longer trust <white><name></white>."
+  self: "<prefix><red>You can't trust yourself."
+  full: "<prefix><red>You can trust at most <white><max></white> players."
+  list-empty: "<prefix><gray>You don't trust anyone."
+  list: "<prefix><gray>Trusted (<count>): <white><names>"
+
+loadout:
+  current: "<prefix><gray>Loadout: <value>"
+  changed: "<prefix><green>Loadout changed: <value>"
+  cooldown: "<prefix><red>You can change your loadout again in <white><time></white>."
+  invalid: "<prefix><red>Use each of <white>a1</white>, <white>a2</white> and <white>passive</white> exactly once."
+
+admin:
+  given: "<prefix><gray>Gave <white><amount>x <item></white> to <white><name></white>."
+  unknown-item: "<prefix><red>Unknown item <white><input></white>. Options: <gray><options>"
+  swizz-set: "<prefix><gray>Set <white><name></white>'s swizz to <swizz><gray>."
+  cooldowns-reset: "<prefix><gray>Reset all cooldowns for <white><name></white>."
+  upgrade-set: "<prefix><gray>Set <white><name></white> upgraded: <white><value>"
+  your-swizz-set: "<prefix><gray>An admin set your swizz to <swizz><gray>."
+  info: "<prefix><gray><name>: swizz=<white><swizz></white> energy=<white><energy></white> upgraded=<white><upgraded></white> loadout=<white><loadout></white> trusted=<white><trusted></white> cooldowns=<white><cooldowns></white>"
+
+confusion:
+  miss-armed: "<prefix><#B05CE0><name></#B05CE0> <gray>is dazed — their next hit on you will miss!"
+  missed: "<prefix><gray>You swing at nothing… <#B05CE0>you are confused!"
+  scrambled: "<prefix><#B05CE0>Your hotbar was scrambled!"
+  scrambled-target: "<prefix><gray>You scrambled <white><name></white>'s hotbar."
+  dome-sealed: "<prefix><#B05CE0>The mirage holds you in!"
+
+fortune:
+  rolled: "<prefix><gray>Fortune rolled <result><gray> for <white><time></white>!"
+  shared: "<prefix><gray><name>'s Fortune Roll gave you <result><gray> for <white><time></white>!"
+  totem: "<prefix><gold><b>Fortune smiled on you!</b> <gray>You cheated death."
+  circle-start: "<prefix><gray>Your <gold>Golden Circle</gold> glows for <white><time></white>."
+
+reroll:
+  title: "<dark_gray>Choose your new swizz"
+  success: "<prefix><gray>Your swizz is now <swizz><gray>! Your energy was kept."
+  need-swizz: "<prefix><red>You need a swizz before you can reroll."
+  lost-reroller: "<prefix><red>You are no longer holding the Reroller."
+  current: "<gray>This is your current swizz."
+  click: "<yellow>Click to change to this swizz."
+
+loadout-menu:
+  title: "<dark_gray>Your loadout"
+  slot: "<gray>Slot <slot> — unlocks at <white><energy></white> energy"
+  bonus: "<aqua>-25% cooldown at <white><energy></white> energy"
+  bonus-wasted: "<dark_gray>Cooldown bonus is wasted on the passive"
+  unlocked: "<green>Unlocked"
+  locked: "<red>Locked"
+  hint: "<yellow>Click two perks to swap them."
+  selected: "<gold>Selected — click another perk to swap."
+
+sword:
+  bind-title: "<dark_gray>Choose 2 elements for the sword"
+  bound: "<prefix><gray>Your <light_purple>Swizz Sword</light_purple> now holds <first> <gray>and <second><gray>!"
+  gained: "<prefix><gray>The <light_purple>Swizz Sword</light_purple> grants you <first> <gray>and <second><gray>. Use <white>/ability3</white> and <white>/ability4</white> for the second element."
+  lost: "<prefix><gray>You no longer hold the <light_purple>Swizz Sword</light_purple>. Your own swizz returns."
+  pick-first: "<yellow>Click to pick this as the first element."
+  pick-second: "<yellow>Click to pick this as the second element."
+  picked: "<gold>Selected as the first element."
+  elements-lore: "<!i><gray>Elements: <first> <gray>+ <second>"
+
+dragon-egg:
+  used: "<prefix><dark_purple><b>⚠</b> <white><name></white> <gray>used the <dark_purple>Dragon Egg</dark_purple>! Every swizz is scrambled for <white><time></white>!"
+  yours: "<prefix><gray>The Dragon Egg turned your swizz into <swizz><gray> for <white><time></white>."
+  ended: "<prefix><gray>The Dragon Egg's chaos fades. Your swizz is back to normal."
+  cooldown: "<prefix><red>The Dragon Egg is recharging: <white><time></white>."
+  admin-reset: "<prefix><gray>The Dragon Egg cooldown was reset."
+
+mace:
+  hit: "<prefix><gray>You disabled <white><name></white>'s swizz for <white><time></white>!"
+  victim: "<prefix><red>A Swizz Mace disabled your swizz for <white><time></white>!"
+  cooldown: "<prefix><gray>Swizz Mace recharging: <white><time></white>"
+
+ritual:
+  # <x>, <y>, <z> show the number once leaked, or scrambled text before that.
+  started: "<prefix><red><b>⚠</b> <white><name></white> <gray>has started a ritual for an <red>Upgrader</red> at <white>x: <x> y: <y> z: <z></white> in <white><dimension></white>!"
+  leak: "<prefix><red><b>⚠</b> <gray>The ritual of <white><name></white> weakens… <white>x: <x> y: <y> z: <z></white> in <white><dimension></white> <dark_gray>(<time> left)"
+  reminder: "<prefix><red><b>⚠</b> <gray>The ritual of <white><name></white> ends in <white><time></white>! <white>x: <x> y: <y> z: <z></white> in <white><dimension></white>"
+  success: "<prefix><gold><b>★</b> <white><name></white> <gray>completed their ritual and <gold>upgraded</gold> their swizz!"
+  failed: "<prefix><gray>The ritual of <white><name></white> failed — the <red>Upgrader</red> dropped at the ritual site!"
+  confirm: "<prefix><yellow>Right-click this block again within <white><time></white> to start the ritual. <red>Your coordinates will be broadcast!"
+  click-block: "<prefix><gray>Right-click a <white>block</white> to start the ritual there."
+  need-swizz: "<prefix><red>You need a swizz to use an Upgrader."
+  already-upgraded: "<prefix><red>Your swizz is already upgraded."
+  already-running: "<prefix><red>You already have a ritual running."
+  out-of-bounds: "<prefix><red>Rituals only work within <white><max></white> blocks of 0, 0 (x and z)."
+  stay-close: "<prefix><gray>Be within <white><radius></white> blocks of the ritual when it ends, or the Upgrader drops!"
+  no-stash: "<prefix><red>Upgraders can't be stored."
+  admin-list-empty: "<prefix><gray>No rituals are running."
+  admin-list-entry: "<prefix><white><name></white> <gray>— <white><x> <y> <z></white> in <white><dimension></white> <dark_gray>(<time> left)"
+  admin-started: "<prefix><gray>Started a ritual for <white><name></white> where they stand."
+  admin-cancelled: "<prefix><gray>Cancelled <white><name></white>'s ritual. The Upgrader was returned."
+  admin-none: "<prefix><red><white><name></white> has no ritual running."
+
+items:
+  craft-reroller-needs-swizz: "<prefix><red>You need a swizz to craft a Reroller."
+
+hud:
+  ready: "<green>✔"
+  locked: "<dark_gray>✖"
+  upgraded: " <gold>★"

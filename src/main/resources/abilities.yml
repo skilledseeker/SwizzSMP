@@ -1,0 +1,221 @@
+# ─────────────────────────────────────────────────────────────
+#  SwizzSMP — ability balance
+#  Damage and health are in HP: 2 HP = 1 heart.
+#  Times are in seconds unless the key says otherwise.
+#  Cooldowns here are the BASE values. The energy tier bonus and the
+#  upgrade bonus (config.yml -> cooldowns) are applied on top.
+# ─────────────────────────────────────────────────────────────
+
+confusion:
+  passive:
+    combo-hits: 4            # hits in a row to trigger
+    miss-count: 1            # how many of the victim's hits will miss you
+    miss-window: 5           # the misses expire after this long
+    reload: 10
+    upgraded:
+      levitation-hit: 5      # this hit of the same combo gives levitation
+      levitation-seconds: 3
+      levitation-level: 1
+  ability1:                  # Scramble — shuffle the hotbar of the next player you hit
+    cooldown: 240
+    upgraded:
+      second-shuffle-delay: 30
+  ability2:                  # Mirage Dome
+    cooldown: 120
+    duration: 10
+    radius: 10
+    block-entry: true        # outsiders can't walk in either
+    hide-nametags: true
+    upgraded:
+      invert-controls: true
+      invert-strength: 0.22  # push speed (blocks/tick) for reversed WASD
+
+sculk:
+  passive:
+    sneak-speed-bonus: 0.45  # +0.45 = Swift Sneak III
+    sculk-repair: 3          # durability repaired per armor piece per sculk eaten
+    sculk-eat-delay-ticks: 4
+  ability1:                  # Sonic Beam
+    cooldown: 150
+    charge-ticks: 34
+    range: 20
+    hit-radius: 0.5
+    damage: 6
+    pass-through-blocks: false
+    upgraded:
+      hit-radius: 1.0
+      damage: 8
+  ability2:                  # Sculk Dome
+    cooldown: 120
+    duration: 15
+    radius: 15
+    upgraded:
+      radius: 30
+      wardens: 2
+      warden-health: 40
+      warden-max-damage: 6
+      darkness: true
+      convert-ground: true
+
+fortune:
+  passive:
+    hero-of-the-village-level: 5
+    loot-multiplier: 3
+    excluded-mobs: [PLAYER, WITHER, ENDER_DRAGON]
+    excluded-items: [NETHER_STAR, DRAGON_EGG, ELYTRA, TOTEM_OF_UNDYING, HEAVY_CORE]
+    ores:
+      - COAL_ORE
+      - DEEPSLATE_COAL_ORE
+      - IRON_ORE
+      - DEEPSLATE_IRON_ORE
+      - COPPER_ORE
+      - DEEPSLATE_COPPER_ORE
+      - GOLD_ORE
+      - DEEPSLATE_GOLD_ORE
+      - REDSTONE_ORE
+      - DEEPSLATE_REDSTONE_ORE
+      - EMERALD_ORE
+      - DEEPSLATE_EMERALD_ORE
+      - LAPIS_ORE
+      - DEEPSLATE_LAPIS_ORE
+      - DIAMOND_ORE
+      - DEEPSLATE_DIAMOND_ORE
+      - NETHER_GOLD_ORE
+      - NETHER_QUARTZ_ORE
+      # - ANCIENT_DEBRIS       # off by default for balance
+    upgraded:
+      totem-chance: 0.10
+  ability1:                  # Golden Circle
+    cooldown: 150
+    duration: 30
+    radius: 6
+    extra-absorption-levels: 1     # +1 level = +2 absorption hearts
+    extra-saturation: 4.8
+    hunger-level: 1
+    upgraded:
+      armor-repair-per-second: 1
+  ability2:                  # Fortune Roll
+    cooldown: 180
+    duration: 15
+    outcomes:
+      # type: REGENERATION | RESISTANCE | STRENGTH | MAX_HEALTH
+      regen-1:      { type: REGENERATION, level: 1, weight: 25, seconds: 15 }
+      regen-2:      { type: REGENERATION, level: 2, weight: 5,  seconds: 15 }
+      resistance-1: { type: RESISTANCE,   level: 1, weight: 25, seconds: 15 }
+      resistance-2: { type: RESISTANCE,   level: 2, weight: 5,  seconds: 15 }
+      hearts:       { type: MAX_HEALTH,   amount: 10, weight: 25, seconds: 15 }
+      strength-2:   { type: STRENGTH,     level: 2, weight: 5,  seconds: 10 }
+    upgraded:
+      share-with-trusted: 2
+      share-radius: 25
+
+gleam:
+  passive:
+    haste-level: 1
+    combo-hits: 3
+    lightning-damage: 2
+    bonus-damage-multiplier: 1.15
+    reload: 10
+    upgraded:
+      low-health-threshold: 10     # HP (10 = 5 hearts)
+      low-health-radius: 20
+  ability1:                  # Radiance
+    cooldown: 150
+    radius: 30
+    duration: 15
+    haste-level: 5
+    upgraded:
+      radius: 50
+      duration: 30
+  ability2:                  # Flashbang
+    cooldown: 180
+    duration: 15
+    radius: 10
+    white-seconds: 4
+    clear-seconds: 1
+    mode: OVERLAY                  # OVERLAY (screen overlay) or TITLE (fallback)
+    overlay-texture: "minecraft:block/snow"
+    upgraded:
+      lightning-damage: 5
+
+frost:
+  passive:
+    cold-temperature: 0.15         # biome temperature below this counts as cold
+    cold-cooldown-rate: 1.25       # cooldowns tick 25% faster in the cold
+    cold-speed-level: 1
+    powder-snow-walk: true
+    upgraded:
+      cold-bonus-health: 6
+  ability1:                  # Icicles
+    cooldown: 180
+    daggers: 3
+    damage: 3
+    delay-between: 1.5
+    session-timeout: 15
+    speed: 2.0
+    max-range: 40
+    upgraded:
+      freeze-seconds: 1
+      shield-disable-seconds: 5
+  ability2:                  # Deep Freeze
+    cooldown: 210
+    freeze-seconds: 6
+    upgraded:
+      radius: 5
+
+earth:
+  passive:
+    overworld-cooldown-rate: 1.3333   # = 25% shorter cooldowns
+    overworld-bonus-health: 4         # 12 hearts total
+    upgraded:
+      bonus-health-everywhere: 6      # 13 hearts total, every dimension
+      weaving: true
+  ability1:                  # Fault Line
+    cooldown: 150
+    length: 15
+    width: 3
+    damage: 4
+    knockback-horizontal: 1.4
+    knockback-vertical: 0.5
+    upgraded:
+      damage: 6
+      break-webs: true
+  ability2:                  # Root Grab
+    cooldown: 120
+    radius: 30
+    hold-ticks: 10
+    upgraded:
+      radius: 50
+      drag-seconds: 6                 # time to drag from the edge to the middle
+      thorns-damage: 1                # per second while dragged
+      max-seconds: 8
+      release-distance: 2
+
+aqua:
+  passive:
+    rain-cooldown-rate: 1.3333        # = 25% shorter cooldowns in rain/thunder
+    trident-shield-disable-seconds: 5
+    upgraded:
+      water-mobs: [DROWNED, GUARDIAN, ELDER_GUARDIAN, PUFFERFISH]
+      bottle-absorption-level: 2
+      bottle-regeneration-level: 2
+      bottle-regeneration-seconds: 5
+      bottle-refill-seconds: 7
+  ability1:                  # Drown
+    cooldown: 150
+    radius: 8
+    duration: 8
+    damage: 1
+    interval-ticks: 20
+    upgraded:
+      radius: 12
+      interval-ticks: 10
+  ability2:                  # Whirlpool
+    cooldown: 120
+    aim-range: 50
+    radius: 5
+    duration: 10
+    pull-speed: 0.35
+    upgraded:
+      radius: 10
+      duration: 20

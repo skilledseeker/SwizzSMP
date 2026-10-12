@@ -1,0 +1,87 @@
+# ─────────────────────────────────────────────────────────────
+#  SwizzSMP — main config
+#  Balance numbers for each swizz live in abilities.yml.
+#  Item looks and crafting recipes live in items.yml.
+#  Run /swizzadmin reload after editing.
+# ─────────────────────────────────────────────────────────────
+
+energy:
+  start: 2            # energy a brand-new player has
+  min: 1              # you can never go below this
+  max: 5              # killing someone at max drops their energy as an item
+  # The killer only gains energy if the victim actually lost one.
+  # Stops farming players who are already at the minimum.
+  kill-requires-victim-loss: true
+
+cooldowns:
+  min-seconds: 10                 # no ability cooldown can go below this
+  slot-bonus-multiplier: 0.75     # energy tier 2 / tier 4 bonus (-25%)
+  upgraded-multiplier: 0.75       # upgraded swizz (-25%)
+  ready-notification: true        # ding + message when an ability is ready again
+
+loadout:
+  switch-cooldown-seconds: 30     # how often /loadout can be changed
+
+abilities:
+  # How long "next hit" abilities (Confusion scramble, Frost freeze) stay armed.
+  arm-window-seconds: 30
+  # Worlds where swizz abilities can't be used (passives still work).
+  disabled-worlds: []
+  # Ignore repeat activations faster than this (stops double key presses).
+  activation-debounce-ms: 250
+  # true  = ability damage ignores armor and Protection ("3 hearts" means 3 hearts).
+  #         Resistance and absorption still reduce it.
+  # false = vanilla armor and enchantments reduce ability damage.
+  true-damage: true
+
+controls:
+  # Sneak + F (swap hands) = ability 1, Sneak + Q (drop) = ability 2.
+  # Sneak + Q needs an item in hand: Minecraft sends no drop action for an empty hand.
+  # Players can toggle this for themselves with /swizz controls.
+  default-enabled: true
+
+hud:
+  enabled-by-default: true
+  update-ticks: 10
+
+combo:
+  # A combo breaks if this many seconds pass between hits.
+  timeout-seconds: 2.5
+
+trust:
+  max-trusted: 20
+
+swizz-items:
+  # If true, only players without a swizz can craft swizz items.
+  craft-requires-no-swizz: false
+
+# Give players a random swizz the first time they join.
+assign-random-on-first-join: false
+
+reroller:
+  keeps-upgrade: true
+
+ritual:
+  duration-minutes: 20
+  leak-interval-minutes: 5
+  # Y is always leaked at the start. These leak one by one after that.
+  leak-order: [X, Z]
+  # The owner must be within this many blocks of the ritual when it ends.
+  radius: 5
+  # Rituals only work where |x| and |z| are both <= this (every dimension).
+  max-abs-coordinate: 750
+  # Players must right-click twice within this many seconds to start a ritual.
+  confirm-seconds: 5
+
+dragon-egg:
+  enabled: true
+  duration-minutes: 5
+  cooldown-minutes: 30
+  exclude-user: true
+
+swizz-mace:
+  disable-seconds: 60
+  cooldown-seconds: 180
+
+storage:
+  autosave-minutes: 5

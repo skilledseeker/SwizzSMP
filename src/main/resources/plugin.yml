@@ -1,0 +1,14 @@
+name: SwizzSMP
+version: '${version}'
+main: com.swizzsmp.SwizzPlugin
+api-version: '26.1'
+description: Swizz elements, energy, abilities and upgrade rituals for SwizzSMP Season 5.
+authors: [SAM aka SkilledMC]
+
+permissions:
+  swizz.use:
+    description: Use swizz abilities and player commands.
+    default: true
+  swizz.admin:
+    description: SwizzSMP admin commands.
+    default: op

@@ -1,0 +1,55 @@
+# ─────────────────────────────────────────────────────────────
+#  SwizzSMP — /swizzbook guide pages (MiniMessage, one string per book page)
+#
+#  Live values from abilities.yml (paths are relative to that swizz):
+#    <v:ability1.radius>     plain number          e.g. 8
+#    <h:ability1.damage>     HP shown as hearts    e.g. 6 -> 3
+#    <t:ability1.cooldown>   seconds as time       e.g. 150 -> 2:30
+#    <ut:ability1.cooldown>  upgraded cooldown     (base x upgraded-multiplier)
+#  Keep pages short: a book page fits about 14 lines.
+# ─────────────────────────────────────────────────────────────
+
+general:
+  - "<b><gradient:#B05CE0:#3498DB>SwizzSMP</gradient></b>\n\nSeven elements called <b>swizz</b>. Each gives you a passive and two abilities.\n\nCraft a swizz and right-click it to bind it. You only get one — use a <gold>Reroller</gold> to change it."
+  - "<b>Energy</b>\n\nYou start with <b>2</b> energy (max <b>5</b>, min <b>1</b>).\n\nKill a player: <green>+1</green>\nDie: <red>-1</red>\n\nAt max energy, kills drop energy as an item. Dying to anything else drops your lost energy on the ground."
+  - "<b>What energy unlocks</b>\n\n1 → Ability 1\n2 → Ability 1 cooldown <aqua>-25%</aqua>\n3 → Ability 2\n4 → Ability 2 cooldown <aqua>-25%</aqua>\n5 → Passive\n\nUse <b>/loadout</b> to change which perk each slot unlocks."
+  - "<b>Using abilities</b>\n\n<b>/ability1</b> and <b>/ability2</b>\n\nor <b>Sneak + F</b> for ability 1 and <b>Sneak + Q</b> (holding an item) for ability 2.\n\n<b>/trust <name></b> stops your harmful abilities from hitting a friend."
+  - "<b>Upgrader</b>\n\nRight-click a block (twice) to start a <red>20 minute ritual</red>. Everyone is told where it is — one coordinate leaks every 5 minutes.\n\nBe within 5 blocks when it ends or the Upgrader drops on the ground!"
+  - "<b>Upgraded swizz</b>\n\nStronger abilities, a stronger passive and <aqua>-25%</aqua> cooldowns.\n\nUpgraders can't be put in chests, shulkers, ender chests or bundles."
+
+swizz:
+  aqua:
+    - "<b><#3498DB>Aqua</#3498DB></b>\n\n<b>Passive</b>\nWater Breathing and Dolphin's Grace forever.\n\nTridents break shields.\n\nCooldowns run 25% faster while it rains."
+    - "<b>Ability 1 — Drown</b>\n\nPlayers within <v:ability1.radius> blocks drown for <v:ability1.duration>s, losing <h:ability1.damage> heart every second.\n\nCooldown: <t:ability1.cooldown>"
+    - "<b>Ability 2 — Whirlpool</b>\n\nLook at a spot up to <v:ability2.aim-range> blocks away. A whirlpool (radius <v:ability2.radius>) pulls everyone to its middle for <v:ability2.duration>s. Cobwebs can't stop it.\n\nCooldown: <t:ability2.cooldown>"
+    - "<b><gold>Upgraded</gold></b>\n\nImmune to water mobs. Water bottles act like golden apples (+2 extra absorption hearts) and refill after <v:passive.upgraded.bottle-refill-seconds>s.\n\nDrown: twice the damage speed, radius <v:ability1.upgraded.radius>.\nWhirlpool: radius <v:ability2.upgraded.radius>, lasts <v:ability2.upgraded.duration>s."
+  confusion:
+    - "<b><#B05CE0>Confusion</#B05CE0></b>\n\n<b>Passive</b>\nLand a <v:passive.combo-hits>-hit combo on a player and their next hit on you misses.\n\nReload: <v:passive.reload>s"
+    - "<b>Ability 1 — Scramble</b>\n\nYour next hit on a player shuffles their hotbar.\n\nCooldown: <t:ability1.cooldown>"
+    - "<b>Ability 2 — Mirage Dome</b>\n\nA purple dome (radius <v:ability2.radius>) traps everyone inside for <v:ability2.duration>s. Everyone looks like <i>you</i> — only you can see who is who.\n\nCooldown: <t:ability2.cooldown>"
+    - "<b><gold>Upgraded</gold></b>\n\nPassive: a <v:passive.upgraded.levitation-hit>th hit in the same combo gives levitation.\n\nScramble shuffles again <v:ability1.upgraded.second-shuffle-delay>s later.\n\nMirage Dome reverses enemies' WASD controls."
+  earth:
+    - "<b><#A0703C>Earth</#A0703C></b>\n\n<b>Passive</b>\n12 hearts in the overworld.\n\nCooldowns are 25% shorter in the overworld."
+    - "<b>Ability 1 — Fault Line</b>\n\nAn earthquake <v:ability1.length> blocks long and <v:ability1.width> wide rolls the way you look. Enemies take <h:ability1.damage> hearts and get knocked back.\n\nCooldown: <t:ability1.cooldown>"
+    - "<b>Ability 2 — Root Grab</b>\n\nRoots grab every enemy player within <v:ability2.radius> blocks and pull them to you.\n\nCooldown: <t:ability2.cooldown>"
+    - "<b><gold>Upgraded</gold></b>\n\n13 hearts in every dimension and permanent Weaving.\n\nFault Line: <h:ability1.upgraded.damage> hearts and breaks cobwebs.\n\nRoot Field: roots drag enemies within <v:ability2.upgraded.radius> blocks to the middle, hurting them on the way."
+  fortune:
+    - "<b><#2ECC71>Fortune</#2ECC71></b>\n\n<b>Passive</b>\nHero of the Village <v:passive.hero-of-the-village-level>.\n\n<v:passive.loot-multiplier>x loot from mobs and ores (not with Silk Touch)."
+    - "<b>Ability 1 — Golden Circle</b>\n\nA circle (radius <v:ability1.radius>) follows you for <v:ability1.duration>s. Golden apples eaten inside give 2 extra absorption hearts and more saturation. Enemies inside get Hunger.\n\nCooldown: <t:ability1.cooldown>"
+    - "<b>Ability 2 — Fortune Roll</b>\n\nRoll a random buff for <v:ability2.duration>s: Regeneration, Resistance or +5 hearts. Level II is rare, and Strength II is the rarest.\n\nCooldown: <t:ability2.cooldown>"
+    - "<b><gold>Upgraded</gold></b>\n\nA 10% chance to survive a killing blow, like a totem, keeping your effects.\n\nGolden Circle slowly repairs your armor.\n\nFortune Roll also buffs your 2 nearest trusted players."
+  frost:
+    - "<b><#AEE6FF>Frost</#AEE6FF></b>\n\n<b>Passive</b>\nIn cold biomes: Speed I and cooldowns run 25% faster.\n\nYou never sink into powder snow (sneak to go down)."
+    - "<b>Ability 1 — Icicles</b>\n\nThrow <v:ability1.daggers> ice daggers, <v:ability1.delay-between>s apart (right-click or /ability1 again). Each deals <h:ability1.damage> hearts. Switching items breaks them.\n\nCooldown: <t:ability1.cooldown>"
+    - "<b>Ability 2 — Deep Freeze</b>\n\nThe next player you hit is frozen solid for <v:ability2.freeze-seconds>s.\n\nCooldown: <t:ability2.cooldown>"
+    - "<b><gold>Upgraded</gold></b>\n\n+3 hearts in cold biomes.\n\nIcicles stun-freeze and break shields.\n\nDeep Freeze freezes everyone within <v:ability2.upgraded.radius> blocks at once."
+  gleam:
+    - "<b><#FFE36E>Gleam</#FFE36E></b>\n\n<b>Passive</b>\nHaste I.\n\nAfter a <v:passive.combo-hits>-hit combo, every extra hit strikes lightning and deals more damage — until they hit back.\n\nReload: <v:passive.reload>s"
+    - "<b>Ability 1 — Radiance</b>\n\nEnemies within <v:ability1.radius> blocks glow for <v:ability1.duration>s and you get Haste V.\n\nCooldown: <t:ability1.cooldown>"
+    - "<b>Ability 2 — Flashbang</b>\n\nEnemies within <v:ability2.radius> blocks are blinded by white light for <v:ability2.duration>s, with short gaps to see.\n\nCooldown: <t:ability2.cooldown>"
+    - "<b><gold>Upgraded</gold></b>\n\nSee nearby players under 5 hearts.\n\nRadiance: radius <v:ability1.upgraded.radius>, lasts <v:ability1.upgraded.duration>s.\n\nFlashbang also strikes the nearest enemy with lightning (<h:ability2.upgraded.lightning-damage> hearts)."
+  sculk:
+    - "<b><#1E9FB0>Sculk</#1E9FB0></b>\n\n<b>Passive</b>\nSwift Sneak III.\n\nRight-click a sculk block in your hand to eat it and repair every armor piece."
+    - "<b>Ability 1 — Sonic Beam</b>\n\nCharge like a warden, then fire a beam (<v:ability1.range> blocks) that deals <h:ability1.damage> hearts through armor.\n\nCooldown: <t:ability1.cooldown>"
+    - "<b>Ability 2 — Sculk Dome</b>\n\nAn unbreakable sculk dome (radius <v:ability2.radius>) traps everyone for <v:ability2.duration>s.\n\nCooldown: <t:ability2.cooldown>"
+    - "<b><gold>Upgraded</gold></b>\n\nImmune to wardens and Darkness.\n\nBeam: twice as wide, <h:ability1.upgraded.damage> hearts.\n\nDome: radius <v:ability2.upgraded.radius>, turns the ground to sculk, gives Darkness and summons wardens."
