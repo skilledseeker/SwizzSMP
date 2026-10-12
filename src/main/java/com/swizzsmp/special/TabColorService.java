@@ -23,7 +23,7 @@ import java.util.UUID;
  */
 public final class TabColorService {
 
-    private enum Carried { DRAGON_EGG, SWORD, MACE, UPGRADER, NONE }
+    private enum Carried { ALL_THREE, DRAGON_EGG, SWORD, MACE, UPGRADER, NONE }
 
     private final SwizzPlugin plugin;
     private final Map<UUID, Carried> shown = new HashMap<>();
@@ -67,7 +67,7 @@ public final class TabColorService {
                 continue;
             }
             shown.put(player.getUniqueId(), carried);
-            player.playerListName(Component.text(player.getName(), color(root, carried)));
+            player.playerListName(carried == Carried.ALL_THREE ? rainbow(player.getName()) : Component.text(player.getName(), color(root, carried)));
         }
     }
 
@@ -90,6 +90,9 @@ public final class TabColorService {
                 upgrader = true;
             }
         }
+        if (egg && sword && mace) {
+            return Carried.ALL_THREE;
+        }
         if (egg) {
             return Carried.DRAGON_EGG;
         }
@@ -102,8 +105,20 @@ public final class TabColorService {
         return upgrader ? Carried.UPGRADER : Carried.NONE;
     }
 
+    /** Bold rainbow name for a player carrying the sword, the mace and the dragon egg. */
+    private static Component rainbow(String name) {
+        net.kyori.adventure.text.TextComponent.Builder b = Component.text();
+        for (int i = 0; i < name.length(); i++) {
+            float hue = (float) i / Math.max(1, name.length());
+            b.append(Component.text(name.charAt(i), TextColor.color(net.kyori.adventure.util.HSVLike.hsvLike(hue, 0.85f, 1f)))
+                    .decorate(net.kyori.adventure.text.format.TextDecoration.BOLD));
+        }
+        return b.build();
+    }
+
     private static TextColor color(ConfigurationSection root, Carried carried) {
         String key = switch (carried) {
+            case ALL_THREE -> "default";
             case DRAGON_EGG -> "dragon-egg";
             case SWORD -> "swizz-sword";
             case MACE -> "swizz-mace";

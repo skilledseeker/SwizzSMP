@@ -80,7 +80,7 @@ public final class ActionBarHud {
             return Component.text("✖ Swizz disabled " + Time.format(left), NamedTextColor.RED);
         }
         if (plugin.settings().hudCooldownsOnly) {
-            return renderCooldowns(data, elements);
+            return renderCooldowns(player, data, elements);
         }
         TextComponent.Builder b = Component.text();
         for (int i = 0; i < elements.size(); i++) {
@@ -104,7 +104,7 @@ public final class ActionBarHud {
     }
 
     /** Cooldown-only HUD: "Ability 1 » 1:42   Ability 2 » ✔" for unlocked abilities. */
-    private Component renderCooldowns(PlayerData data, List<SwizzType> elements) {
+    private Component renderCooldowns(Player player, PlayerData data, List<SwizzType> elements) {
         TextComponent.Builder b = Component.text();
         boolean any = false;
         for (int i = 0; i < elements.size(); i++) {
@@ -121,7 +121,7 @@ public final class ActionBarHud {
                 any = true;
                 int number = i * 2 + n;
                 long left = data.cooldown(prefix + n);
-                b.append(Component.text("Ability " + number + " » ", type.textColor()));
+                b.append(Component.text(plugin.abilityName(player, number) + " » ", type.textColor()));
                 b.append(left > 0 ? Component.text(Time.format(left), NamedTextColor.RED) : plugin.messages().get("hud.ready"));
             }
             long reload = data.cooldown("P:" + type.name());

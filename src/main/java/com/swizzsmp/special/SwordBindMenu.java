@@ -11,6 +11,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -25,13 +26,16 @@ final class SwordBindMenu extends Menu {
     private final SwizzPlugin plugin;
     private final SwizzSwordService swords;
     private final int heldSlot;
+    /** Hand holding the Reroller that pays for a re-bind, or null for the first binding. */
+    private final EquipmentSlot rerollerHand;
     private SwizzType first;
 
-    SwordBindMenu(SwizzPlugin plugin, SwizzSwordService swords, int heldSlot) {
+    SwordBindMenu(SwizzPlugin plugin, SwizzSwordService swords, int heldSlot, EquipmentSlot rerollerHand) {
         super(3, plugin.messages().get("sword.bind-title"));
         this.plugin = plugin;
         this.swords = swords;
         this.heldSlot = heldSlot;
+        this.rerollerHand = rerollerHand;
         render();
     }
 
@@ -72,9 +76,19 @@ final class SwordBindMenu extends Menu {
             return;
         }
         ItemStack sword = player.getInventory().getItem(heldSlot);
-        if (!CustomItems.is(sword, ItemIds.SWORD) || SwizzSwordService.elementsOf(sword) != null) {
+        boolean rebind = rerollerHand != null;
+        if (!CustomItems.is(sword, ItemIds.SWORD) || (SwizzSwordService.elementsOf(sword) != null) != rebind) {
             player.closeInventory();
             return;
+        }
+        if (rebind) {
+            ItemStack reroller = player.getInventory().getItem(rerollerHand);
+            if (!CustomItems.is(reroller, ItemIds.REROLLER)) {
+                plugin.messages().send(player, "reroll.lost-reroller");
+                player.closeInventory();
+                return;
+            }
+            com.swizzsmp.items.TokenListener.consumeOne(player, rerollerHand, reroller);
         }
         swords.bind(sword, first, clicked);
         player.getInventory().setItem(heldSlot, sword);

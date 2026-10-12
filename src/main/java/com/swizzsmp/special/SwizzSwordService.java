@@ -85,6 +85,7 @@ public final class SwizzSwordService implements Listener {
         ItemMeta meta = sword.getItemMeta();
         meta.getPersistentDataContainer().set(Keys.SWORD_ELEMENTS, PersistentDataType.STRING, first.id() + "," + second.id());
         List<Component> lore = meta.hasLore() ? new ArrayList<>(meta.lore()) : new ArrayList<>();
+        lore.removeIf(line -> net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText().serialize(line).startsWith("Elements:"));
         lore.add(plugin.messages().get("sword.elements-lore",
                 Messages.comp("first", first.displayComponent()), Messages.comp("second", second.displayComponent())));
         meta.lore(lore);
@@ -182,6 +183,11 @@ public final class SwizzSwordService implements Listener {
         cache.remove(event.getPlayer().getUniqueId());
     }
 
+    /** A reroller used while carrying a bound sword: choose the sword's elements again. */
+    public void openRebind(Player player, int swordSlot, EquipmentSlot rerollerHand) {
+        new SwordBindMenu(plugin, this, swordSlot, rerollerHand).open(player);
+    }
+
     /** Right-click an unbound sword to choose its two elements. */
     @EventHandler(priority = EventPriority.HIGH)
     public void onInteract(PlayerInteractEvent event) {
@@ -194,6 +200,6 @@ public final class SwizzSwordService implements Listener {
             return;
         }
         event.setUseItemInHand(Event.Result.DENY);
-        new SwordBindMenu(plugin, this, event.getPlayer().getInventory().getHeldItemSlot()).open(event.getPlayer());
+        new SwordBindMenu(plugin, this, event.getPlayer().getInventory().getHeldItemSlot(), null).open(event.getPlayer());
     }
 }

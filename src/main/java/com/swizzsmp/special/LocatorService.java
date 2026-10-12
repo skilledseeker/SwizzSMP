@@ -98,6 +98,14 @@ public final class LocatorService {
         boolean enabled = enabled();
         boolean hideOthers = plugin.settingsFile().getBoolean("dragon-egg.locator.hide-for-everyone-else");
         UUID user = activeUser();
+        // The tracker only works while the user still carries the dragon egg.
+        if (user != null) {
+            Player holder = Bukkit.getPlayer(user);
+            if (holder == null || !holder.getInventory().contains(org.bukkit.Material.DRAGON_EGG)) {
+                state.setLong(UNTIL, 0);
+                user = null;
+            }
+        }
         // Tell the user once when their tracker runs out.
         String raw = state.getString(USER);
         if (raw != null && user == null) {

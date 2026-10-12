@@ -54,7 +54,7 @@ public final class AbilityService {
         int element = index <= 2 ? 0 : 1;
         Perk perk = (index % 2 == 1) ? Perk.ABILITY_1 : Perk.ABILITY_2;
         String key = (element == 0 ? "A" : "B") + (perk == Perk.ABILITY_1 ? "1" : "2");
-        String abilityName = "Ability " + index;
+        String abilityName = plugin.abilityName(player, index);
 
         PlayerData data = plugin.store().get(player);
         List<SwizzType> elements = plugin.swizz().elements(player);

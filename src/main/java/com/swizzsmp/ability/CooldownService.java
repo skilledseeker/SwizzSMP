@@ -91,10 +91,10 @@ public final class CooldownService {
             return;
         }
         String name = switch (key) {
-            case "A1" -> "Ability 1";
-            case "A2" -> "Ability 2";
-            case "B1" -> "Ability 3";
-            case "B2" -> "Ability 4";
+            case "A1" -> plugin.abilityName(player, 1);
+            case "A2" -> plugin.abilityName(player, 2);
+            case "B1" -> plugin.abilityName(player, 3);
+            case "B2" -> plugin.abilityName(player, 4);
             default -> null;
         };
         if (name == null) {

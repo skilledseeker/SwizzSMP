@@ -104,11 +104,21 @@ public final class ResourcePackService implements Listener {
         player.sendResourcePacks(request);
     }
 
+    /** Logs what each client did with the pack, so problems can be seen in the console. */
+    @EventHandler
+    public void onStatus(org.bukkit.event.player.PlayerResourcePackStatusEvent event) {
+        ResourcePackInfo current = info;
+        if (current == null || !current.id().equals(event.getID())) {
+            return;
+        }
+        plugin.getLogger().info("Resource pack " + event.getStatus() + " for " + event.getPlayer().getName());
+    }
+
     /** Sent a moment after join so a pack another plugin sends on join can't wipe ours. */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onJoin(PlayerJoinEvent event) {
         ConfigurationSection c = cfg();
-        long delay = c == null ? 40 : Math.max(0, c.getLong("send-delay-ticks", 40));
+        long delay = c == null ? 100 : Math.max(0, c.getLong("send-delay-ticks", 100));
         Player player = event.getPlayer();
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (player.isOnline()) {

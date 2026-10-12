@@ -17,10 +17,12 @@ confusion:
       levitation-seconds: 3
       levitation-level: 1
   ability1:                  # Scramble — shuffle the hotbar of the next player you hit
+    name: "Hotbar Shuffle"
     cooldown: 240
     upgraded:
       second-shuffle-delay: 30
   ability2:                  # Mirage Dome
+    name: "Anonymous Dome"
     cooldown: 120
     duration: 10
     radius: 10
@@ -36,6 +38,7 @@ sculk:
     sculk-repair: 3          # durability repaired per armor piece per sculk eaten
     sculk-eat-delay-ticks: 4
   ability1:                  # Sonic Beam
+    name: "Warden Beam"
     cooldown: 150
     charge-ticks: 34
     range: 20
@@ -46,6 +49,7 @@ sculk:
       hit-radius: 1.0
       damage: 8
   ability2:                  # Sculk Dome
+    name: "Sculk Dome"
     cooldown: 120
     duration: 15
     radius: 10
@@ -86,6 +90,7 @@ fortune:
     upgraded:
       totem-chance: 0.10
   ability1:                  # Golden Circle
+    name: "Luck Circle"
     cooldown: 150
     duration: 30
     radius: 6
@@ -95,6 +100,7 @@ fortune:
     upgraded:
       armor-repair-per-second: 1
   ability2:                  # Fortune Roll
+    name: "Effect Roulette"
     cooldown: 180
     duration: 15
     outcomes:
@@ -122,6 +128,7 @@ gleam:
       low-health-threshold: 10     # HP (10 = 5 hearts)
       low-health-radius: 20
   ability1:                  # Radiance
+    name: "Haste Rush"
     cooldown: 150
     radius: 30
     duration: 15
@@ -130,6 +137,7 @@ gleam:
       radius: 50
       duration: 30
   ability2:                  # Flashbang
+    name: "Flashbang"
     cooldown: 180
     duration: 15
     radius: 10
@@ -149,6 +157,7 @@ frost:
     upgraded:
       cold-bonus-health: 6
   ability1:                  # Icicles
+    name: "Ice Daggers"
     cooldown: 180
     daggers: 3
     damage: 3
@@ -160,6 +169,7 @@ frost:
       freeze-seconds: 1
       shield-disable-seconds: 5
   ability2:                  # Deep Freeze
+    name: "Freeze"
     cooldown: 210
     freeze-seconds: 6
     upgraded:
@@ -170,11 +180,12 @@ earth:
     overworld-cooldown-rate: 1.3333   # = 25% shorter cooldowns
     overworld-bonus-health: 4         # 12 hearts total
     knockback-resistance: 0.3         # 30% less knockback in the overworld
+    weaving: true                     # permanent Weaving
     upgraded:
       bonus-health-everywhere: 6      # 13 hearts total, every dimension
-      weaving: true
       knockback-resistance: 0.5       # 50% less knockback, every dimension
   ability1:                  # Fault Line
+    name: "Fault Line"
     cooldown: 120
     length: 18
     width: 3
@@ -187,6 +198,7 @@ earth:
       damage: 8
       break-webs: true
   ability2:                  # Root Grab
+    name: "Root Grab"
     cooldown: 100
     radius: 30
     hold-ticks: 10
@@ -213,6 +225,7 @@ aqua:
       bottle-regeneration-seconds: 5
       bottle-refill-seconds: 7
   ability1:                  # Drown
+    name: "Drowning"
     cooldown: 150
     radius: 8
     duration: 8
@@ -222,6 +235,7 @@ aqua:
       radius: 12
       interval-ticks: 10
   ability2:                  # Whirlpool
+    name: "Swirl"
     cooldown: 120
     aim-range: 50
     radius: 5

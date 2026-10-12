@@ -67,12 +67,12 @@ public final class EarthHandler extends BaseHandler {
     @Override
     public void passiveBuffs(Player player, boolean upgraded, BuffSet out) {
         AbilityValues v = passiveValues();
+        if (v.bool("weaving")) {
+            out.effect(PotionEffectType.WEAVING, 1); // permanent, upgraded or not (owner request)
+        }
         if (upgraded) {
             out.attribute(HEALTH_KEY, Attribute.MAX_HEALTH, v.upgradedNum("bonus-health-everywhere"));
             out.attribute(KNOCKBACK_KEY, Attribute.KNOCKBACK_RESISTANCE, v.upgradedNum("knockback-resistance"));
-            if (v.upgradedBool("weaving")) {
-                out.effect(PotionEffectType.WEAVING, 1);
-            }
         } else if (player.getWorld().getEnvironment() == World.Environment.NORMAL) {
             out.attribute(HEALTH_KEY, Attribute.MAX_HEALTH, v.num("overworld-bonus-health"));
             out.attribute(KNOCKBACK_KEY, Attribute.KNOCKBACK_RESISTANCE, v.num("knockback-resistance"));

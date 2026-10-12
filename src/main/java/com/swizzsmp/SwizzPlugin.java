@@ -328,6 +328,14 @@ public final class SwizzPlugin extends JavaPlugin {
     }
 
     public void openReroller(Player player, EquipmentSlot hand) {
+        // Holding a Swizz Sword: the reroller re-picks the sword's two elements instead.
+        for (int slot = 0; slot < player.getInventory().getSize(); slot++) {
+            org.bukkit.inventory.ItemStack item = player.getInventory().getItem(slot);
+            if (com.swizzsmp.special.SwizzSwordService.elementsOf(item) != null) {
+                swords.openRebind(player, slot, hand);
+                return;
+            }
+        }
         if (!store.get(player).hasSwizz()) {
             messages.send(player, "reroll.need-swizz");
             return;
@@ -341,6 +349,19 @@ public final class SwizzPlugin extends JavaPlugin {
 
     public void openBook(Player player) {
         new BookMenu(this).open(player);
+    }
+
+    /** Display name of ability 1-4 for this player (from abilities.yml "name"), e.g. "Ice Daggers". */
+    public String abilityName(Player player, int index) {
+        java.util.List<SwizzType> elements = swizz.elements(player);
+        int element = index <= 2 ? 0 : 1;
+        if (element < elements.size()) {
+            String name = abilityValues(elements.get(element), index % 2 == 1 ? "ability1" : "ability2").str("name");
+            if (!name.isBlank()) {
+                return name;
+            }
+        }
+        return "Ability " + index;
     }
 
     public AbilityValues abilityValues(SwizzType type, String part) {
