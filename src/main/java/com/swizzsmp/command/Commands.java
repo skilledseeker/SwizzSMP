@@ -29,6 +29,7 @@ public final class Commands {
         bind(plugin, "giveupgraded", new GiveUpgradedCommand(plugin));
         bind(plugin, "resetcooldown", new ResetCooldownCommand(plugin));
         bind(plugin, "swizzadmin", new SwizzAdminCommand(plugin));
+        bind(plugin, "jumpscare", new JumpscareCommand(plugin));
     }
 
     private static void bind(SwizzPlugin plugin, String name, CommandBase command) {

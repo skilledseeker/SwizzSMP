@@ -17,6 +17,7 @@ import com.swizzsmp.data.ServerState;
 import com.swizzsmp.effects.BlockRestorer;
 import com.swizzsmp.effects.ControlInverter;
 import com.swizzsmp.effects.Flashbang;
+import com.swizzsmp.effects.Jumpscare;
 import com.swizzsmp.effects.LowHealthEffect;
 import com.swizzsmp.effects.PetalTrail;
 import com.swizzsmp.energy.EnergyListener;
@@ -81,6 +82,7 @@ public final class SwizzPlugin extends JavaPlugin {
     private AbilityDamage damage;
     private BlockRestorer blocks;
     private Flashbang flashbang;
+    private Jumpscare jumpscare;
     private ControlInverter inverter;
     private LowHealthEffect lowHealth;
     private PetalTrail petalTrail;
@@ -116,6 +118,7 @@ public final class SwizzPlugin extends JavaPlugin {
         blocks = new BlockRestorer(this);
         blocks.recoverPending();
         flashbang = new Flashbang(this);
+        jumpscare = new Jumpscare(this);
         inverter = new ControlInverter(this);
         lowHealth = new LowHealthEffect(this);
         petalTrail = new PetalTrail(this);
@@ -462,10 +465,9 @@ public final class SwizzPlugin extends JavaPlugin {
         return flashbang;
     }
 
-    public PetalTrail petalTrail() {
-        return petalTrail;
+    public Jumpscare jumpscare() {
+        return jumpscare;
     }
-
     public CustomItems items() {
         return items;
     }

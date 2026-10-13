@@ -55,9 +55,8 @@ low-health:
   volume: 1.0
 
 petal-trail:
-  # Pink cherry blossom petals that drift down behind a player's feet as they move.
-  # Give it with /swizzadmin trail <player> on (or the swizz.trail permission).
-  # Players who have it turn their own trail off and on with /trail.
+  # Pink cherry blossom petals that drift down behind blinkypies' feet as they move.
+  # Only blinkypies has it (set in the plugin). They turn it off and on with /trail.
   # It is always hidden while invisible, vanished, in spectator or in a Mirage dome.
   enabled: true
   interval-ticks: 2          # how often petals drop while moving (20 ticks = 1 second)
@@ -75,6 +74,22 @@ petal-trail:
   jump-burst: 8
   land-burst: 16
   land-min-fall: 2.0         # blocks fallen before the landing puff
+
+jumpscare:
+  # /jumpscare [player|all]: a horror picture fills the middle of the screen with a huge
+  # scream, then disappears. The picture comes from the texture pack; players without
+  # the pack see the elder guardian ghost instead.
+  duration-ticks: 50         # how long the picture stays (20 ticks = 1 second)
+  texture: "swizz:misc/jumpscare"
+  shake: true                # jolt the camera as if hit
+  # Played all at once at full volume ("sound-id pitch"). Each one is stacked
+  # "repeat" times on top of itself, which makes it much louder.
+  sounds:
+    - "minecraft:entity.elder_guardian.curse 1.0"
+    - "minecraft:entity.ghast.scream 0.7"
+    - "minecraft:entity.enderman.scream 0.6"
+    - "minecraft:entity.warden.sonic_boom 0.8"
+  repeat: 3
 
 resource-pack:
   # Custom item textures. The plugin downloads the zip once at startup to learn its

@@ -78,16 +78,17 @@ commands:
     permission: swizz.admin
   swizzadmin:
     description: SwizzSMP admin tools
-    usage: /swizzadmin <reload|give|upgrade|info|ritual|dragonegg|recipe|craftcheck|trail>
+    usage: /swizzadmin <reload|give|upgrade|info|ritual|dragonegg|recipe|craftcheck>
+    permission: swizz.admin
+  jumpscare:
+    description: Flash a horror picture with a scream on players' screens
+    usage: /jumpscare [player|all]
     permission: swizz.admin
 
 permissions:
   swizz.use:
     description: Use swizz abilities and player commands.
     default: true
-  swizz.trail:
-    description: Have the cherry blossom trail (also given with /swizzadmin trail).
-    default: false
   swizz.admin:
     description: SwizzSMP admin commands.
     default: op

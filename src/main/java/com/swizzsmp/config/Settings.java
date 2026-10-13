@@ -1,5 +1,8 @@
 package com.swizzsmp.config;
 
+import net.kyori.adventure.key.InvalidKeyException;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
 import org.bukkit.Color;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -49,6 +52,12 @@ public final class Settings {
     public final int trailJumpBurst;
     public final int trailLandBurst;
     public final double trailLandMinFall;
+
+    public final int jumpscareTicks;
+    public final String jumpscareTexture;
+    public final List<Sound> jumpscareSounds;
+    public final int jumpscareRepeat;
+    public final boolean jumpscareShake;
 
     public final boolean controlsDefault;
     public final boolean hudDefault;
@@ -126,6 +135,19 @@ public final class Settings {
         trailLandBurst = Math.max(0, c.getInt("petal-trail.land-burst"));
         trailLandMinFall = c.getDouble("petal-trail.land-min-fall");
 
+        jumpscareTicks = Math.max(1, c.getInt("jumpscare.duration-ticks"));
+        jumpscareTexture = c.getString("jumpscare.texture", "swizz:misc/jumpscare");
+        List<Sound> sounds = new ArrayList<>();
+        for (String entry : c.getStringList("jumpscare.sounds")) {
+            Sound sound = sound(entry);
+            if (sound != null) {
+                sounds.add(sound);
+            }
+        }
+        jumpscareSounds = List.copyOf(sounds);
+        jumpscareRepeat = Math.max(1, c.getInt("jumpscare.repeat"));
+        jumpscareShake = c.getBoolean("jumpscare.shake");
+
         controlsDefault = c.getBoolean("controls.default-enabled");
         hudDefault = c.getBoolean("hud.enabled-by-default");
         hudCooldownsOnly = !"full".equalsIgnoreCase(c.getString("hud.mode", "cooldowns"));
@@ -157,6 +179,17 @@ public final class Settings {
 
     private static int clamp(int value, int min, int max) {
         return Math.max(min, Math.min(max, value));
+    }
+
+    /** "minecraft:entity.ghast.scream 0.6" (sound id, optional pitch) → a full-volume sound, or null. */
+    private static Sound sound(String entry) {
+        String[] parts = entry.trim().split("\\s+");
+        try {
+            float pitch = parts.length > 1 ? Float.parseFloat(parts[1]) : 1f;
+            return Sound.sound(Key.key(parts[0]), Sound.Source.MASTER, 1f, pitch);
+        } catch (InvalidKeyException | NumberFormatException e) {
+            return null;
+        }
     }
 
     /** "#FF69B4" → a colour, or null if it isn't a valid hex colour. */

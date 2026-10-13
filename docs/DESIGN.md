@@ -64,8 +64,7 @@ override:         { swizz, untilEpochMillis } | null    # dragon egg
 disabledUntil:    epochMillis (0 = none)                # swizz mace
 hudEnabled:       bool (default true)
 controlsEnabled:  bool (default true)
-trailGranted:     bool (default false)  # cherry blossom trail, given by an admin
-trailEnabled:     bool (default true)   # /trail
+trailEnabled:     bool (default true)   # /trail (only blinkypies has the trail, §13.5)
 ```
 - Loaded on join (sync; the file is tiny) and kept in memory while online.
 - Saved async on quit, every 5 minutes (only if changed), and sync on disable.
@@ -613,8 +612,8 @@ Custom items may **not**:
 | `/swizzadmin dragonegg reset` | `swizz.admin` | clears the server-wide dragon egg cooldown |
 | `/swizzadmin recipe <item>` | `swizz.admin` | in-game recipe editor; saves to items.yml and reloads |
 | `/giveupgraded <player>` | `swizz.admin` | upgrades the player's current swizz without a ritual |
-| `/swizzadmin trail <player> <on\|off>` | `swizz.admin` | gives or takes the cherry blossom trail (§13.5); works offline |
-| `/trail [on\|off]` | `swizz.use` | turns your own trail off and on; only with the trail (`trailGranted` or `swizz.trail`, default: nobody) |
+| `/trail [on\|off]` | `swizz.use` | turns the cherry blossom trail off and on; only for blinkypies (§13.5) |
+| `/jumpscare [player\|all]` | `swizz.admin` | horror picture + scream (§13.6). No argument: everyone except you; `all`: you too |
 
 ---
 
@@ -682,13 +681,30 @@ Checked every second. Colours in `config.yml → tab-colors`.
   Petals are scattered along the path since the last drop (every 2 ticks), so fast moves
   don't leave gaps. Teleports and respawns don't draw a line.
 - A puff of petals on every jump and on landing from a fall of 2+ blocks.
-- Given per player with `/swizzadmin trail <player> on` (saved in their file) or the
-  `swizz.trail` permission. `/trail` turns it off and on.
+- **D-33:** only the player named **blinkypies** has it (owner request; hardcoded as
+  `PetalTrail.OWNER`, matched by name, case-insensitive). It is on by default and
+  `/trail` turns it off and on. Anyone else gets "one-of-a-kind cosmetic".
 - **D-32:** the trail is hidden whenever it could give the player away: sneaking
   (`hide-while-sneaking`), invisible, spectator, dead, vanished (`vanished` metadata) or
   inside a Mirage dome. Particles are sent per viewer, only to players within 32 blocks
   who can see the player.
 - Particles only, so nothing needs cleaning up. All numbers in `config.yml → petal-trail`.
+
+### 13.6 Jumpscare (owner request, admin command)
+- `/jumpscare` shows a horror picture in the middle of the screen for **2.5 s**
+  (`duration-ticks: 50`) with a huge scream and three camera jolts (`sendHurtAnimation`).
+- **Picture:** the owner's nun photo, centred on a black 16:9 canvas with feathered
+  edges: `resourcepack/src/assets/swizz/textures/misc/jumpscare.png` (`blur` mcmeta for
+  smooth scaling). It is a camera overlay on a fake helmet sent only to the victim, reusing
+  Flashbang's code, so it has the same cleanup (expiry, quit, death, disable) and the same
+  risk R1. Only drawn in first person.
+- **D-34:** players without the texture pack loaded (tracked from resource pack status
+  events) would see a missing texture, so they get the elder guardian ghost instead.
+- **Sound:** a list of vanilla sounds in `jumpscare.sounds`, each played `repeat` (3)
+  times at once on the MASTER channel; stacking copies is what makes it louder, since one
+  sound can't go above full volume.
+
+---
 
 ---
 
@@ -712,7 +728,7 @@ swizz/    SwizzType (enum: id, display, colors, particles), SwizzRegistry,
 swizz/impl/  Aqua..Sculk handlers (one class each + helper classes where large)
 combat/   TargetFilter, ComboTracker, FreezeService, StatusListener
 effects/  Particles (line, circle, sphere, spiral), BlockRestorer (persisted),
-          DomeBuilder, Flashbang, Disguise, ControlInverter, LowHealthEffect, PetalTrail
+          DomeBuilder, Flashbang, Disguise, ControlInverter, LowHealthEffect, PetalTrail, Jumpscare
 passive/  PassiveService (effects + attribute modifier reconciliation)
 items/    ItemIds, CustomItems (factory + identify), RecipeService, ItemGuardListener,
           UpgraderGuardListener, SwizzItemListener (absorb on right-click)
@@ -801,6 +817,7 @@ cleanup path that runs on **expiry, quit, death, world change and disable**.
 - [x] Dragon Egg
 - [x] Swizz Mace
 - [x] Cherry blossom trail (§13.5)
+- [x] Jumpscare (§13.6)
 
 ### Phase 7 — Hardening
 - [x] Audit every cleanup path (quit, death, world change, disable)
@@ -839,4 +856,6 @@ D-24 leak X then Z · D-25 neutral base item + item_model · D-26 placeholder re
 D-27 /giveswizz sets the swizz directly · D-28 dragon egg excludes the user ·
 D-29 ability damage ignores armor/Protection (`abilities.true-damage`) · D-30 shields don't block ability damage (icicles excepted) ·
 D-31 custom textures via custom_model_data select with vanilla fallback; pack sent by the plugin ·
-D-32 petal trail hidden while sneaking, invisible, vanished or disguised
+D-32 petal trail hidden while sneaking, invisible, vanished or disguised ·
+D-33 petal trail only for blinkypies (hardcoded) ·
+D-34 jumpscare falls back to the elder guardian without the pack

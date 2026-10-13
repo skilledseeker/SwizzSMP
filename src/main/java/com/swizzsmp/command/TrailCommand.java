@@ -3,6 +3,7 @@ package com.swizzsmp.command;
 import com.swizzsmp.SwizzPlugin;
 import com.swizzsmp.config.Messages;
 import com.swizzsmp.data.PlayerData;
+import com.swizzsmp.effects.PetalTrail;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -22,8 +23,8 @@ final class TrailCommand extends CommandBase {
         if (player == null) {
             return;
         }
-        if (!plugin.petalTrail().hasAccess(player)) {
-            msg().send(player, "trail.no-access");
+        if (!PetalTrail.hasAccess(player)) {
+            msg().send(player, "trail.not-yours");
             return;
         }
         PlayerData data = plugin.store().get(player);

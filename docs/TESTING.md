@@ -49,11 +49,19 @@ client. You need two players (or two accounts). Give yourself everything with:
 
 ## Cherry blossom trail
 
-- [ ] `/swizzadmin trail <you> on`, then walk: pink petals drift down behind your feet
-      and settle on the ground. Sprinting drops more. Jumping and landing from 2+ blocks
-      puff out petals. Another player sees it too.
+- [ ] As blinkypies, walk: pink petals drift down behind your feet and settle on the
+      ground. Sprinting drops more. Jumping and landing from 2+ blocks puff out petals.
+      Another player sees it too. Anyone else gets no trail, and `/trail` tells them so.
 - [ ] Sneaking, an invisibility potion and `/trail off` all hide it. `/trail on` brings it back.
 - [ ] Too much or too little? Tune `petal-trail` in `config.yml` and `/swizzadmin reload`.
+
+## Jumpscare
+
+- [ ] `/jumpscare <you>` in first person: the nun picture fills the middle of the screen
+      for about 2.5 s with a very loud scream and the camera jolts, then everything is
+      back to normal (your real helmet too).
+- [ ] With the texture pack declined, you see the elder guardian ghost instead.
+- [ ] `/jumpscare` with a friend online scares them but not you.
 
 ## Resource pack
 

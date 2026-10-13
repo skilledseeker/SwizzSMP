@@ -32,12 +32,13 @@ import java.util.concurrent.ThreadLocalRandom;
  * Cosmetic cherry blossom trail (DESIGN.md §13.5). Pink petals drift down behind the
  * player's feet while they move, and puff out when they jump or land from a fall. Three
  * layers: Minecraft's cherry petals, leaf petals tinted a random pink, and pink glitter
- * that fades to white. The trail is hidden whenever it could give the player away, and
- * it is particles only, so there is nothing to clean up.
+ * that fades to white. Only {@link #OWNER} has it. The trail is hidden whenever it could
+ * give the player away, and it is particles only, so there is nothing to clean up.
  */
 public final class PetalTrail implements Listener {
 
-    public static final String PERMISSION = "swizz.trail";
+    /** The trail is a gift for this one player (owner request, D-33). */
+    public static final String OWNER = "blinkypies";
     /** Clients don't draw particles further away than this, so nobody beyond it is sent any. */
     private static final double VIEW_DISTANCE = 32;
     private static final double PETAL_LIFT = 0.35;
@@ -74,13 +75,12 @@ public final class PetalTrail implements Listener {
         walkers.clear();
     }
 
-    /** Given by an admin ({@code /swizzadmin trail}) or through the swizz.trail permission. */
-    public boolean hasAccess(Player player) {
-        return plugin.store().get(player).trailGranted() || player.hasPermission(PERMISSION);
+    public static boolean hasAccess(Player player) {
+        return player.getName().equalsIgnoreCase(OWNER);
     }
 
     private boolean wears(Player player) {
-        return plugin.settings().trailEnabled && plugin.store().get(player).trailEnabled() && hasAccess(player);
+        return plugin.settings().trailEnabled && hasAccess(player) && plugin.store().get(player).trailEnabled();
     }
 
     private void tick() {

@@ -30,8 +30,7 @@ public final class PlayerData {
     private boolean hudEnabled;
     private boolean controlsEnabled;
     private boolean heartbeatEnabled = true;
-    /** Cherry blossom trail: given by an admin, then turned off and on with /trail. */
-    private boolean trailGranted;
+    /** Cherry blossom trail on/off (/trail). Only PetalTrail.OWNER has the trail. */
     private boolean trailEnabled = true;
     /** Health at logout, so passive max-health bonuses don't cost hearts on relog. */
     private double lastHealth;
@@ -190,15 +189,6 @@ public final class PlayerData {
 
     public void setHeartbeatEnabled(boolean heartbeatEnabled) {
         this.heartbeatEnabled = heartbeatEnabled;
-        dirty = true;
-    }
-
-    public boolean trailGranted() {
-        return trailGranted;
-    }
-
-    public void setTrailGranted(boolean trailGranted) {
-        this.trailGranted = trailGranted;
         dirty = true;
     }
 

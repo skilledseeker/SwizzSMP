@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 /** /swizzadmin reload | give | upgrade | info | ritual (admin). */
 final class SwizzAdminCommand extends CommandBase {
 
-    private static final String USAGE = "/swizzadmin <reload | give <item> <player> [amount] | upgrade <player> <true|false> | info <player> | ritual <list | start <player> | cancel <player>> | dragonegg reset | recipe <item> | craftcheck <item> | trail <player> <on|off>>";
+    private static final String USAGE = "/swizzadmin <reload | give <item> <player> [amount] | upgrade <player> <true|false> | info <player> | ritual <list | start <player> | cancel <player>> | dragonegg reset | recipe <item> | craftcheck <item>>";
 
     SwizzAdminCommand(SwizzPlugin plugin) {
         super(plugin, "swizz.admin");
@@ -34,7 +34,6 @@ final class SwizzAdminCommand extends CommandBase {
             }
             case "give" -> give(sender, args);
             case "upgrade" -> upgrade(sender, args);
-            case "trail" -> trail(sender, args);
             case "info" -> info(sender, args);
             case "ritual" -> plugin.rituals().adminCommand(sender, args);
             case "craftcheck" -> {
@@ -125,27 +124,6 @@ final class SwizzAdminCommand extends CommandBase {
         });
     }
 
-    private void trail(CommandSender sender, String[] args) {
-        if (args.length != 3 || !List.of("on", "off").contains(args[2].toLowerCase())) {
-            usage(sender, "/swizzadmin trail <player> <on|off>");
-            return;
-        }
-        boolean on = args[2].equalsIgnoreCase("on");
-        findTarget(sender, args[1]).ifPresent(target -> {
-            PlayerData data = plugin.store().loadAny(target.uuid());
-            data.setTrailGranted(on);
-            if (on) {
-                data.setTrailEnabled(true);
-            }
-            if (target.online() == null) {
-                plugin.store().saveAsync(data);
-            } else if (on) {
-                msg().send(target.online(), "trail.you-got-it");
-            }
-            msg().send(sender, on ? "admin.trail-granted" : "admin.trail-revoked", Messages.text("name", target.name()));
-        });
-    }
-
     private void info(CommandSender sender, String[] args) {
         if (args.length != 2) {
             usage(sender, "/swizzadmin info <player>");
@@ -170,7 +148,7 @@ final class SwizzAdminCommand extends CommandBase {
     @Override
     protected Collection<String> complete(CommandSender sender, String[] args) {
         if (args.length <= 1) {
-            return filter(List.of("reload", "give", "upgrade", "info", "ritual", "dragonegg", "recipe", "craftcheck", "trail"), last(args));
+            return filter(List.of("reload", "give", "upgrade", "info", "ritual", "dragonegg", "recipe", "craftcheck"), last(args));
         }
         String sub = args[0].toLowerCase();
         return switch (sub) {
@@ -180,7 +158,6 @@ final class SwizzAdminCommand extends CommandBase {
                 default -> List.of();
             };
             case "upgrade" -> args.length == 2 ? onlineNames(last(args)) : args.length == 3 ? filter(List.of("true", "false"), last(args)) : List.of();
-            case "trail" -> args.length == 2 ? onlineNames(last(args)) : args.length == 3 ? filter(List.of("on", "off"), last(args)) : List.of();
             case "info" -> args.length == 2 ? onlineNames(last(args)) : List.of();
             case "ritual" -> args.length == 2 ? filter(List.of("list", "start", "cancel"), last(args)) : args.length == 3 ? onlineNames(last(args)) : List.of();
             case "dragonegg" -> args.length == 2 ? filter(List.of("reset"), last(args)) : List.of();

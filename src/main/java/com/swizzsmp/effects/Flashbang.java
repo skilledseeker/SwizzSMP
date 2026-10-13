@@ -27,7 +27,8 @@ import java.util.UUID;
  * The Gleam flashbang (DESIGN.md §7.4). The victim's screen goes white without any
  * potion effect. In OVERLAY mode only the victim is sent a fake helmet whose
  * {@code equippable} component has a full-screen camera overlay. TITLE mode is a
- * fallback that fills the screen with white block characters.
+ * fallback that fills the screen with white block characters. {@link Jumpscare} also uses
+ * the overlay to show its picture.
  */
 public final class Flashbang implements Listener {
 

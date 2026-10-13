@@ -27,7 +27,7 @@ Fortune, Frost, Gleam, Sculk), energy, abilities, upgrade rituals and special it
 | Energy to items | `/withdraw <amount>` (you always keep 1) |
 | Status | `/swizz` · `/swizz hud`, `/swizz controls` and `/swizz heartbeat` toggle the action bar, the key combos and the low-health warning |
 | Guide | `/swizzbook`: recipes and a book about every swizz |
-| Petal trail | `/trail` turns your cherry blossom trail off and on (if an admin gave it to you) |
+| Petal trail | `/trail` turns the cherry blossom trail off and on (only blinkypies has it) |
 | Upgrade | Right-click a block with an **Upgrader** twice to start a 20-minute ritual |
 
 ## Admin commands (`swizz.admin`, op by default)
@@ -49,8 +49,7 @@ Fortune, Frost, Gleam, Sculk), energy, abilities, upgrade rituals and special it
 | `/swizzadmin dragonegg reset` | Clear the server-wide Dragon Egg cooldown |
 | `/swizzadmin recipe <item>` | Edit an item's crafting recipe in game (saves to `items.yml`, works right away) |
 | `/swizzadmin craftcheck <item>` | Verify that an item's recipe actually crafts with its own ingredients |
-| `/swizzadmin trail <player> <on\|off>` | Give or take the pink cherry blossom trail (petals follow their feet). The `swizz.trail` permission also gives it. Tune it in `config.yml → petal-trail` |
-
+| `/jumpscare [player\|all]` | Horror picture + huge scream for 2.5 s. No name = everyone but you, `all` = you too, a name = just them. Players without the texture pack get the elder guardian ghost. Sounds and length in `config.yml → jumpscare` |
 The **Swizz Sword** and **Swizz Mace** are admin-given only (`/swizzadmin give`). The
 **Dragon Egg** uses the real dragon egg: right-click air to scramble everyone's swizz
 for 5 minutes, or **sneak + right-click air** to be the only player with a locator bar

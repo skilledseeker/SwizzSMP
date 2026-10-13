@@ -11,8 +11,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.net.URI;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
@@ -28,6 +31,8 @@ public final class ResourcePackService implements Listener {
     private final SwizzPlugin plugin;
     private volatile ResourcePackInfo info;
     private String loadedUrl;
+    /** Players whose client reported our pack as loaded. */
+    private final Set<UUID> loaded = new HashSet<>();
 
     public ResourcePackService(SwizzPlugin plugin) {
         this.plugin = plugin;
@@ -104,6 +109,11 @@ public final class ResourcePackService implements Listener {
         player.sendResourcePacks(request);
     }
 
+    /** True once this player's client has loaded our pack (so its textures exist for them). */
+    public boolean hasPack(Player player) {
+        return loaded.contains(player.getUniqueId());
+    }
+
     /** Logs what each client did with the pack, so problems can be seen in the console. */
     @EventHandler
     public void onStatus(org.bukkit.event.player.PlayerResourcePackStatusEvent event) {
@@ -111,7 +121,20 @@ public final class ResourcePackService implements Listener {
         if (current == null || !current.id().equals(event.getID())) {
             return;
         }
+        UUID player = event.getPlayer().getUniqueId();
+        switch (event.getStatus()) {
+            case SUCCESSFULLY_LOADED -> loaded.add(player);
+            case DECLINED, FAILED_DOWNLOAD, FAILED_RELOAD, INVALID_URL, DISCARDED -> loaded.remove(player);
+            default -> {
+                // ACCEPTED, DOWNLOADED: still loading
+            }
+        }
         plugin.getLogger().info("Resource pack " + event.getStatus() + " for " + event.getPlayer().getName());
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        loaded.remove(event.getPlayer().getUniqueId());
     }
 
     /** Sent a moment after join so a pack another plugin sends on join can't wipe ours. */

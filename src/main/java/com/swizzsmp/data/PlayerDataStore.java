@@ -189,7 +189,6 @@ public final class PlayerDataStore {
         data.setControlsEnabled(yaml.getBoolean("controls", s.controlsDefault));
         data.setLastHealth(yaml.getDouble("last-health"));
         data.setHeartbeatEnabled(yaml.getBoolean("heartbeat", true));
-        data.setTrailGranted(yaml.getBoolean("trail-granted"));
         data.setTrailEnabled(yaml.getBoolean("trail", true));
         data.clearDirty();
         return data;
@@ -217,7 +216,6 @@ public final class PlayerDataStore {
         yaml.set("controls", data.controlsEnabled());
         yaml.set("last-health", data.lastHealth());
         yaml.set("heartbeat", data.heartbeatEnabled());
-        yaml.set("trail-granted", data.trailGranted());
         yaml.set("trail", data.trailEnabled());
         return yaml.saveToString();
     }
