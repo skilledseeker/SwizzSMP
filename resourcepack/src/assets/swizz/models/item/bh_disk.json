@@ -1,0 +1,6 @@
+{
+  "parent": "swizz:item/plane",
+  "textures": {
+    "plane": "swizz:item/bh_disk"
+  }
+}

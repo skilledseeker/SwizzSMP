@@ -30,7 +30,8 @@ public final class Commands {
         bind(plugin, "resetcooldown", new ResetCooldownCommand(plugin));
         bind(plugin, "swizzadmin", new SwizzAdminCommand(plugin));
         bind(plugin, "jumpscare", new JumpscareCommand(plugin));
-        bind(plugin, "aura", new AuraCommand(plugin));
+        bind(plugin, "aura", new CinematicCommand(plugin, "aura"));
+        bind(plugin, "cinematic", new CinematicCommand(plugin, null));
     }
 
     private static void bind(SwizzPlugin plugin, String name, CommandBase command) {

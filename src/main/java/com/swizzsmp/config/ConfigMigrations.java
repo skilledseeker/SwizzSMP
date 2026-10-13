@@ -11,7 +11,7 @@ import java.util.logging.Logger;
  */
 public final class ConfigMigrations {
 
-    public static final int CURRENT = 4;
+    public static final int CURRENT = 5;
 
     private ConfigMigrations() {
     }
@@ -107,6 +107,13 @@ public final class ConfigMigrations {
             replaceIfDefault(a, "earth.ability2.cooldown", 120, 100, logger);
             replaceIfDefault(a, "earth.ability2.upgraded.thorns-damage", 1, 2, logger);
             abilities.save();
+        }
+        if (version < 5 && c.isConfigurationSection("aura")) {
+            // /aura became one of several cinematics, which share these options.
+            c.set("cinematics.screen-radius", c.getDouble("aura.screen-radius", 30));
+            c.set("cinematics.levitate", c.getBoolean("aura.levitate", true));
+            c.set("aura", null);
+            logger.info("Config update: the aura options moved to 'cinematics'.");
         }
         c.set("config-version", CURRENT);
         config.save();

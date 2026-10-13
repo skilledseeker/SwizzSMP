@@ -88,12 +88,33 @@ admin:
   info: "<prefix><gray><name>: swizz=<white><swizz></white> energy=<white><energy></white> upgraded=<white><upgraded></white> loadout=<white><loadout></white> trusted=<white><trusted></white> cooldowns=<white><cooldowns></white>"
   jumpscared: "<prefix><dark_red>☠</dark_red> <gray>Jumpscared <white><count></white> player(s)."
   jumpscare-nobody: "<prefix><gray>Nobody else is online to scare. Use <white>/jumpscare all</white> to scare yourself."
-  aura-started: "<prefix><gray>The aura rises around <white><name></white>…"
-  aura-busy: "<prefix><red><white><name></white>'s aura is already playing."
+  cinematic-started: "<prefix><gray>▶ <white><cinematic></white> plays around <white><name></white>…"
+  cinematic-busy: "<prefix><red>A cinematic is already playing around <white><name></white>."
+  cinematic-unknown: "<prefix><red>Unknown cinematic <white><input></white>. Options: <gray><options>"
 
 aura:
   title: "<gradient:#3498DB:#B05CE0:#A0703C:#2ECC71:#AEE6FF:#FFE36E:#1E9FB0><b><name></b></gradient>"
   subtitle: "<gray>✦ <white>ascends</white> ✦"
+
+# Typed out letter by letter on a green screen (formatting is ignored there).
+matrix:
+  wake-up: "Wake up, <name>..."
+  has-you: "The Matrix has you..."
+  rabbit: "Follow the white rabbit."
+  knock: "Knock, knock, <name>."
+  the-one: "You are the One."
+  escaped: "You have escaped the Matrix."
+  real-world: "Welcome to the real world."
+
+singularity:
+  title: "<gradient:#B06BFF:#FF8A3D><b>SINGULARITY</b></gradient>"
+  subtitle: "<gray><white><name></white> tore a hole in spacetime"
+
+timestop:
+  title: "<gradient:#9FF3FF:#FFFFFF:#FFD27F><b>TIME STOP</b></gradient>"
+  subtitle: "<gray><white><name></white> stopped time"
+  resumes: "<#FFE9A8>Time resumes."
+  actionbar: "<#9FF3FF>⌚ <white>Time is stopped</white> <gray>— <white><time></white> left"
 
 trail:
   toggled: "<prefix><#FF69B4>❀</#FF69B4> <gray>Cherry blossom trail: <state>"

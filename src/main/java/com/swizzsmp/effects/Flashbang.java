@@ -87,10 +87,22 @@ public final class Flashbang implements Listener {
             Key texture = Key.key(overlayTexture);
             overlay.setData(DataComponentTypes.EQUIPPABLE, Equippable.equippable(EquipmentSlot.HEAD).cameraOverlay(texture).build());
         }
-        State previous = active.put(target.getUniqueId(), new State(totalTicks, whiteTicks, clearTicks, mode, overlay));
+        State state = new State(totalTicks, whiteTicks, clearTicks, mode, overlay);
+        State previous = active.put(target.getUniqueId(), state);
         if (previous != null && previous.white) {
-            clearScreen(target, previous);
+            if (previous.mode == Mode.OVERLAY && mode == Mode.OVERLAY) {
+                // Overlay to overlay swaps straight over, so animated overlays don't flicker.
+                whiteScreen(target, state);
+                state.white = true;
+            } else {
+                clearScreen(target, previous);
+            }
         }
+    }
+
+    /** Ends any flash or overlay on this player right away. */
+    public void clear(Player player) {
+        end(player);
     }
 
     public boolean isFlashed(Player player) {

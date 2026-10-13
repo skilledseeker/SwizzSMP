@@ -88,6 +88,10 @@ commands:
     description: Play the aura showcase cinematic around a player
     usage: /aura [player]
     permission: swizz.admin
+  cinematic:
+    description: Play a showcase cinematic around a player
+    usage: /cinematic <aura|matrix|singularity|timestop> [player]
+    permission: swizz.admin
 
 permissions:
   swizz.use:

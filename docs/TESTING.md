@@ -73,6 +73,17 @@ client. You need two players (or two accounts). Give yourself everything with:
 - [ ] Nothing is left behind afterwards (no floating items or blocks), even if you log out
       in the middle.
 
+## Matrix, singularity and timestop (`/cinematic <name>`)
+
+- [ ] matrix: the green CRT and typing are readable; the black cat walks by twice; the
+      ground and walls turn black with a lime grid; the rain overlay animates smoothly (no
+      flicker); agents wear black suits; bullets stop in the air and drop; the chrome covers
+      the screen; the world looks normal again after "Welcome to the real world".
+- [ ] singularity: the black hole looks round from every side, the disk spins, blocks peel
+      off and fly in; after the blast the ground is back exactly as it was (relog to be sure).
+- [ ] timestop: the clock hands sit on the clock face; a friend is frozen (even mid-jump),
+      mobs stop, a thrown snowball or arrow hangs; everything carries on afterwards.
+
 ## Resource pack
 
 - [ ] On join you are asked to load the SwizzSMP pack; after accepting, the seven swizz

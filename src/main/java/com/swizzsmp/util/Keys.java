@@ -23,7 +23,10 @@ public final class Keys {
     public static final NamespacedKey MOD_ROLL_SCALE = key("roll_scale");
     public static final NamespacedKey MOD_DRAG_SPEED = key("drag_speed");
     public static final NamespacedKey MOD_INVERT_SPEED = key("invert_speed");
-    public static final NamespacedKey MOD_AURA_HOVER = key("aura_hover");
+    public static final NamespacedKey MOD_CINEMATIC_HOVER = key("cinematic_hover");
+    public static final NamespacedKey MOD_TIMESTOP_SPEED = key("timestop_speed");
+    public static final NamespacedKey MOD_TIMESTOP_JUMP = key("timestop_jump");
+    public static final NamespacedKey MOD_TIMESTOP_GRAVITY = key("timestop_gravity");
 
     private Keys() {
     }

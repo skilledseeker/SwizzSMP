@@ -50,7 +50,7 @@ Fortune, Frost, Gleam, Sculk), energy, abilities, upgrade rituals and special it
 | `/swizzadmin recipe <item>` | Edit an item's crafting recipe in game (saves to `items.yml`, works right away) |
 | `/swizzadmin craftcheck <item>` | Verify that an item's recipe actually crafts with its own ingredients |
 | `/jumpscare [player\|all]` | Horror picture + huge scream for 2.5 s. No name = everyone but you, `all` = you too, a name = just them. Players without the texture pack get the elder guardian ghost. Sounds and length in `config.yml → jumpscare` |
-| `/aura [player]` | A 14-second showcase: a glowing sigil, the 7 swizz orbiting and pouring their colours into the player, a flash, lightning and a shockwave. Nearby screens get the effects (`config.yml → aura`) |
+| `/cinematic <aura\|matrix\|singularity\|timestop> [player]` | Showcase animations around a player (no name = yourself). **aura**: glowing sigil, the 7 swizz orbit and pour into the player, flash and shockwave. **matrix**: "Wake up…" on a green CRT, déjà-vu cat, the world turns into code, agents, bullet time, chrome, "Welcome to the real world". **singularity**: a black hole tears up the ground and detonates. **timestop**: a golden clock and a sphere that freezes players, mobs and arrows. Nothing real is changed. `/aura` is a shortcut (`config.yml → cinematics`) |
 The **Swizz Sword** and **Swizz Mace** are admin-given only (`/swizzadmin give`). The
 **Dragon Egg** uses the real dragon egg: right-click air to scramble everyone's swizz
 for 5 minutes, or **sneak + right-click air** to be the only player with a locator bar
