@@ -14,6 +14,7 @@ import com.swizzsmp.config.Messages;
 import com.swizzsmp.config.Settings;
 import com.swizzsmp.data.PlayerDataStore;
 import com.swizzsmp.data.ServerState;
+import com.swizzsmp.effects.AuraShowcase;
 import com.swizzsmp.effects.BlockRestorer;
 import com.swizzsmp.effects.ControlInverter;
 import com.swizzsmp.effects.Flashbang;
@@ -83,6 +84,7 @@ public final class SwizzPlugin extends JavaPlugin {
     private BlockRestorer blocks;
     private Flashbang flashbang;
     private Jumpscare jumpscare;
+    private AuraShowcase auraShowcase;
     private ControlInverter inverter;
     private LowHealthEffect lowHealth;
     private PetalTrail petalTrail;
@@ -119,6 +121,7 @@ public final class SwizzPlugin extends JavaPlugin {
         blocks.recoverPending();
         flashbang = new Flashbang(this);
         jumpscare = new Jumpscare(this);
+        auraShowcase = new AuraShowcase(this);
         inverter = new ControlInverter(this);
         lowHealth = new LowHealthEffect(this);
         petalTrail = new PetalTrail(this);
@@ -159,6 +162,7 @@ public final class SwizzPlugin extends JavaPlugin {
         listen(inverter);
         listen(lowHealth);
         listen(petalTrail);
+        listen(auraShowcase);
         Commands.registerAll(this);
 
         freeze.start();
@@ -229,6 +233,9 @@ public final class SwizzPlugin extends JavaPlugin {
         }
         if (petalTrail != null) {
             petalTrail.stop();
+        }
+        if (auraShowcase != null) {
+            auraShowcase.stop();
         }
         if (combos != null) {
             combos.stop();
@@ -467,6 +474,10 @@ public final class SwizzPlugin extends JavaPlugin {
 
     public Jumpscare jumpscare() {
         return jumpscare;
+    }
+
+    public AuraShowcase auraShowcase() {
+        return auraShowcase;
     }
     public CustomItems items() {
         return items;

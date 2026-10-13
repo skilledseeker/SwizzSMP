@@ -88,6 +88,12 @@ admin:
   info: "<prefix><gray><name>: swizz=<white><swizz></white> energy=<white><energy></white> upgraded=<white><upgraded></white> loadout=<white><loadout></white> trusted=<white><trusted></white> cooldowns=<white><cooldowns></white>"
   jumpscared: "<prefix><dark_red>☠</dark_red> <gray>Jumpscared <white><count></white> player(s)."
   jumpscare-nobody: "<prefix><gray>Nobody else is online to scare. Use <white>/jumpscare all</white> to scare yourself."
+  aura-started: "<prefix><gray>The aura rises around <white><name></white>…"
+  aura-busy: "<prefix><red><white><name></white>'s aura is already playing."
+
+aura:
+  title: "<gradient:#3498DB:#B05CE0:#A0703C:#2ECC71:#AEE6FF:#FFE36E:#1E9FB0><b><name></b></gradient>"
+  subtitle: "<gray>✦ <white>ascends</white> ✦"
 
 trail:
   toggled: "<prefix><#FF69B4>❀</#FF69B4> <gray>Cherry blossom trail: <state>"

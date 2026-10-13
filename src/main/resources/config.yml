@@ -91,6 +91,13 @@ jumpscare:
     - "minecraft:entity.warden.sonic_boom 0.8"
   repeat: 3
 
+aura:
+  # /aura [player]: a 14-second showcase around a player. A glowing sigil unfolds under
+  # them, the seven swizz orbit and pour their colours in, then a flash, lightning and a
+  # shockwave. The sigils and screen colours need the texture pack.
+  screen-radius: 30          # players this close get the darkness, flash, colours and wobble
+  levitate: true             # the player rises and hovers during the show
+
 resource-pack:
   # Custom item textures. The plugin downloads the zip once at startup to learn its
   # SHA-1, then sends it to every player who joins. To update the textures, replace the

@@ -63,6 +63,16 @@ client. You need two players (or two accounts). Give yourself everything with:
 - [ ] With the texture pack declined, you see the elder guardian ghost instead.
 - [ ] `/jumpscare` with a friend online scares them but not you.
 
+## Aura showcase
+
+- [ ] `/aura` with a friend watching from ~10 blocks: the sigil lies flat and centred under
+      you (not standing up, not offset), glows, and both rings spin. The 7 swizz rise with
+      chimes, orbit faster, and stream their colours into you.
+- [ ] At the climax: white flash, lightning, boom, shards flying out, rainbow border and
+      wobble, your name in rainbow letters. You float down gently at the end.
+- [ ] Nothing is left behind afterwards (no floating items or blocks), even if you log out
+      in the middle.
+
 ## Resource pack
 
 - [ ] On join you are asked to load the SwizzSMP pack; after accepting, the seven swizz

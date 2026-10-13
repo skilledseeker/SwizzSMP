@@ -59,6 +59,9 @@ public final class Settings {
     public final int jumpscareRepeat;
     public final boolean jumpscareShake;
 
+    public final double auraScreenRadius;
+    public final boolean auraLevitate;
+
     public final boolean controlsDefault;
     public final boolean hudDefault;
     public final boolean hudCooldownsOnly;
@@ -147,6 +150,9 @@ public final class Settings {
         jumpscareSounds = List.copyOf(sounds);
         jumpscareRepeat = Math.max(1, c.getInt("jumpscare.repeat"));
         jumpscareShake = c.getBoolean("jumpscare.shake");
+
+        auraScreenRadius = Math.max(0, c.getDouble("aura.screen-radius"));
+        auraLevitate = c.getBoolean("aura.levitate");
 
         controlsDefault = c.getBoolean("controls.default-enabled");
         hudDefault = c.getBoolean("hud.enabled-by-default");

@@ -84,6 +84,10 @@ commands:
     description: Flash a horror picture with a scream on players' screens
     usage: /jumpscare [player|all]
     permission: swizz.admin
+  aura:
+    description: Play the aura showcase cinematic around a player
+    usage: /aura [player]
+    permission: swizz.admin
 
 permissions:
   swizz.use:

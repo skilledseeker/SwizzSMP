@@ -54,6 +54,7 @@
 | `/swizzadmin recipe <item>` | Edit an item's crafting recipe in game (click a grid slot while holding an item; Save). Potions keep their exact type |
 | `/swizzadmin craftcheck <item>` | Check that an item's recipe crafts with its own ingredients |
 | `/jumpscare [player\|all]` | Horror picture + huge scream for 2.5 s (no name = everyone but you, `all` = you too) |
+| `/aura [player]` | 14-second showcase cinematic around a player (no name = yourself) |
 ## Names you can type
 
 **Swizz types:** `aqua`, `confusion`, `earth`, `fortune`, `frost`, `gleam`, `sculk`
