@@ -150,6 +150,10 @@ public final class Disguise {
         }
     }
 
+    public boolean includes(UUID id) {
+        return active && participants.contains(id);
+    }
+
     /** One participant leaves early (quit). */
     public void removeParticipant(Player player) {
         if (!participants.remove(player.getUniqueId())) {

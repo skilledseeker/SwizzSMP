@@ -86,6 +86,13 @@ admin:
   you-were-upgraded: "<prefix><gold><b>★</b> <gray>An admin upgraded your <swizz><gray>!"
   your-swizz-set: "<prefix><gray>An admin set your swizz to <swizz><gray>."
   info: "<prefix><gray><name>: swizz=<white><swizz></white> energy=<white><energy></white> upgraded=<white><upgraded></white> loadout=<white><loadout></white> trusted=<white><trusted></white> cooldowns=<white><cooldowns></white>"
+  trail-granted: "<prefix><gray>Gave <white><name></white> the <#FF69B4>cherry blossom trail</#FF69B4>."
+  trail-revoked: "<prefix><gray>Took the cherry blossom trail from <white><name></white>."
+
+trail:
+  toggled: "<prefix><#FF69B4>❀</#FF69B4> <gray>Cherry blossom trail: <state>"
+  no-access: "<prefix><gray>The <#FF69B4>cherry blossom trail</#FF69B4> is a special cosmetic. Ask an admin for it."
+  you-got-it: "<prefix><#FF69B4>❀</#FF69B4> <gray>You got the <gradient:#FF4FA3:#FFB7D5>cherry blossom trail</gradient><gray>! Petals follow you as you walk. Turn it off and on with <white>/trail</white>."
 
 confusion:
   miss-armed: "<prefix><#B05CE0><name></#B05CE0> <gray>is dazed — their next hit on you will miss!"

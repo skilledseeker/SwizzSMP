@@ -374,6 +374,16 @@ public final class ConfusionHandler extends BaseHandler implements Listener, Com
         }
     }
 
+    /** True while the player wears a Mirage dome look-alike disguise (or is its caster). */
+    public boolean isDisguised(UUID id) {
+        for (Dome dome : domes) {
+            if (dome.disguise.includes(id)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @EventHandler
     public void onParticipantDeath(PlayerDeathEvent event) {
         for (Dome dome : domes) {

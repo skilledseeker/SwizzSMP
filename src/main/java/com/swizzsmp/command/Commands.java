@@ -19,6 +19,7 @@ public final class Commands {
         bind(plugin, "loadout", new LoadoutCommand(plugin));
         bind(plugin, "swizz", new SwizzCommand(plugin));
         bind(plugin, "swizzbook", new SwizzBookCommand(plugin));
+        bind(plugin, "trail", new TrailCommand(plugin));
 
         bind(plugin, "energy", new EnergyCommand(plugin));
         bind(plugin, "giveenergy", new GiveItemCommand(plugin, ItemIds.ENERGY, "giveenergy"));

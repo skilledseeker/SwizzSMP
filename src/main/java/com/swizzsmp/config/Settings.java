@@ -1,7 +1,9 @@
 package com.swizzsmp.config;
 
+import org.bukkit.Color;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -32,6 +34,21 @@ public final class Settings {
     public final int lowHealthFastTicks;
     public final int lowHealthFlashTicks;
     public final double lowHealthVolume;
+
+    public final boolean trailEnabled;
+    public final int trailIntervalTicks;
+    public final double trailMinMove;
+    public final double trailFastMultiplier;
+    public final boolean trailHideWhileSneaking;
+    public final int trailCherryPetals;
+    public final int trailPinkPetals;
+    public final int trailSparkles;
+    public final List<Color> trailColors;
+    public final float trailSparkleSize;
+    public final Color trailSparkleFade;
+    public final int trailJumpBurst;
+    public final int trailLandBurst;
+    public final double trailLandMinFall;
 
     public final boolean controlsDefault;
     public final boolean hudDefault;
@@ -86,6 +103,29 @@ public final class Settings {
         lowHealthFlashTicks = Math.max(1, c.getInt("low-health.flash-ticks"));
         lowHealthVolume = c.getDouble("low-health.volume");
 
+        trailEnabled = c.getBoolean("petal-trail.enabled");
+        trailIntervalTicks = Math.max(1, c.getInt("petal-trail.interval-ticks"));
+        trailMinMove = c.getDouble("petal-trail.min-move");
+        trailFastMultiplier = Math.max(0, c.getDouble("petal-trail.fast-multiplier"));
+        trailHideWhileSneaking = c.getBoolean("petal-trail.hide-while-sneaking");
+        trailCherryPetals = Math.max(0, c.getInt("petal-trail.cherry-petals"));
+        trailPinkPetals = Math.max(0, c.getInt("petal-trail.pink-petals"));
+        trailSparkles = Math.max(0, c.getInt("petal-trail.sparkles"));
+        List<Color> colors = new ArrayList<>();
+        for (String hex : c.getStringList("petal-trail.colors")) {
+            Color color = color(hex);
+            if (color != null) {
+                colors.add(color);
+            }
+        }
+        trailColors = colors.isEmpty() ? List.of(Color.fromRGB(0xFF69B4)) : List.copyOf(colors);
+        trailSparkleSize = (float) Math.max(0.1, c.getDouble("petal-trail.sparkle-size"));
+        Color fade = color(c.getString("petal-trail.sparkle-fade"));
+        trailSparkleFade = fade != null ? fade : Color.WHITE;
+        trailJumpBurst = Math.max(0, c.getInt("petal-trail.jump-burst"));
+        trailLandBurst = Math.max(0, c.getInt("petal-trail.land-burst"));
+        trailLandMinFall = c.getDouble("petal-trail.land-min-fall");
+
         controlsDefault = c.getBoolean("controls.default-enabled");
         hudDefault = c.getBoolean("hud.enabled-by-default");
         hudCooldownsOnly = !"full".equalsIgnoreCase(c.getString("hud.mode", "cooldowns"));
@@ -117,5 +157,17 @@ public final class Settings {
 
     private static int clamp(int value, int min, int max) {
         return Math.max(min, Math.min(max, value));
+    }
+
+    /** "#FF69B4" → a colour, or null if it isn't a valid hex colour. */
+    private static Color color(String hex) {
+        if (hex == null) {
+            return null;
+        }
+        try {
+            return Color.fromRGB(Integer.parseInt(hex.trim().replace("#", ""), 16));
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 }

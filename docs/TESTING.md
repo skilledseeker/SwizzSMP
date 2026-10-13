@@ -47,6 +47,14 @@ client. You need two players (or two accounts). Give yourself everything with:
       fully restored after 15 s); upgraded dome (ground turns to sculk, wardens only attack
       enemies, Darkness); eating sculk repairs armor; Swift Sneak speed.
 
+## Cherry blossom trail
+
+- [ ] `/swizzadmin trail <you> on`, then walk: pink petals drift down behind your feet
+      and settle on the ground. Sprinting drops more. Jumping and landing from 2+ blocks
+      puff out petals. Another player sees it too.
+- [ ] Sneaking, an invisibility potion and `/trail off` all hide it. `/trail on` brings it back.
+- [ ] Too much or too little? Tune `petal-trail` in `config.yml` and `/swizzadmin reload`.
+
 ## Resource pack
 
 - [ ] On join you are asked to load the SwizzSMP pack; after accepting, the seven swizz

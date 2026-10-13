@@ -18,6 +18,7 @@ import com.swizzsmp.effects.BlockRestorer;
 import com.swizzsmp.effects.ControlInverter;
 import com.swizzsmp.effects.Flashbang;
 import com.swizzsmp.effects.LowHealthEffect;
+import com.swizzsmp.effects.PetalTrail;
 import com.swizzsmp.energy.EnergyListener;
 import com.swizzsmp.energy.EnergyService;
 import com.swizzsmp.gui.BookMenu;
@@ -82,6 +83,7 @@ public final class SwizzPlugin extends JavaPlugin {
     private Flashbang flashbang;
     private ControlInverter inverter;
     private LowHealthEffect lowHealth;
+    private PetalTrail petalTrail;
     private CustomItems items;
     private RecipeService recipes;
     private ResourcePackService resourcePack;
@@ -116,6 +118,7 @@ public final class SwizzPlugin extends JavaPlugin {
         flashbang = new Flashbang(this);
         inverter = new ControlInverter(this);
         lowHealth = new LowHealthEffect(this);
+        petalTrail = new PetalTrail(this);
         cooldowns = new CooldownService(this);
         abilities = new AbilityService(this);
         passives = new PassiveService(this);
@@ -152,6 +155,7 @@ public final class SwizzPlugin extends JavaPlugin {
         listen(flashbang);
         listen(inverter);
         listen(lowHealth);
+        listen(petalTrail);
         Commands.registerAll(this);
 
         freeze.start();
@@ -159,6 +163,7 @@ public final class SwizzPlugin extends JavaPlugin {
         flashbang.start();
         inverter.start();
         lowHealth.start();
+        petalTrail.start();
         cooldowns.start();
         passives.start();
         hud.start();
@@ -218,6 +223,9 @@ public final class SwizzPlugin extends JavaPlugin {
         }
         if (lowHealth != null) {
             lowHealth.stop();
+        }
+        if (petalTrail != null) {
+            petalTrail.stop();
         }
         if (combos != null) {
             combos.stop();
@@ -452,6 +460,10 @@ public final class SwizzPlugin extends JavaPlugin {
 
     public Flashbang flashbang() {
         return flashbang;
+    }
+
+    public PetalTrail petalTrail() {
+        return petalTrail;
     }
 
     public CustomItems items() {

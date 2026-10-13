@@ -54,6 +54,28 @@ low-health:
   flash-ticks: 6             # how long the red stays on per beat
   volume: 1.0
 
+petal-trail:
+  # Pink cherry blossom petals that drift down behind a player's feet as they move.
+  # Give it with /swizzadmin trail <player> on (or the swizz.trail permission).
+  # Players who have it turn their own trail off and on with /trail.
+  # It is always hidden while invisible, vanished, in spectator or in a Mirage dome.
+  enabled: true
+  interval-ticks: 2          # how often petals drop while moving (20 ticks = 1 second)
+  min-move: 0.05             # blocks moved since the last drop before new petals appear
+  fast-multiplier: 1.5       # sprinting or flying with an elytra drops this many times more
+  hide-while-sneaking: true  # sneak to hide the trail, so it can't give you away in PvP
+  # Petals per drop while walking:
+  cherry-petals: 2           # Minecraft's own cherry blossom petals
+  pink-petals: 2             # petals tinted a random colour from the list below
+  sparkles: 2                # tiny pink glitter that fades to sparkle-fade
+  colors: ["#FF69B4", "#FF8FC7", "#FFB7D5", "#FF4FA3", "#F9A8D4"]
+  sparkle-size: 0.8
+  sparkle-fade: "#FFFFFF"
+  # A puff of petals when jumping and when landing from a fall.
+  jump-burst: 8
+  land-burst: 16
+  land-min-fall: 2.0         # blocks fallen before the landing puff
+
 resource-pack:
   # Custom item textures. The plugin downloads the zip once at startup to learn its
   # SHA-1, then sends it to every player who joins. To update the textures, replace the

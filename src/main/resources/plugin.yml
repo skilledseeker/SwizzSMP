@@ -44,6 +44,10 @@ commands:
     description: Recipes and guides for every swizz
     usage: /swizzbook
     permission: swizz.use
+  trail:
+    description: Turn your cherry blossom trail off and on
+    usage: /trail [on|off]
+    permission: swizz.use
   energy:
     description: Manage a player's energy
     usage: /energy <set|add|remove|view> <player> [amount]
@@ -74,13 +78,16 @@ commands:
     permission: swizz.admin
   swizzadmin:
     description: SwizzSMP admin tools
-    usage: /swizzadmin <reload|give|upgrade|info|ritual|dragonegg|recipe|craftcheck>
+    usage: /swizzadmin <reload|give|upgrade|info|ritual|dragonegg|recipe|craftcheck|trail>
     permission: swizz.admin
 
 permissions:
   swizz.use:
     description: Use swizz abilities and player commands.
     default: true
+  swizz.trail:
+    description: Have the cherry blossom trail (also given with /swizzadmin trail).
+    default: false
   swizz.admin:
     description: SwizzSMP admin commands.
     default: op

@@ -17,6 +17,7 @@
 | `/swizz hud` | Turn the action bar HUD on/off |
 | `/swizz controls` | Turn the Sneak+F / Sneak+Q shortcuts on/off |
 | `/swizz heartbeat` | Turn the low-health red screen + heartbeat on/off |
+| `/trail [on\|off]` | Turn your cherry blossom trail on/off (only if an admin gave it to you) |
 | `/swizzbook` | Open the recipe book and guide for every swizz |
 
 ### Shortcuts
@@ -52,6 +53,7 @@
 | `/swizzadmin dragonegg reset` | Reset the server-wide Dragon Egg cooldown |
 | `/swizzadmin recipe <item>` | Edit an item's crafting recipe in game (click a grid slot while holding an item; Save). Potions keep their exact type |
 | `/swizzadmin craftcheck <item>` | Check that an item's recipe crafts with its own ingredients |
+| `/swizzadmin trail <player> <on\|off>` | Give or take the pink cherry blossom trail (or use the `swizz.trail` permission) |
 
 ## Names you can type
 

@@ -64,6 +64,8 @@ override:         { swizz, untilEpochMillis } | null    # dragon egg
 disabledUntil:    epochMillis (0 = none)                # swizz mace
 hudEnabled:       bool (default true)
 controlsEnabled:  bool (default true)
+trailGranted:     bool (default false)  # cherry blossom trail, given by an admin
+trailEnabled:     bool (default true)   # /trail
 ```
 - Loaded on join (sync; the file is tiny) and kept in memory while online.
 - Saved async on quit, every 5 minutes (only if changed), and sync on disable.
@@ -611,6 +613,8 @@ Custom items may **not**:
 | `/swizzadmin dragonegg reset` | `swizz.admin` | clears the server-wide dragon egg cooldown |
 | `/swizzadmin recipe <item>` | `swizz.admin` | in-game recipe editor; saves to items.yml and reloads |
 | `/giveupgraded <player>` | `swizz.admin` | upgrades the player's current swizz without a ritual |
+| `/swizzadmin trail <player> <on\|off>` | `swizz.admin` | gives or takes the cherry blossom trail (§13.5); works offline |
+| `/trail [on\|off]` | `swizz.use` | turns your own trail off and on; only with the trail (`trailGranted` or `swizz.trail`, default: nobody) |
 
 ---
 
@@ -671,6 +675,21 @@ Checked every second. Colours in `config.yml → tab-colors`.
   no abilities and no passives (buffs are removed). One target per hit.
 - **180 s cooldown** for the attacker.
 
+### 13.5 Cherry blossom trail (owner request, cosmetic)
+- Pink petals drift down behind the player's feet while they move: Minecraft's
+  `CHERRY_LEAVES`, `TINTED_LEAVES` in a random pink from `petal-trail.colors`, and pink
+  `DUST_COLOR_TRANSITION` glitter fading to white. Sprinting or gliding drops ×1.5.
+  Petals are scattered along the path since the last drop (every 2 ticks), so fast moves
+  don't leave gaps. Teleports and respawns don't draw a line.
+- A puff of petals on every jump and on landing from a fall of 2+ blocks.
+- Given per player with `/swizzadmin trail <player> on` (saved in their file) or the
+  `swizz.trail` permission. `/trail` turns it off and on.
+- **D-32:** the trail is hidden whenever it could give the player away: sneaking
+  (`hide-while-sneaking`), invisible, spectator, dead, vanished (`vanished` metadata) or
+  inside a Mirage dome. Particles are sent per viewer, only to players within 32 blocks
+  who can see the player.
+- Particles only, so nothing needs cleaning up. All numbers in `config.yml → petal-trail`.
+
 ---
 
 **Config migration:** `config.yml` has `config-version`. On start (and on reload), older
@@ -693,7 +712,7 @@ swizz/    SwizzType (enum: id, display, colors, particles), SwizzRegistry,
 swizz/impl/  Aqua..Sculk handlers (one class each + helper classes where large)
 combat/   TargetFilter, ComboTracker, FreezeService, StatusListener
 effects/  Particles (line, circle, sphere, spiral), BlockRestorer (persisted),
-          DomeBuilder, Flashbang, Disguise, ControlInverter
+          DomeBuilder, Flashbang, Disguise, ControlInverter, LowHealthEffect, PetalTrail
 passive/  PassiveService (effects + attribute modifier reconciliation)
 items/    ItemIds, CustomItems (factory + identify), RecipeService, ItemGuardListener,
           UpgraderGuardListener, SwizzItemListener (absorb on right-click)
@@ -781,6 +800,7 @@ cleanup path that runs on **expiry, quit, death, world change and disable**.
 - [x] Swizz Sword
 - [x] Dragon Egg
 - [x] Swizz Mace
+- [x] Cherry blossom trail (§13.5)
 
 ### Phase 7 — Hardening
 - [x] Audit every cleanup path (quit, death, world change, disable)
@@ -818,4 +838,5 @@ D-21 drown ignores water breathing · D-22 ritual confirm click · D-23 ritual w
 D-24 leak X then Z · D-25 neutral base item + item_model · D-26 placeholder recipes ·
 D-27 /giveswizz sets the swizz directly · D-28 dragon egg excludes the user ·
 D-29 ability damage ignores armor/Protection (`abilities.true-damage`) · D-30 shields don't block ability damage (icicles excepted) ·
-D-31 custom textures via custom_model_data select with vanilla fallback; pack sent by the plugin
+D-31 custom textures via custom_model_data select with vanilla fallback; pack sent by the plugin ·
+D-32 petal trail hidden while sneaking, invisible, vanished or disguised
