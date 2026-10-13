@@ -1,11 +1,15 @@
 package com.swizzsmp.effects.cinematic;
 
 import com.swizzsmp.SwizzPlugin;
+import com.swizzsmp.util.Keys;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -30,6 +34,7 @@ public final class Cinematics implements Listener {
         types.put("matrix", MatrixCinematic::new);
         types.put("singularity", SingularityCinematic::new);
         types.put("timestop", TimeStopCinematic::new);
+        types.put("finale", FinaleCinematic::new);
     }
 
     public Set<String> names() {
@@ -62,6 +67,15 @@ public final class Cinematics implements Listener {
     @EventHandler
     public void onDeath(PlayerDeathEvent event) {
         end(event.getPlayer());
+    }
+
+    /** Our fireworks are for show only. */
+    @EventHandler(ignoreCancelled = true)
+    public void onFireworkDamage(EntityDamageByEntityEvent event) {
+        if (event.getDamager() instanceof Firework firework
+                && firework.getPersistentDataContainer().has(Keys.SPAWNED_BY_SWIZZ, PersistentDataType.BYTE)) {
+            event.setCancelled(true);
+        }
     }
 
     private void end(Player player) {

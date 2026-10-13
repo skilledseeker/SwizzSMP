@@ -84,6 +84,12 @@ client. You need two players (or two accounts). Give yourself everything with:
 - [ ] timestop: the clock hands sit on the clock face; a friend is frozen (even mid-jump),
       mobs stop, a thrown snowball or arrow hangs; everything carries on afterwards.
 
+## Finale (`/cinematic finale`, 75 s)
+
+- [ ] Watch it once with a friend: six act cards, you are frozen until the clock shatters,
+      the sunrise at the end plays over about 11 s and the sky returns to the real time,
+      fireworks hurt nobody, and the ground is intact afterwards.
+
 ## Resource pack
 
 - [ ] On join you are asked to load the SwizzSMP pack; after accepting, the seven swizz

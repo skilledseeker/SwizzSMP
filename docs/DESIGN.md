@@ -614,7 +614,7 @@ Custom items may **not**:
 | `/giveupgraded <player>` | `swizz.admin` | upgrades the player's current swizz without a ritual |
 | `/trail [on\|off]` | `swizz.use` | turns the cherry blossom trail off and on; only for blinkypies (§13.5) |
 | `/jumpscare [player\|all]` | `swizz.admin` | horror picture + scream (§13.6). No argument: everyone except you; `all`: you too |
-| `/cinematic <aura\|matrix\|singularity\|timestop> [player]` | `swizz.admin` | a showcase cinematic around a player (§13.7); no player: yourself |
+| `/cinematic <aura\|matrix\|singularity\|timestop\|finale> [player]` | `swizz.admin` | a showcase cinematic around a player (§13.7); no player: yourself |
 | `/aura [player]` | `swizz.admin` | shortcut for `/cinematic aura` |
 
 ---
@@ -707,11 +707,15 @@ Checked every second. Colours in `config.yml → tab-colors`.
   sound can't go above full volume.
 
 ### 13.7 Cinematics (owner request, admin command)
-`/cinematic <aura|matrix|singularity|timestop> [player]` (and `/aura` as a shortcut) plays a
-showcase around a player. `effects/cinematic/`: `Cinematic` is the base class (tick clock,
-spawned-entity tracking, cleanup, helpers for overlays, flashes, jolts, sounds, hovering and
-display animation); `Cinematics` starts them by name, one at a time per player, and ends them
-on quit and death. Shared rules:
+`/cinematic <aura|matrix|singularity|timestop|finale> [player]` (and `/aura` as a shortcut)
+plays a showcase around a player. `effects/cinematic/`: `Cinematic` is the base class (tick
+clock, spawned-entity tracking, audience/sky/weather tracking, cleanup, helpers for overlays,
+flashes, jolts, sounds, titles, hovering and display animation). Every effect is a reusable
+`Layer` (`TimeFreeze`, `Clock`, `Afterimages`, `Sigil`, `SwizzOrbit`, `Petals`, `FakeBlocks`,
+`Construct`, `GroundTear`, `CodeRain`, `Agents`, `Typewriter`, `BlackHole`, `Shards`); a show is a
+tick-by-tick script over layers, and the finale reuses the same layers as the four shows.
+`Cinematics` starts shows by name, one at a time per player, ends them on quit and death, and
+cancels damage from the show's own fireworks. Shared rules:
 
 - **Who sees what:** players within `cinematics.screen-radius` (30) get the screen effects,
   sounds and titles. Pack pictures (overlays, flat planes) need the pack; plane displays are
@@ -766,6 +770,19 @@ From 45 to 165 surface blocks within 3.5–14 are hidden with fake air while cop
 lift off and spiral in; matter streams in as `TRAIL` particles. At 165 it collapses, at 174
 all sound stops, at 180 it detonates (flash, lightning, explosions, an expanding shell, 40
 blocks thrown out) and the ground rebuilds ring by ring from the centre.
+
+#### finale (75 s): everything, in six acts
+| Act | Ticks | What happens |
+|---|---|---|
+| I · STILLNESS | 0–220 | A bell tolls, the golden clock appears and its hands race. At 20 the time sphere sweeps out: everyone and everything within 24 blocks freezes, screens go blue and silent, comparator clicks tick. The caster walks free, leaving afterimages; a first breeze of petals |
+| II · BLOOM | 220–560 | The caster rises and hovers; the sigil unfolds; the 7 swizz rise every half second with chimes and orbit in a cherry-petal vortex, streaming their colours in; the charge builds (portal, conduit, sparks), the clock's hands start winding back |
+| III · FRACTURE | 560–860 | The clock shatters and time thaws with a jolt; glitch bursts; "Wake up…", "The Matrix has you…", "Knock, knock." on the CRT; the construct spreads; digital rain; agents double to 16; bullet time; "You are the One."; the bullets fly back and the agents dissolve |
+| IV · DEVOUR | 860–1140 | Night sky and a storm (per-player time and weather); the black hole opens and spins up; the code rises into it, the ground tears up (construct-coloured copies), the sigil and the petals are pulled in, the gems are dragged toward it; lightning on the horizon; glitches; it collapses |
+| V · SILENCE | 1140–1200 | All sound stops; black; three heartbeats; a 0.3 s flash of the nun with a scream; a breath. The construct is quietly restored behind the black |
+| VI · ASCENSION | 1200–1500 | Detonation: the gems collapse into the caster, white flash, a ring of 8 lightning strikes, supernova shells and a rainbow floor ring, 82 shards; the ground rebuilds ring by ring; a fast-forward sunrise from midnight to dawn, then the sky eases back to the real time; the rainbow border; the caster's name in rainbow; a halo; 13 real fireworks (damage cancelled); a storm of petals; the closing melody; the caster floats down; "fin"; a last bell |
+
+Frozen watchers are released at the fracture (27 s). Every other rule above applies: fake
+blocks only, every layer undone on any end.
 
 #### timestop (11.5 s)
 A golden clock (`clock_face`, `clock_hour`, `clock_minute`, camera-facing) floats over the

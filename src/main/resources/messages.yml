@@ -102,7 +102,7 @@ matrix:
   has-you: "The Matrix has you..."
   rabbit: "Follow the white rabbit."
   knock: "Knock, knock, <name>."
-  the-one: "You are the One."
+  the-one: "<#00FF41><b>You are the One.</b>"
   escaped: "You have escaped the Matrix."
   real-world: "Welcome to the real world."
 
@@ -115,6 +115,17 @@ timestop:
   subtitle: "<gray><white><name></white> stopped time"
   resumes: "<#FFE9A8>Time resumes."
   actionbar: "<#9FF3FF>⌚ <white>Time is stopped</white> <gray>— <white><time></white> left"
+
+finale:
+  act-number: "<dark_gray>— <gray>ACT <numeral></gray> —"
+  act-1: "<#9FF3FF><b>STILLNESS</b>"
+  act-2: "<#FFB7D5><b>BLOOM</b>"
+  act-3: "<#00FF41><b>FRACTURE</b>"
+  act-4: "<#B06BFF><b>DEVOUR</b>"
+  act-6: "<gradient:#FFE36E:#FFFFFF:#FFB7D5><b>ASCENSION</b></gradient>"
+  title: "<gradient:#3498DB:#B05CE0:#A0703C:#2ECC71:#AEE6FF:#FFE36E:#1E9FB0><b><name></b></gradient>"
+  subtitle: "<gray>✦ <white>transcends</white> ✦"
+  outro: "<dark_gray>✦ <gray>fin</gray> ✦"
 
 trail:
   toggled: "<prefix><#FF69B4>❀</#FF69B4> <gray>Cherry blossom trail: <state>"

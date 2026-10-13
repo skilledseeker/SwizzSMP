@@ -90,7 +90,7 @@ commands:
     permission: swizz.admin
   cinematic:
     description: Play a showcase cinematic around a player
-    usage: /cinematic <aura|matrix|singularity|timestop> [player]
+    usage: /cinematic <aura|matrix|singularity|timestop|finale> [player]
     permission: swizz.admin
 
 permissions:

@@ -1,17 +1,22 @@
 package com.swizzsmp.effects.cinematic;
 
 import com.swizzsmp.SwizzPlugin;
+import com.swizzsmp.config.Messages;
 import com.swizzsmp.effects.Flashbang;
 import com.swizzsmp.swizz.SwizzType;
 import com.swizzsmp.util.Attrs;
 import com.swizzsmp.util.Keys;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
+import org.bukkit.WeatherType;
 import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
@@ -30,23 +35,29 @@ import org.bukkit.util.Vector;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
+import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 
 /**
  * One showcase cinematic playing around one player (DESIGN.md §13.7). Subclasses script it
- * tick by tick in {@link #tick()}; this class runs the clock and owns the cleanup: every
- * entity made through {@link #spawn} is non-persistent and removed when the show ends, the
- * player quits, dies or changes world, or the plugin is disabled. Anything else a show
- * changes (fake blocks, AI, modifiers) is undone in {@link #cleanup()}.
+ * tick by tick in {@link #tick()} out of reusable {@link Layer}s; this class runs the clock
+ * and owns the cleanup: every entity made through {@link #spawn} is non-persistent and
+ * removed when the show ends, the player quits, dies or changes world, or the plugin is
+ * disabled. Layers undo their other changes in {@link Layer#stop()}, and an early end also
+ * clears every watcher's screen, sky and weather.
  */
 public abstract class Cinematic {
 
     protected static final Display.Brightness FULL_BRIGHT = new Display.Brightness(15, 15);
     protected static final SwizzType[] TYPES = SwizzType.values();
     protected static final String FLASH_TEXTURE = "swizz:misc/flash";
+    protected static final String BLACK_TEXTURE = "swizz:misc/black";
 
     protected final SwizzPlugin plugin;
     protected final Player player;
@@ -56,6 +67,11 @@ public abstract class Cinematic {
     /** Ticks since the start. */
     protected int t;
     private final List<Entity> spawned = new ArrayList<>();
+    private final List<Layer> layers = new ArrayList<>();
+    /** Everyone who was sent a screen effect, sound or title. */
+    private final Set<UUID> audience = new HashSet<>();
+    private final Set<UUID> skyChanged = new HashSet<>();
+    private final Set<UUID> weatherChanged = new HashSet<>();
     private BukkitTask task;
     private Runnable onEnd = () -> { };
     private boolean ended;
@@ -75,10 +91,6 @@ public abstract class Cinematic {
     /** Runs once per tick while {@link #t} counts up from 0 to {@link #length()}. */
     protected abstract void tick();
 
-    /** Undoes everything that isn't a spawned entity (fake blocks, AI, modifiers). Runs once. */
-    protected void cleanup() {
-    }
-
     final void start(Runnable whenDone) {
         this.onEnd = whenDone;
         task = Bukkit.getScheduler().runTaskTimer(plugin, this::step, 0L, 1L);
@@ -95,23 +107,55 @@ public abstract class Cinematic {
         }
     }
 
-    /** Stops the show and removes everything it made. Safe to call more than once. */
+    /** Stops the show and undoes everything it did. Safe to call more than once. */
     public final void end() {
         if (ended) {
             return;
         }
         ended = true;
+        boolean early = t <= length();
         if (task != null) {
             task.cancel();
         }
-        spawned.forEach(Entity::remove);
-        spawned.clear();
         try {
+            spawned.forEach(Entity::remove);
+            spawned.clear();
+            for (int i = layers.size() - 1; i >= 0; i--) {
+                layers.get(i).stop();
+            }
             release();
-            cleanup();
+            for (UUID id : skyChanged) {
+                Player viewer = Bukkit.getPlayer(id);
+                if (viewer != null) {
+                    viewer.resetPlayerTime();
+                }
+            }
+            for (UUID id : weatherChanged) {
+                Player viewer = Bukkit.getPlayer(id);
+                if (viewer != null) {
+                    viewer.resetPlayerWeather();
+                }
+            }
+            if (early) {
+                for (UUID id : audience) {
+                    Player viewer = Bukkit.getPlayer(id);
+                    if (viewer != null) {
+                        clearOverlay(viewer);
+                        viewer.clearTitle();
+                        for (PotionEffectType type : List.of(PotionEffectType.DARKNESS, PotionEffectType.NAUSEA,
+                                PotionEffectType.BLINDNESS, PotionEffectType.SLOWNESS)) {
+                            clearEffect(viewer, type);
+                        }
+                    }
+                }
+            }
         } finally {
             onEnd.run();
         }
+    }
+
+    final void register(Layer layer) {
+        layers.add(layer);
     }
 
     // ── Entities ────────────────────────────────────────────────────────────────
@@ -214,13 +258,14 @@ public abstract class Cinematic {
 
     // ── Everyone watching ───────────────────────────────────────────────────────
 
-    /** Players close enough to get the screen effects. */
+    /** Players close enough to get the screen effects. Everyone returned is remembered for the cleanup. */
     protected List<Player> viewers() {
         double radius = plugin.settings().cinematicScreenRadius;
         List<Player> list = new ArrayList<>();
         for (Player viewer : world.getPlayers()) {
             if (viewer.getLocation().distanceSquared(player.getLocation()) <= radius * radius) {
                 list.add(viewer);
+                audience.add(viewer.getUniqueId());
             }
         }
         return list;
@@ -232,6 +277,7 @@ public abstract class Cinematic {
 
     /** A full-screen pack image for {@code ticks}. Shows nothing (and returns false) without the pack. */
     protected boolean overlay(Player viewer, String texture, int ticks) {
+        audience.add(viewer.getUniqueId());
         if (!hasPack(viewer)) {
             return false;
         }
@@ -241,11 +287,55 @@ public abstract class Cinematic {
 
     /** A white screen: the flash image, or a white title without the pack. */
     protected void whiteFlash(Player viewer, int ticks) {
+        audience.add(viewer.getUniqueId());
         plugin.flashbang().flash(viewer, ticks, ticks, 0, hasPack(viewer) ? Flashbang.Mode.OVERLAY : Flashbang.Mode.TITLE, FLASH_TEXTURE);
+    }
+
+    /** A black screen: the black image, or Blindness without the pack. */
+    protected void blackout(Player viewer, int ticks) {
+        if (!overlay(viewer, BLACK_TEXTURE, ticks)) {
+            effect(viewer, PotionEffectType.BLINDNESS, ticks, 0);
+        }
     }
 
     protected void clearOverlay(Player viewer) {
         plugin.flashbang().clear(viewer);
+    }
+
+    /** A fixed time of day on this player's sky only (reset when the show ends). */
+    protected void sky(Player viewer, long time) {
+        viewer.setPlayerTime(Math.floorMod(time, 24000L), false);
+        skyChanged.add(viewer.getUniqueId());
+    }
+
+    protected void resetSky(Player viewer) {
+        viewer.resetPlayerTime();
+        skyChanged.remove(viewer.getUniqueId());
+    }
+
+    /** Rain on this player's screen only (reset when the show ends). */
+    protected void weather(Player viewer, WeatherType type) {
+        viewer.setPlayerWeather(type);
+        weatherChanged.add(viewer.getUniqueId());
+    }
+
+    protected void resetWeather(Player viewer) {
+        viewer.resetPlayerWeather();
+        weatherChanged.remove(viewer.getUniqueId());
+    }
+
+    /** A title from messages.yml for everyone watching, with {@code <name>} = the player. */
+    protected void title(String titleKey, String subtitleKey, int inMs, int stayMs, int outMs, TagResolver... extra) {
+        Messages msg = plugin.messages();
+        TagResolver[] resolvers = new TagResolver[extra.length + 1];
+        System.arraycopy(extra, 0, resolvers, 0, extra.length);
+        resolvers[extra.length] = Messages.text("name", player.getName());
+        Component top = titleKey == null ? Component.empty() : msg.get(titleKey, resolvers);
+        Component bottom = subtitleKey == null ? Component.empty() : msg.get(subtitleKey, resolvers);
+        Title title = Title.title(top, bottom, Title.Times.times(Duration.ofMillis(inMs), Duration.ofMillis(stayMs), Duration.ofMillis(outMs)));
+        for (Player viewer : viewers()) {
+            viewer.showTitle(title);
+        }
     }
 
     protected static void effect(Player viewer, PotionEffectType type, int ticks, int amplifier) {
@@ -279,6 +369,13 @@ public abstract class Cinematic {
     /** A sound on the listener, so it is full volume wherever they stand. */
     protected static void sound(Player viewer, Sound sound, float volume, float pitch) {
         viewer.playSound(viewer, sound, SoundCategory.MASTER, volume, pitch);
+    }
+
+    /** The same sound on every watcher at once. */
+    protected void soundAll(Sound sound, float volume, float pitch) {
+        for (Player viewer : viewers()) {
+            sound(viewer, sound, volume, pitch);
+        }
     }
 
     // ── Geometry and maths ──────────────────────────────────────────────────────
@@ -341,6 +438,11 @@ public abstract class Cinematic {
         location.setYaw(0);
         location.setPitch(0);
         return location;
+    }
+
+    /** A point on a circle around {@code center} on the floor plane. */
+    protected static Location around(Location center, double angle, double radius, double y) {
+        return new Location(center.getWorld(), center.getX() + Math.cos(angle) * radius, y, center.getZ() + Math.sin(angle) * radius);
     }
 
     /** Note-block pitch for {@code semitones} above F#3 (0..24). */
