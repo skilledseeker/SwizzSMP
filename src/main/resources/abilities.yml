@@ -31,7 +31,7 @@ confusion:
     upgraded:
       invert-controls: true
       invert-strength: 0.22  # push speed (blocks/tick) for reversed WASD
-      invert-sprint-multiplier: 1.35  # holding sprint pushes this much harder
+      invert-sprint-multiplier: 1.5   # sprinting (key, double-tap or toggle) pushes this much harder
 
 sculk:
   passive:

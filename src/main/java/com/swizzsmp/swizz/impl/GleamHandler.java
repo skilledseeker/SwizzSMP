@@ -7,6 +7,7 @@ import com.swizzsmp.ability.Perk;
 import com.swizzsmp.combat.ComboTracker;
 import com.swizzsmp.combat.TargetFilter;
 import com.swizzsmp.config.AbilityValues;
+import com.swizzsmp.config.Messages;
 import com.swizzsmp.effects.Flashbang;
 import com.swizzsmp.effects.Particles;
 import com.swizzsmp.passive.BuffSet;
@@ -17,7 +18,13 @@ import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import net.kyori.adventure.text.Component;
 import org.bukkit.damage.DamageType;
+import org.bukkit.entity.Display;
+import org.bukkit.entity.TextDisplay;
+import org.bukkit.util.Transformation;
+import org.joml.AxisAngle4f;
+import org.joml.Vector3f;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -29,7 +36,9 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -43,6 +52,8 @@ public final class GleamHandler extends BaseHandler implements Listener, ComboTr
 
     /** Attackers whose current combo has reached the lightning stage. */
     private final Set<UUID> charged = new HashSet<>();
+    /** Upgraded low-health labels: viewer → (low-health player → label only the viewer sees). */
+    private final Map<UUID, Map<UUID, TextDisplay>> labels = new HashMap<>();
     private final BukkitTask lowHealthTask;
 
     public GleamHandler(SwizzPlugin plugin) {
@@ -98,8 +109,13 @@ public final class GleamHandler extends BaseHandler implements Listener, ComboTr
         }
     }
 
-    /** Upgraded: see untrusted players nearby who are under the health threshold. */
+    /**
+     * Upgraded: untrusted players nearby who are under the health threshold get a red
+     * "❤ 4.5" label riding on their head plus heart particles. Only the Gleam player sees
+     * either (the label is a text display hidden from everyone else).
+     */
     private void showLowHealth() {
+        Map<UUID, Set<UUID>> wanted = new HashMap<>();
         for (Player viewer : Bukkit.getOnlinePlayers()) {
             if (!hasPassive(viewer) || !upgraded(viewer)) {
                 continue;
@@ -113,10 +129,58 @@ public final class GleamHandler extends BaseHandler implements Listener, ComboTr
                         || !canHarm(viewer, other, TargetFilter.Mode.PLAYERS)) {
                     continue;
                 }
-                Location head = other.getLocation().add(0, other.getHeight() + 0.5, 0);
-                viewer.spawnParticle(Particle.DUST, head, 6, 0.25, 0.1, 0.25, 0, new Particle.DustOptions(LOW_HEALTH, 1.6f));
-                viewer.spawnParticle(Particle.DAMAGE_INDICATOR, head, 1, 0.1, 0.1, 0.1, 0);
+                wanted.computeIfAbsent(viewer.getUniqueId(), k -> new HashSet<>()).add(other.getUniqueId());
+                Location head = other.getLocation().add(0, other.getHeight() + 0.9, 0);
+                viewer.spawnParticle(Particle.HEART, head, 1, 0.2, 0.05, 0.2, 0);
+                viewer.spawnParticle(Particle.DUST, head, 4, 0.3, 0.1, 0.3, 0, new Particle.DustOptions(LOW_HEALTH, 1.4f));
+                label(viewer, other);
             }
+        }
+        // Labels for anyone no longer low (or out of range, or a viewer who lost the passive) go.
+        for (Map.Entry<UUID, Map<UUID, TextDisplay>> entry : Map.copyOf(labels).entrySet()) {
+            Set<UUID> keep = wanted.getOrDefault(entry.getKey(), Set.of());
+            entry.getValue().entrySet().removeIf(e -> {
+                if (keep.contains(e.getKey()) && e.getValue().isValid()) {
+                    return false;
+                }
+                e.getValue().remove();
+                return true;
+            });
+            if (entry.getValue().isEmpty()) {
+                labels.remove(entry.getKey());
+            }
+        }
+    }
+
+    /** The red hearts label over {@code target}, shown to {@code viewer} only. */
+    private void label(Player viewer, Player target) {
+        Map<UUID, TextDisplay> mine = labels.computeIfAbsent(viewer.getUniqueId(), k -> new HashMap<>());
+        TextDisplay label = mine.get(target.getUniqueId());
+        Component text = plugin.messages().get("gleam.low-health-label",
+                Messages.text("hearts", String.format(java.util.Locale.ROOT, "%.1f", target.getHealth() / 2.0)));
+        if (label == null || !label.isValid()) {
+            label = target.getWorld().spawn(target.getLocation().add(0, target.getHeight(), 0), TextDisplay.class, d -> {
+                d.text(text);
+                d.setBillboard(Display.Billboard.CENTER);
+                d.setPersistent(false);
+                d.setVisibleByDefault(false);
+                d.setSeeThrough(true);
+                d.setShadowed(true);
+                d.setBackgroundColor(Color.fromARGB(90, 40, 0, 0));
+                d.setTransformation(new Transformation(new Vector3f(0, 0.55f, 0), new AxisAngle4f(), new Vector3f(1.1f), new AxisAngle4f()));
+            });
+            target.addPassenger(label);
+            viewer.showEntity(plugin, label);
+            mine.put(target.getUniqueId(), label);
+        } else {
+            label.text(text);
+        }
+    }
+
+    private void removeLabels(UUID viewer) {
+        Map<UUID, TextDisplay> mine = labels.remove(viewer);
+        if (mine != null) {
+            mine.values().forEach(TextDisplay::remove);
         }
     }
 
@@ -196,8 +260,24 @@ public final class GleamHandler extends BaseHandler implements Listener, ComboTr
     }
 
     @Override
+    public void onQuit(Player player) {
+        cleanup(player);
+        removeLabels(player.getUniqueId());
+        // Labels riding on the player who left go too.
+        for (Map<UUID, TextDisplay> mine : labels.values()) {
+            TextDisplay label = mine.remove(player.getUniqueId());
+            if (label != null) {
+                label.remove();
+            }
+        }
+    }
+
+    @Override
     public void shutdown() {
         lowHealthTask.cancel();
         charged.clear();
+        for (UUID viewer : java.util.List.copyOf(labels.keySet())) {
+            removeLabels(viewer);
+        }
     }
 }

@@ -142,6 +142,9 @@ trail:
   toggled: "<prefix><#FF69B4>❀</#FF69B4> <gray>Cherry blossom trail: <state>"
   not-yours: "<prefix><gray>The <#FF69B4>cherry blossom trail</#FF69B4> is a one-of-a-kind cosmetic."
 
+gleam:
+  low-health-label: "<red>❤ <white><hearts></white>"
+
 confusion:
   miss-armed: "<prefix><#B05CE0><name></#B05CE0> <gray>is dazed — their next hit on you will miss!"
   missed: "<prefix><gray>You swing at nothing… <#B05CE0>you are confused!"

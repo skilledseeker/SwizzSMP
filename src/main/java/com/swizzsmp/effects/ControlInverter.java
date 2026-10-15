@@ -93,7 +93,9 @@ public final class ControlInverter implements Listener {
             // Reversed: forward pushes back, left pushes right.
             Vector move = facing.multiply(-forward).add(left.multiply(-strafe));
             State state = entry.getValue();
-            move.normalize().multiply(state.strength() * (input.isSprint() ? state.sprintMultiplier() : 1));
+            // Sprint key, double-tap W or toggle sprint: any of them counts.
+            boolean sprinting = input.isSprint() || player.isSprinting();
+            move.normalize().multiply(state.strength() * (sprinting ? state.sprintMultiplier() : 1));
             Vector velocity = player.getVelocity();
             player.setVelocity(new Vector(move.getX(), velocity.getY(), move.getZ()));
         }

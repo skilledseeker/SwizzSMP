@@ -293,8 +293,8 @@ in spec).
   set to 0, and every tick we read `getCurrentInput()` and push them the opposite way
   (velocity). Jumping is unchanged.
 
-- *Upgraded dome, reversed WASD:* holding sprint pushes `invert-sprint-multiplier` (1.35) times
-  harder, so sprinting still works inside the dome (owner fix).
+- *Upgraded dome, reversed WASD:* sprinting (sprint key, double-tap W or toggle sprint)
+  pushes `invert-sprint-multiplier` (1.5) times harder, so sprinting still works inside the dome.
 
 ### 7.2 SCULK — dark blue (DUST #0B3D5C, SCULK_SOUL, SCULK_CHARGE_POP, SONIC_BOOM)
 **Passive.**
@@ -385,8 +385,10 @@ in spec).
   (`strikeLightningEffect`) plus 2 HP, so it causes no fire, no mob conversion, and no
   self-damage.
 - This lasts until the victim hits you or the combo breaks, then a 10 s reload.
-- *Upgraded:* every 10 ticks you see red heart particles (only you) above untrusted
-  players within 20 blocks who are **under 5 hearts** (10 HP).
+- *Upgraded:* untrusted players within 20 blocks who are **under 5 hearts** (10 HP) get a
+  red **"❤ 4.5"** label (their exact hearts) riding on their head plus heart particles,
+  updated every 10 ticks. Only you see them (a text display hidden from everyone else); the
+  label goes when they heal, leave range, or either of you logs out.
 
 **Ability 1 — Radiance** (cd 150 s). Untrusted players within **30** blocks get Glowing
 for **15 s**, and you get **Haste V** for 15 s.

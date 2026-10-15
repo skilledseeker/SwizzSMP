@@ -11,7 +11,7 @@ import java.util.logging.Logger;
  */
 public final class ConfigMigrations {
 
-    public static final int CURRENT = 5;
+    public static final int CURRENT = 6;
 
     private ConfigMigrations() {
     }
@@ -106,6 +106,10 @@ public final class ConfigMigrations {
             replaceIfDefault(a, "earth.ability1.upgraded.damage", 6, 8, logger);
             replaceIfDefault(a, "earth.ability2.cooldown", 120, 100, logger);
             replaceIfDefault(a, "earth.ability2.upgraded.thorns-damage", 1, 2, logger);
+            abilities.save();
+        }
+        if (version < 6) {
+            replaceIfDefault(abilities.yaml(), "confusion.ability2.upgraded.invert-sprint-multiplier", 1.35, 1.5, logger);
             abilities.save();
         }
         if (version < 5 && c.isConfigurationSection("aura")) {
