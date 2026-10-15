@@ -68,6 +68,7 @@ public final class Settings {
     public final int hudUpdateTicks;
 
     public final double comboTimeoutSeconds;
+    public final double comboMinAttackCharge;
     public final int maxTrusted;
     public final boolean swizzCraftRequiresNoSwizz;
     public final boolean assignRandomOnFirstJoin;
@@ -87,6 +88,14 @@ public final class Settings {
 
     public final double maceDisableSeconds;
     public final double maceCooldownSeconds;
+
+    public final double breachRadius;
+    public final double breachDurationMinutes;
+    public final double breachCooldownMinutes;
+    public final double breachCooldownMultiplier;
+
+    public final double doubleEnergyMinutes;
+    public final int doubleEnergyExtra;
 
     public final double autosaveMinutes;
 
@@ -160,6 +169,7 @@ public final class Settings {
         hudUpdateTicks = Math.max(1, c.getInt("hud.update-ticks"));
 
         comboTimeoutSeconds = c.getDouble("combo.timeout-seconds");
+        comboMinAttackCharge = Math.max(0, Math.min(1, c.getDouble("combo.min-attack-charge")));
         maxTrusted = c.getInt("trust.max-trusted");
         swizzCraftRequiresNoSwizz = c.getBoolean("swizz-items.craft-requires-no-swizz");
         assignRandomOnFirstJoin = c.getBoolean("assign-random-on-first-join");
@@ -179,6 +189,14 @@ public final class Settings {
 
         maceDisableSeconds = c.getDouble("swizz-mace.disable-seconds");
         maceCooldownSeconds = c.getDouble("swizz-mace.cooldown-seconds");
+
+        breachRadius = Math.max(0, c.getDouble("breach-mace.radius"));
+        breachDurationMinutes = Math.max(0, c.getDouble("breach-mace.duration-minutes"));
+        breachCooldownMinutes = Math.max(0, c.getDouble("breach-mace.cooldown-minutes"));
+        breachCooldownMultiplier = Math.max(0.05, Math.min(1, c.getDouble("breach-mace.cooldown-multiplier")));
+
+        doubleEnergyMinutes = Math.max(1, c.getDouble("double-energy-event.duration-minutes"));
+        doubleEnergyExtra = Math.max(0, c.getInt("double-energy-event.extra-energy-per-kill"));
 
         autosaveMinutes = Math.max(1, c.getDouble("storage.autosave-minutes"));
     }

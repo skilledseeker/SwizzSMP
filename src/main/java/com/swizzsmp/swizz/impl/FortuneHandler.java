@@ -32,7 +32,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDropItemEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.EntityResurrectEvent;
+import org.bukkit.EntityEffect;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.block.Container;
 import org.bukkit.inventory.EntityEquipment;
@@ -217,34 +217,37 @@ public final class FortuneHandler extends BaseHandler implements Listener {
         }
     }
 
-    /** Upgraded: a chance to survive a lethal hit like a totem, keeping your effects. */
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onResurrect(EntityResurrectEvent event) {
-        if (!event.isCancelled() || !(event.getEntity() instanceof Player player)
-                || !hasPassive(player) || !upgraded(player)) {
-            return;
-        }
-        EntityDamageEvent last = player.getLastDamageCause();
-        if (last != null && (last.getCause() == EntityDamageEvent.DamageCause.VOID
-                || last.getCause() == EntityDamageEvent.DamageCause.KILL)) {
+    /**
+     * Upgraded: a chance to survive a lethal hit like a totem, keeping your effects. Decided
+     * on the lethal hit itself: the hit is cancelled, you drop to 1 HP and get the totem's
+     * buffs on top of your own effects. A real totem in hand is used normally instead.
+     */
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onLethalHit(EntityDamageEvent event) {
+        if (!(event.getEntity() instanceof Player player) || !hasPassive(player) || !upgraded(player)
+                || event.getCause() == EntityDamageEvent.DamageCause.VOID || event.getCause() == EntityDamageEvent.DamageCause.KILL
+                || event.getFinalDamage() < player.getHealth() + player.getAbsorptionAmount()
+                || player.getInventory().getItemInMainHand().getType() == Material.TOTEM_OF_UNDYING
+                || player.getInventory().getItemInOffHand().getType() == Material.TOTEM_OF_UNDYING) {
             return;
         }
         if (ThreadLocalRandom.current().nextDouble() >= passiveValues().upgradedNum("totem-chance")) {
             return;
         }
-        Collection<PotionEffect> kept = new ArrayList<>(player.getActivePotionEffects());
-        event.setCancelled(false);
-        later(1L, () -> {
-            if (!player.isOnline() || player.isDead()) {
-                return;
+        event.setCancelled(true);
+        player.setHealth(Math.min(1.0, player.getHealth()));
+        player.setAbsorptionAmount(0);
+        player.setFireTicks(0);
+        for (PotionEffect totem : List.of(new PotionEffect(PotionEffectType.REGENERATION, 900, 1),
+                new PotionEffect(PotionEffectType.ABSORPTION, 100, 1), new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 800, 0))) {
+            PotionEffect now = player.getPotionEffect(totem.getType());
+            if (now == null || now.getAmplifier() < totem.getAmplifier()
+                    || (now.getAmplifier() == totem.getAmplifier() && now.getDuration() < totem.getDuration())) {
+                player.addPotionEffect(totem);
             }
-            for (PotionEffect effect : kept) {
-                PotionEffect now = player.getPotionEffect(effect.getType());
-                if (now == null || now.getAmplifier() < effect.getAmplifier()) {
-                    player.addPotionEffect(effect);
-                }
-            }
-        });
+        }
+        player.playEffect(EntityEffect.PROTECTED_FROM_DEATH);
+        player.getWorld().playSound(player.getLocation(), Sound.ITEM_TOTEM_USE, 1f, 1f);
         plugin.messages().send(player, "fortune.totem");
         player.getWorld().spawnParticle(Particle.HAPPY_VILLAGER, player.getLocation().add(0, 1, 0), 40, 0.6, 0.9, 0.6, 0);
     }

@@ -21,8 +21,7 @@ import java.util.List;
  * "finale" (DESIGN.md §13.7): everything at once, in six acts over 75 seconds. Time stops
  * and the world freezes blue; the sigil blooms and the seven swizz orbit in a petal vortex;
  * reality fractures into the Matrix with agents and bullet time; a black hole devours the
- * code, the agents, the ground, the sigil and the petals; silence, black, and a flash of the
- * nun; then the detonation: a ring of lightning, a supernova, shards, the sunrise, the
+ * code, the agents, the ground, the sigil and the petals; silence, black, and a then the detonation: a ring of lightning, a supernova, shards, the sunrise, the
  * rebuilt world, fireworks and a storm of petals as the player floats back down.
  */
 final class FinaleCinematic extends Cinematic {
@@ -32,6 +31,7 @@ final class FinaleCinematic extends Cinematic {
     private static final int FREEZE_TICKS = 15;
     // Act II · BLOOM
     private static final int ACT2 = 220;
+    private static final int THAW_TICKS = 15;
     private static final int SIGIL = 230;
     private static final int GEMS = 270;
     private static final int GEM_GAP = 10;
@@ -60,7 +60,6 @@ final class FinaleCinematic extends Cinematic {
     private static final int COLLAPSE = 1130;
     // Act V · SILENCE
     private static final int ACT5 = 1140;
-    private static final int NUN = 1172;
     // Act VI · ASCENSION
     private static final int ACT6 = 1200;
     private static final int REBLOOM = 1210;
@@ -73,7 +72,6 @@ final class FinaleCinematic extends Cinematic {
 
     private static final double HOLE_HEIGHT = 7.5;
     private static final double FREEZE_RADIUS = 24;
-    private static final String JUMPSCARE = "swizz:misc/jumpscare";
     private static final String[] NUMERALS = {"I", "II", "III", "IV", "V", "VI"};
     /** The closing melody (semitones), one note every 6 ticks from {@link #MELODY_START}. */
     private static final int[] MELODY = {15, 19, 22, 24, 22, 19, 15, 22, 24, 27};
@@ -147,7 +145,7 @@ final class FinaleCinematic extends Cinematic {
     private void stillness() {
         if (t == 0) {
             clock = new Clock(this);
-            freeze.setTint(TimeStopCinematic.TINT, ACT3 - FREEZE);
+            freeze.setTint(TimeStopCinematic.TINT, ACT2 - FREEZE);
             soundAll(Sound.BLOCK_BELL_USE, 1f, 0.5f);
             for (Player viewer : viewers()) {
                 effect(viewer, PotionEffectType.DARKNESS, 50, 0);
@@ -166,7 +164,7 @@ final class FinaleCinematic extends Cinematic {
                 sound(viewer, Sound.BLOCK_BEACON_ACTIVATE, 1f, 0.5f);
                 jolt(viewer, 0);
             }
-            overlay(player, TimeStopCinematic.TINT, ACT3 - t);
+            overlay(player, TimeStopCinematic.TINT, ACT2 - t);
             echoes.start();
         }
         if (t >= FREEZE && t < FREEZE + FREEZE_TICKS) {
@@ -207,11 +205,25 @@ final class FinaleCinematic extends Cinematic {
         if (t == ACT2) {
             act(1, "finale.act-2", Sound.BLOCK_AMETHYST_BLOCK_CHIME, 1.2f);
             lift(30, 1);
+            for (Player viewer : viewers()) {
+                whiteFlash(viewer, 3);
+                sound(viewer, Sound.BLOCK_BELL_RESONATE, 1f, 1f);
+                sound(viewer, Sound.ENTITY_ILLUSIONER_MIRROR_MOVE, 1f, 1.2f);
+            }
+        }
+        // The sphere collapses and lets everyone go; the clock keeps floating, stopped.
+        if (t > ACT2 && t <= ACT2 + THAW_TICKS) {
+            double radius = FREEZE_RADIUS * (1 - (t - ACT2) / (double) THAW_TICKS);
+            TimeStopCinematic.shell(this, radius, TimeStopCinematic.GOLD);
+            freeze.thawOutside(radius);
+            echoes.shatter(1);
+        }
+        if (t == ACT2 + THAW_TICKS) {
+            freeze.thawAll();
         }
         if (t % 2 == 0) {
             clock.turn(0, Clock.size(t, 0, 12, ACT3, 1, true));
         }
-        frozenWorld();
         if (t == SIGIL) {
             sigil = new Sigil(this, ground);
             sound(Sound.BLOCK_END_PORTAL_SPAWN, 0.8f);
@@ -252,7 +264,6 @@ final class FinaleCinematic extends Cinematic {
     private void fracture() {
         if (t == ACT3) {
             clock.shatter();
-            freeze.thawAll();
             for (Player viewer : viewers()) {
                 glitch(viewer, 3);
                 jolt(viewer, 0, 2, 6);
@@ -448,21 +459,6 @@ final class FinaleCinematic extends Cinematic {
         if (t == 1150 || t == 1165 || t == 1180 || t == 1192 || t == 1195) {
             soundAll(Sound.ENTITY_WARDEN_HEARTBEAT, 0.6f, 1f);
         }
-        if (t == NUN) {
-            for (Player viewer : viewers()) {
-                overlay(viewer, JUMPSCARE, 6);
-                for (int i = 0; i < 2; i++) {
-                    sound(viewer, Sound.ENTITY_ELDER_GUARDIAN_CURSE, 1f, 1f);
-                    sound(viewer, Sound.ENTITY_GHAST_SCREAM, 1f, 0.7f);
-                }
-                jolt(viewer, 0, 2);
-            }
-        }
-        if (t == NUN + 4) {
-            for (Player viewer : viewers()) {
-                blackout(viewer, ACT6 - t);
-            }
-        }
         if (t == 1196) {
             soundAll(Sound.ENTITY_PLAYER_BREATH, 1f, 0.8f);
         }
@@ -509,7 +505,7 @@ final class FinaleCinematic extends Cinematic {
                 overlay(viewer, AuraCinematic.AURA_TEXTURE, 70);
             }
         }
-        if (t == 1222) {
+        if (t == 1268) {
             title("finale.title", "finale.subtitle", 150, 3000, 900);
         }
         if (t == HALO) {

@@ -48,6 +48,7 @@ ability:
 
 energy:
   gained: "<prefix><light_purple>+<amount> energy <gray>(<value>/<max>)"
+  gained-event: "<prefix><light_purple>+<amount> energy <gradient:#B05CE0:#FF4FA3>(double energy!)</gradient> <gray>(<value>/<max>)"
   lost: "<prefix><red>-<amount> energy <gray>(<value>/<max>)"
   at-max: "<prefix><gray>You are at max energy. The energy dropped on the ground."
   item-at-max: "<prefix><red>You are already at max energy."
@@ -115,6 +116,15 @@ timestop:
   subtitle: "<gray><white><name></white> stopped time"
   resumes: "<#FFE9A8>Time resumes."
   actionbar: "<#9FF3FF>⌚ <white>Time is stopped</white> <gray>— <white><time></white> left"
+
+meteor:
+  brace: "<#FF4F2F><b>BRACE</b>"
+  title: "<gradient:#FF8A3D:#FFD27F><b>METEOR</b></gradient>"
+  subtitle: "<gray><white><name></white> called down the sky"
+
+phoenix:
+  title: "<gradient:#FF4F2F:#FFD27F:#FFFFFF><b>REBORN</b></gradient>"
+  subtitle: "<gray><white><name></white> rose from the ashes"
 
 finale:
   act-number: "<dark_gray>— <gray>ACT <numeral></gray> —"
@@ -188,6 +198,18 @@ mace:
   hit: "<prefix><gray>You disabled <white><name></white>'s swizz for <white><time></white>!"
   victim: "<prefix><red>A Swizz Mace disabled your swizz for <white><time></white>!"
   cooldown: "<prefix><gray>Swizz Mace recharging: <white><time></white>"
+
+breach:
+  activated: "<prefix><#5AA0FF>⚡ Breach!</#5AA0FF> <gray>You and <white><count></white> teammate(s) have <white>half cooldowns</white> for <white><time></white>."
+  buffed: "<prefix><#5AA0FF>⚡</#5AA0FF> <white><name></white><gray>'s Breach Mace halves your cooldowns for <white><time></white>."
+  ended: "<prefix><gray>Your Breach boost wore off."
+  cooldown: "<prefix><gray>Breach Mace recharging: <white><time></white>"
+
+event:
+  started: "<prefix><gradient:#B05CE0:#FF4FA3><b>DOUBLE ENERGY EVENT</b></gradient> <gray>has started! Every kill gives <white>extra energy</white> for <white><time></white>."
+  ended: "<prefix><gray>The <light_purple>double energy event</light_purple> is over."
+  bossbar: "<gradient:#B05CE0:#FF4FA3><b>DOUBLE ENERGY</b></gradient> <gray>— <white><time></white> left"
+  not-running: "<prefix><red>The double energy event isn't running."
 
 ritual:
   # <x>, <y>, <z> show the number once leaked, or scrambled text before that.

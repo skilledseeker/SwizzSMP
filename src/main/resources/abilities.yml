@@ -31,6 +31,7 @@ confusion:
     upgraded:
       invert-controls: true
       invert-strength: 0.22  # push speed (blocks/tick) for reversed WASD
+      invert-sprint-multiplier: 1.35  # holding sprint pushes this much harder
 
 sculk:
   passive:
@@ -197,6 +198,7 @@ earth:
     upgraded:
       damage: 8
       break-webs: true
+      ring: true                      # the quake rolls out in every direction (length = radius)
   ability2:                  # Root Grab
     name: "Root Grab"
     cooldown: 100
@@ -240,7 +242,9 @@ aqua:
     aim-range: 50
     radius: 5
     duration: 10
-    pull-speed: 0.35
+    pull-speed: 0.35                # mobs: pull per tick
+    player-pull: 0.55               # players: one tug every player-pull-interval ticks,
+    player-pull-interval: 5         # so they can still move between tugs
     upgraded:
       radius: 10
       duration: 20

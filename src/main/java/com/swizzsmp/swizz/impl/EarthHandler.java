@@ -107,6 +107,9 @@ public final class EarthHandler extends BaseHandler {
         int slowTicks = Time.secondsToTicks(v.num("slowness-seconds"));
         int slowAmp = Math.max(0, v.integer("slowness-level") - 1);
         boolean breakWebs = up && v.upgradedBool("break-webs");
+        if (up && v.upgradedBool("ring")) {
+            return quakeRing(caster, length, damage, kbH, kbV, slowTicks, slowAmp, breakWebs);
+        }
 
         Vector dir = Locs.horizontalDirection(caster.getLocation());
         Vector perp = new Vector(-dir.getZ(), 0, dir.getX());
@@ -150,6 +153,78 @@ public final class EarthHandler extends BaseHandler {
             }
         }.runTaskTimer(plugin, 0L, 1L);
         return AbilityResult.success();
+    }
+
+    /** Upgraded Fault Line: the quake rolls out from the caster in every direction as a ring. */
+    private AbilityResult quakeRing(Player caster, int length, double damage, double kbH, double kbV, int slowTicks, int slowAmp, boolean breakWebs) {
+        Location center = caster.getLocation().clone();
+        World world = caster.getWorld();
+        Set<UUID> hit = new HashSet<>();
+        world.playSound(center, Sound.ENTITY_RAVAGER_ROAR, 1.5f, 0.5f);
+        world.playSound(center, Sound.ENTITY_WARDEN_SONIC_BOOM, 0.8f, 0.5f);
+        world.spawnParticle(Particle.EXPLOSION_EMITTER, center, 1);
+
+        new org.bukkit.scheduler.BukkitRunnable() {
+            int radius;
+
+            @Override
+            public void run() {
+                if (++radius > length || !caster.isOnline()) {
+                    cancel();
+                    return;
+                }
+                int points = Math.max(8, (int) Math.round(2 * Math.PI * radius / 1.3));
+                Vector none = new Vector();
+                for (int i = 0; i < points; i++) {
+                    double angle = 2 * Math.PI * i / points;
+                    Location at = groundAt(center.clone().add(Math.cos(angle) * radius, 0, Math.sin(angle) * radius));
+                    if (at == null) {
+                        continue;
+                    }
+                    Block groundBlock = at.getBlock().getRelative(0, -1, 0);
+                    BlockData look = groundBlock.getType().isSolid() ? groundBlock.getBlockData() : ROOTED_DIRT;
+                    world.spawnParticle(Particle.BLOCK, at.clone().add(0, 0.2, 0), 4, 0.25, 0.1, 0.25, 0.15, look);
+                    if (i % 2 == 0) {
+                        world.spawnParticle(Particle.DUST, at.clone().add(0, 0.5, 0), 1, 0.2, 0.3, 0.2, 0, new Particle.DustOptions(BROWN, 1.6f));
+                    }
+                    if (breakWebs) {
+                        breakWebs(at, none, 0);
+                    }
+                }
+                if (radius % 3 == 0) {
+                    world.playSound(center, Sound.BLOCK_ROOTED_DIRT_BREAK, 1.6f, 0.6f);
+                    world.playSound(center, Sound.ENTITY_GENERIC_EXPLODE, 0.4f, 1.4f);
+                }
+                for (Entity entity : world.getNearbyEntities(center, radius + 1, 3, radius + 1)) {
+                    Vector away = entity.getLocation().toVector().subtract(center.toVector()).setY(0);
+                    double dist = away.length();
+                    if (!(entity instanceof LivingEntity living) || dist < radius - 1.5 || dist > radius + 0.5
+                            || !hit.add(entity.getUniqueId()) || !canHarm(caster, entity, TargetFilter.Mode.ENEMIES)) {
+                        continue;
+                    }
+                    damage(living, damage, caster, DamageType.MAGIC);
+                    Vector push = dist < 0.01 ? new Vector() : away.multiply(1.0 / dist);
+                    living.setVelocity(push.multiply(kbH).setY(kbV));
+                    if (slowTicks > 0) {
+                        living.addPotionEffect(new org.bukkit.potion.PotionEffect(PotionEffectType.SLOWNESS, slowTicks, slowAmp));
+                    }
+                    world.spawnParticle(Particle.EXPLOSION, living.getLocation(), 1);
+                }
+            }
+        }.runTaskTimer(plugin, 0L, 1L);
+        return AbilityResult.success();
+    }
+
+    /** The standing spot in this column within a few blocks of the given height, or null (wall or drop). */
+    private static Location groundAt(Location at) {
+        Block block = at.getBlock();
+        for (int dy = 2; dy >= -3; dy--) {
+            Block feet = block.getRelative(0, dy, 0);
+            if (feet.isPassable() && !feet.getRelative(0, -1, 0).isPassable()) {
+                return feet.getLocation().add(0.5, 0, 0.5);
+            }
+        }
+        return null;
     }
 
     /** Moves the quake one block forward, stepping up or down over terrain. False = blocked. */
@@ -226,7 +301,7 @@ public final class EarthHandler extends BaseHandler {
             Player victim = (Player) target;
             held.add(victim);
             root(victim);
-            damage(victim, grabDamage, caster, DamageType.MAGIC);
+            damage(victim, grabDamage, caster, DamageType.THORNS);
             victim.getWorld().spawnParticle(Particle.BLOCK, victim.getLocation().add(0, 0.5, 0), 40, 0.3, 0.6, 0.3, 0, ROOTS);
             victim.getWorld().playSound(victim.getLocation(), Sound.BLOCK_HANGING_ROOTS_PLACE, 1.5f, 0.6f);
         }
@@ -358,6 +433,9 @@ public final class EarthHandler extends BaseHandler {
             Vector toCenter = field.center.toVector().subtract(pos.toVector()).setY(0);
             double dist = toCenter.length();
             if (dist <= field.release) {
+                if (field.age == 1) {
+                    damage(victim, field.thorns, caster, DamageType.THORNS);
+                }
                 field.victims.remove(id);
                 unroot(victim);
                 victim.setVelocity(new Vector());
@@ -372,7 +450,7 @@ public final class EarthHandler extends BaseHandler {
             }
             // Velocity only: a wall in the way stops the drag (no pulling through blocks).
             victim.setVelocity(dir.clone().multiply(Math.min(field.speed, dist)).setY(Math.max(-0.6, y)));
-            if (field.age % 20 == 0) {
+            if (field.age % 20 == 1) {
                 damage(victim, field.thorns, caster, DamageType.THORNS);
             }
             if (field.age % 4 == 0) {

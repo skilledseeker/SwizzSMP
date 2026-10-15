@@ -153,6 +153,13 @@ point wasted, as the spec says).
 - **D-09:** the loadout can be changed once every **30 s** (`loadout.switch-cooldown-seconds`).
   Ability cooldowns are never reset by switching.
 
+### 5.3 Double energy event (owner request)
+`/doubleenergyevent [start [minutes] | stop]` (admin). For `double-energy-event.duration-minutes`
+(120) every kill that earns energy earns `extra-energy-per-kill` (1) more, so 2 instead of 1.
+The same rules apply as for a normal kill (nothing for killing someone at 1 energy); anything
+over the maximum drops as an item at the victim. The end time is in `server-state.yml`, so a
+restart doesn't end it. Everyone sees a boss bar counting down; start and end are broadcast.
+
 ---
 
 ## 6. Abilities: shared rules
@@ -221,6 +228,10 @@ same check vanilla uses for snowfall, height included.
   - the attacker hits a different entity, **or**
   - more than `combo.timeout` (2.5 s) passes between hits.
 - A passive in its reload doesn't count hits towards a new trigger.
+- **Only charged hits count** (owner fix): the attack bar must be at least
+  `combo.min-attack-charge` (0.9) when the swing starts (read in `PrePlayerAttackEntityEvent`,
+  before the swing resets it). A weak spam-click neither counts nor breaks the combo, and
+  gets no combo bonus damage.
 
 ### 6.5 Status effects (shared engine)
 - **Freeze:** transient attribute modifiers set `MOVEMENT_SPEED` ×0 and
@@ -230,6 +241,9 @@ same check vanilla uses for snowfall, height included.
   bows, crossbows) are blocked. **Eating (golden apples), potions (drunk or thrown) and
   shields still work** (owner change). Freeze ticks stay at maximum for the frost screen
   overlay; freeze damage is cancelled. Removed on expiry, quit and death.
+- **The view is locked too** (owner fix): the yaw and pitch at the moment of freezing are
+  kept, and any turn snaps the camera back (Paper only reports turns of about 10° or more,
+  so tiny wiggles are possible).
 - **Ability lock:** frozen players can't use abilities.
 - All attribute changes are **transient modifiers** with namespaced keys. They are never
   saved to player.dat, so removing the plugin leaves nothing behind.
@@ -277,6 +291,9 @@ in spec).
 - *Upgraded:* untrusted participants also get **reversed WASD**. Their movement speed is
   set to 0, and every tick we read `getCurrentInput()` and push them the opposite way
   (velocity). Jumping is unchanged.
+
+- *Upgraded dome, reversed WASD:* holding sprint pushes `invert-sprint-multiplier` (1.35) times
+  harder, so sprinting still works inside the dome (owner fix).
 
 ### 7.2 SCULK — dark blue (DUST #0B3D5C, SCULK_SOUL, SCULK_CHARGE_POP, SONIC_BOOM)
 **Passive.**
@@ -333,9 +350,12 @@ in spec).
   - The ore list is in config; all vanilla ores are included. **`ANCIENT_DEBRIS` is off
     by default** for balance.
 - *Upgraded:* when you would die, a **10% chance** of a totem pop that **keeps your effects**:
-  - We un-cancel `EntityResurrectEvent` when you have no real totem.
-  - Your effects are saved, and put back next tick on top of the totem's buffs.
-  - Not for `VOID` or `KILL` deaths.
+  - Decided on the lethal hit (`EntityDamageEvent`, HIGHEST): the hit is cancelled, you drop
+    to 1 HP and get the totem's buffs (Regeneration II 45 s, Absorption II 5 s, Fire
+    Resistance 40 s) on top of your own effects, with the totem animation and sound.
+    (Un-cancelling `EntityResurrectEvent` without a totem plays the animation but the player
+    still dies on current Paper, which is why it never worked.)
+  - A real totem in either hand is used normally instead. Not for `VOID` or `KILL` deaths.
 
 **Ability 1 — Golden Circle** (cd 150 s, lasts 30 s, radius 6, follows you).
 - For you and trusted players inside, golden apples give +1 Absorption level (2 extra
@@ -421,10 +441,12 @@ for **15 s**, and you get **Haste V** for 15 s.
   forward 1 block per tick with rising ground particles and a rumble.
 - Each ENEMIES target in it is hit once: **6 HP (3 hearts)**, pushed along the line
   (horizontal 1.4, up 0.5) and given **Slowness II for 3 s**.
-- *Upgraded:* **8 HP (4 hearts)**, and cobwebs in the path (3 wide, 3 tall) are broken.
+- *Upgraded:* **8 HP (4 hearts)**, cobwebs in the path are broken, and the quake rolls
+  out **in every direction** as a ring from where you stand, out to 18 blocks (1 block per
+  tick); everyone it passes is hit once and thrown outward (`upgraded.ring`).
 
 **Ability 2 — Root Grab** (cd **100 s**, buffed from 120). The roots deal **3 HP (1.5
-hearts)** when they grab, and after the pull the victims stay **rooted next to you for
+hearts)** of thorns damage when they grab, and after the pull the victims stay **rooted next to you for
 1.5 s**.
 - Untrusted players within **30** blocks **that the caster can see** (line of sight;
   roots don't reach through walls) are held by roots for 0.5 s (root particles, can't move).
@@ -436,8 +458,9 @@ hearts)** when they grab, and after the pull the victims stay **rooted next to y
   - Speed = radius ÷ 6 s, so about 6 s from the edge, as the spec says.
   - Their own movement is disabled while dragged; only velocity pulls them, so a wall
     in the way stops the drag (never pulled through blocks).
-  - They take **2 HP** of `THORNS` damage per second until they reach the middle (within
-    2 blocks) or 8 s pass.
+  - They take **2 HP** of `THORNS` damage as soon as the roots catch them and every second
+    after, until they reach the middle (within 2 blocks) or 8 s pass. (Before the fix the
+    first hit came after 1 s, so anyone closer than ~8 blocks took none.)
   - A ring of particles marks the edge.
 
 ### 7.7 AQUA — blue + dark blue (DUST #3498DB, DUST #1A3C8C, BUBBLE_POP, SPLASH, DRIPPING_WATER)
@@ -467,8 +490,10 @@ hearts)** when they grab, and after the pull the victims stay **rooted next to y
 
 **Ability 2 — Whirlpool** (cd 120 s, lasts 10 s).
 - Aim at a block within **50** blocks (ray trace). A swirl of radius **5** forms there.
-- Every ENEMIES target inside is pulled towards the centre (0.35 blocks per tick) with a
-  sideways swirl.
+- Mobs inside are pulled towards the centre (0.35 blocks per tick) with a sideways swirl.
+- **Players** get a tug towards the centre every `player-pull-interval` (5) ticks
+  (`player-pull` 0.55) instead of a constant pull, so they keep some control: they can walk,
+  turn and fight between tugs, and sprinting out is possible but hard (owner fix).
 - Cobwebs don't stop it: anyone in a web is moved by small teleports instead of velocity.
 - *Upgraded:* radius **10**, lasts **20 s**.
 
@@ -612,9 +637,10 @@ Custom items may **not**:
 | `/swizzadmin dragonegg reset` | `swizz.admin` | clears the server-wide dragon egg cooldown |
 | `/swizzadmin recipe <item>` | `swizz.admin` | in-game recipe editor; saves to items.yml and reloads |
 | `/giveupgraded <player>` | `swizz.admin` | upgrades the player's current swizz without a ritual |
+| `/doubleenergyevent [start [minutes] \| stop]` | `swizz.admin` | double energy event (§5.3), 2 h by default |
 | `/trail [on\|off]` | `swizz.use` | turns the cherry blossom trail off and on; only for blinkypies (§13.5) |
 | `/jumpscare [player\|all]` | `swizz.admin` | horror picture + scream (§13.6). No argument: everyone except you; `all`: you too |
-| `/cinematic <aura\|matrix\|singularity\|timestop\|finale> [player]` | `swizz.admin` | a showcase cinematic around a player (§13.7); no player: yourself |
+| `/cinematic <aura\|matrix\|singularity\|timestop\|meteor\|phoenix\|finale> [player]` | `swizz.admin` | a showcase cinematic around a player (§13.7); no player: yourself |
 | `/aura [player]` | `swizz.admin` | shortcut for `/cinematic aura` |
 
 ---
@@ -676,6 +702,14 @@ Checked every second. Colours in `config.yml → tab-colors`.
   no abilities and no passives (buffs are removed). One target per hit.
 - **180 s cooldown** for the attacker.
 
+### 13.4b Breach Swizz Mace (owner request)
+- A real mace (admin-given, `/swizzadmin give breach_mace <player>`, unbreakable), id
+  `breach_mace`. **Blue name in the tab list** (`tab-colors.breach-mace`).
+- **Press F** (swap hands) holding it in the main hand: you and every player **you trust**
+  within `breach-mace.radius` (15) get their ability cooldowns ×0.5 (they tick twice as fast)
+  for **5 minutes**. Item cooldowns ("X:" keys) are not sped up. **10 minute cooldown.**
+  Sneak + F with key combos on is still ability 1. The boost ends if you log out.
+
 ### 13.5 Cherry blossom trail (owner request, cosmetic)
 - Pink petals drift down behind the player's feet while they move: Minecraft's
   `CHERRY_LEAVES`, `TINTED_LEAVES` in a random pink from `petal-trail.colors`, and pink
@@ -707,7 +741,7 @@ Checked every second. Colours in `config.yml → tab-colors`.
   sound can't go above full volume.
 
 ### 13.7 Cinematics (owner request, admin command)
-`/cinematic <aura|matrix|singularity|timestop|finale> [player]` (and `/aura` as a shortcut)
+`/cinematic <aura|matrix|singularity|timestop|meteor|phoenix|finale> [player]` (and `/aura` as a shortcut)
 plays a showcase around a player. `effects/cinematic/`: `Cinematic` is the base class (tick
 clock, spawned-entity tracking, audience/sky/weather tracking, cleanup, helpers for overlays,
 flashes, jolts, sounds, titles, hovering and display animation). Every effect is a reusable
@@ -734,7 +768,12 @@ cancels damage from the show's own fireworks. Shared rules:
   between versions, and a broken shader would break the whole pack (item textures, jumpscare)
   for everyone. Display entities, overlays and particles get the same look safely.
 
-#### aura (14 s)
+#### aura (17 s)
+Since the owner asked for a crazier aura: three glowing rings (`Gyroscope`) tumble around the
+player from tick 70 while the gems orbit, the climax adds a ring of 8 lightning strikes and a
+pillar of light into the sky (`LightPillar`), and the player hangs there with golden wings of
+light (`Wings`) and a halo before floating down at 300.
+
 | Tick | What happens |
 |---|---|
 | 0 | Darkness on nearby screens, heartbeat starts, the player rises (Levitation II, 1.5 s) |
@@ -778,11 +817,24 @@ blocks thrown out) and the ground rebuilds ring by ring from the centre.
 | II · BLOOM | 220–560 | The caster rises and hovers; the sigil unfolds; the 7 swizz rise every half second with chimes and orbit in a cherry-petal vortex, streaming their colours in; the charge builds (portal, conduit, sparks), the clock's hands start winding back |
 | III · FRACTURE | 560–860 | The clock shatters and time thaws with a jolt; glitch bursts; "Wake up…", "The Matrix has you…", "Knock, knock." on the CRT; the construct spreads; digital rain; agents double to 16; bullet time; "You are the One."; the bullets fly back and the agents dissolve |
 | IV · DEVOUR | 860–1140 | Night sky and a storm (per-player time and weather); the black hole opens and spins up; the code rises into it, the ground tears up (construct-coloured copies), the sigil and the petals are pulled in, the gems are dragged toward it; lightning on the horizon; glitches; it collapses |
-| V · SILENCE | 1140–1200 | All sound stops; black; three heartbeats; a 0.3 s flash of the nun with a scream; a breath. The construct is quietly restored behind the black |
+| V · SILENCE | 1140–1200 | All sound stops; black; heartbeats; a breath. The construct is quietly restored behind the black (the nun flash was removed: too scary) |
 | VI · ASCENSION | 1200–1500 | Detonation: the gems collapse into the caster, white flash, a ring of 8 lightning strikes, supernova shells and a rainbow floor ring, 82 shards; the ground rebuilds ring by ring; a fast-forward sunrise from midnight to dawn, then the sky eases back to the real time; the rainbow border; the caster's name in rainbow; a halo; 13 real fireworks (damage cancelled); a storm of petals; the closing melody; the caster floats down; "fin"; a last bell |
 
-Frozen watchers are released at the fracture (27 s). Every other rule above applies: fake
+Frozen watchers are released when the bloom begins (11 s): the sphere collapses with a flash and a bell, everyone can move again, and only the clock stays stopped until it shatters at the fracture. Every other rule above applies: fake
 blocks only, every layer undone on any end.
+
+#### meteor (17 s)
+Dusk-red screens (`misc/ember`) and a red sky; the player rises. Meteors (tumbling magma,
+blackstone, basalt and netherrack displays with fire and smoke trails) fall every 0.6 s
+around them and blast glowing craters (fake magma, blackstone and fire, only for watchers).
+"BRACE": one enormous rock falls straight onto the player for a white-out impact, a ring
+of lightning, explosions and a fire shockwave. Ash falls, then the craters cool and heal.
+
+#### phoenix (17.5 s)
+Flames spiral up the player and the screen glows hot; they catch fire (visual only) and burn
+away to ash in the dark with a heartbeat. Then a flash, a cry and lightning: reborn in a
+pillar of fire with burning wings (`Wings`), a ring of flame racing out, soul fire and lava
+sparks, before landing. The visual fire is always put out (`VisualFire` layer).
 
 #### timestop (11.5 s)
 A golden clock (`clock_face`, `clock_hour`, `clock_minute`, camera-facing) floats over the

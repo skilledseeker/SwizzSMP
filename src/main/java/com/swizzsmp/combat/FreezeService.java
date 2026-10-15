@@ -38,8 +38,8 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Freeze (DESIGN.md §6.5): no walking, no jumping, no melee, no escape items. Eating,
- * potions and shields still work. Looking around and falling still work.
+ * Freeze (DESIGN.md §6.5): no walking, no jumping, no turning, no melee, no escape items.
+ * Eating, potions and shields still work. Falling still works.
  */
 public final class FreezeService implements Listener {
 
@@ -50,6 +50,8 @@ public final class FreezeService implements Listener {
     private final SwizzPlugin plugin;
     /** Entity uuid -> freeze end, in server ticks. */
     private final Map<UUID, Long> frozenUntil = new HashMap<>();
+    /** Where a frozen player was looking when the freeze started: {yaw, pitch}. */
+    private final Map<UUID, float[]> lockedView = new HashMap<>();
     private long tick;
     private BukkitTask task;
 
@@ -78,6 +80,7 @@ public final class FreezeService implements Listener {
     public void freeze(LivingEntity entity, int ticks) {
         long end = tick + ticks;
         frozenUntil.merge(entity.getUniqueId(), end, Math::max);
+        lockedView.putIfAbsent(entity.getUniqueId(), new float[]{entity.getLocation().getYaw(), entity.getLocation().getPitch()});
         Attrs.apply(entity, Attribute.MOVEMENT_SPEED, Keys.MOD_FREEZE_SPEED, -1.0, AttributeModifier.Operation.MULTIPLY_SCALAR_1);
         Attrs.apply(entity, Attribute.JUMP_STRENGTH, Keys.MOD_FREEZE_JUMP, -1.0, AttributeModifier.Operation.MULTIPLY_SCALAR_1);
         entity.setFreezeTicks(entity.getMaxFreezeTicks());
@@ -95,6 +98,7 @@ public final class FreezeService implements Listener {
 
     public void unfreeze(LivingEntity entity) {
         frozenUntil.remove(entity.getUniqueId());
+        lockedView.remove(entity.getUniqueId());
         Attrs.remove(entity, Attribute.MOVEMENT_SPEED, Keys.MOD_FREEZE_SPEED);
         Attrs.remove(entity, Attribute.JUMP_STRENGTH, Keys.MOD_FREEZE_JUMP);
         entity.setFreezeTicks(0);
@@ -130,11 +134,14 @@ public final class FreezeService implements Listener {
         }
         Location from = event.getFrom();
         Location to = event.getTo();
-        if (from.getX() != to.getX() || from.getZ() != to.getZ() || to.getY() > from.getY()) {
+        float[] view = lockedView.get(event.getPlayer().getUniqueId());
+        boolean turned = view != null && (Math.abs(to.getYaw() - view[0]) > 0.5f || Math.abs(to.getPitch() - view[1]) > 0.5f);
+        if (from.getX() != to.getX() || from.getZ() != to.getZ() || to.getY() > from.getY() || turned) {
+            // Moving or turning snaps the player back: the camera stays where it froze.
             Location fixed = from.clone();
             fixed.setY(Math.min(from.getY(), to.getY()));
-            fixed.setYaw(to.getYaw());
-            fixed.setPitch(to.getPitch());
+            fixed.setYaw(view != null ? view[0] : to.getYaw());
+            fixed.setPitch(view != null ? view[1] : to.getPitch());
             event.setTo(fixed);
         }
     }

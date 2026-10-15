@@ -93,6 +93,13 @@ items:
     lore:
       - "<!i><gray>Hitting a player disables their swizz"
       - "<!i><gray>for <white>60 seconds</white>. <dark_gray>(3 min cooldown)"
+  breach_mace:
+    material: MACE
+    name: "<!i><gradient:#5AA0FF:#2B4BFF><b>Breach Swizz Mace</b></gradient>"
+    lore:
+      - "<!i><gray>Press <white>F</white> to halve the cooldowns of"
+      - "<!i><gray>you and trusted teammates nearby for <white>5 minutes</white>."
+      - "<!i><dark_gray>(10 min cooldown)"
 
 # Shaped recipes. Each letter in "shape" maps to a vanilla material in "ingredients".
 # Delete a recipe block to disable crafting that item.

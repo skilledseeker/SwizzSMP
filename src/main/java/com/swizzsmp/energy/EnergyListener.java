@@ -44,14 +44,20 @@ public final class EnergyListener implements Listener {
             return;
         }
         PlayerData killerData = plugin.store().get(killer);
+        // During the double energy event every kill earns extra (DESIGN.md §5.3).
+        int extra = plugin.doubleEnergy().extraPerKill();
         if (plugin.energy().isAtMax(killerData)) {
-            plugin.energy().drop(deathLoc, Math.max(1, lost));
+            plugin.energy().drop(deathLoc, Math.max(1, lost) + extra);
             plugin.messages().send(killer, "energy.at-max");
             return;
         }
-        int gained = plugin.energy().add(killerData, 1);
+        int wanted = 1 + extra;
+        int gained = plugin.energy().add(killerData, wanted);
+        if (gained < wanted) {
+            plugin.energy().drop(deathLoc, wanted - gained); // the rest would go over the max
+        }
         if (gained > 0) {
-            plugin.messages().send(killer, "energy.gained", Messages.text("amount", gained),
+            plugin.messages().send(killer, extra > 0 ? "energy.gained-event" : "energy.gained", Messages.text("amount", gained),
                     Messages.text("value", killerData.energy()), Messages.text("max", settings.energyMax));
             killer.playSound(killer.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 0.7f);
         }

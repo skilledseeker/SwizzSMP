@@ -53,8 +53,9 @@
 | `/swizzadmin dragonegg reset` | Reset the server-wide Dragon Egg cooldown |
 | `/swizzadmin recipe <item>` | Edit an item's crafting recipe in game (click a grid slot while holding an item; Save). Potions keep their exact type |
 | `/swizzadmin craftcheck <item>` | Check that an item's recipe crafts with its own ingredients |
+| `/doubleenergyevent [start [minutes] \| stop]` | Double energy event: every kill gives 1 extra energy for 2 h |
 | `/jumpscare [player\|all]` | Horror picture + huge scream for 2.5 s (no name = everyone but you, `all` = you too) |
-| `/cinematic <aura\|matrix\|singularity\|timestop\|finale> [player]` | Showcase animations around a player (no name = yourself); `finale` is everything in one 75 s show |
+| `/cinematic <aura\|matrix\|singularity\|timestop\|meteor\|phoenix\|finale> [player]` | Showcase animations around a player (no name = yourself); `finale` is everything in one 75 s show |
 | `/aura [player]` | Shortcut for `/cinematic aura` |
 ## Names you can type
 

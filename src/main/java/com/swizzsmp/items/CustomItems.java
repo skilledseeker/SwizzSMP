@@ -62,7 +62,7 @@ public final class CustomItems {
             meta.setMaxStackSize(Math.max(1, Math.min(99, def.getInt("max-stack"))));
         }
         meta.setEnchantmentGlintOverride(true);
-        if (ItemIds.SWORD.equals(id) || ItemIds.MACE.equals(id)) {
+        if (ItemIds.SWORD.equals(id) || ItemIds.MACE.equals(id) || ItemIds.BREACH_MACE.equals(id)) {
             meta.setUnbreakable(true);
             meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
         }

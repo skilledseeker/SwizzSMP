@@ -65,7 +65,7 @@ public final class CooldownService {
             if (cooldowns.isEmpty()) {
                 continue;
             }
-            long step = Math.round(PERIOD_MILLIS * plugin.swizz().cooldownRate(player));
+            long step = Math.round(PERIOD_MILLIS * plugin.swizz().cooldownRate(player) * plugin.breachMace().cooldownRate(player));
             // "X:" keys (item cooldowns such as the Swizz Mace) are never sped up by passives.
             List<String> finished = new ArrayList<>(2);
             Iterator<Map.Entry<String, Long>> it = cooldowns.entrySet().iterator();

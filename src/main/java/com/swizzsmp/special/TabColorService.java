@@ -18,12 +18,12 @@ import java.util.UUID;
 
 /**
  * Colours each player's name in the tab list by the special item they carry:
- * dragon egg, Swizz Sword, Swizz Mace, upgrader, or nothing (in that priority order).
+ * dragon egg, Swizz Sword, Swizz Mace, Breach Mace, upgrader, or nothing (in that priority order).
  * Colours come from config.yml → tab-colors.
  */
 public final class TabColorService {
 
-    private enum Carried { ALL_THREE, DRAGON_EGG, SWORD, MACE, UPGRADER, NONE }
+    private enum Carried { ALL_THREE, DRAGON_EGG, SWORD, MACE, BREACH, UPGRADER, NONE }
 
     private final SwizzPlugin plugin;
     private final Map<UUID, Carried> shown = new HashMap<>();
@@ -72,7 +72,7 @@ public final class TabColorService {
     }
 
     private static Carried carried(Player player) {
-        boolean egg = false, sword = false, mace = false, upgrader = false;
+        boolean egg = false, sword = false, mace = false, breach = false, upgrader = false;
         for (ItemStack item : player.getInventory().getContents()) {
             if (item == null || item.isEmpty()) {
                 continue;
@@ -86,6 +86,8 @@ public final class TabColorService {
                 sword = true;
             } else if (ItemIds.MACE.equals(id)) {
                 mace = true;
+            } else if (ItemIds.BREACH_MACE.equals(id)) {
+                breach = true;
             } else if (ItemIds.UPGRADER.equals(id)) {
                 upgrader = true;
             }
@@ -101,6 +103,9 @@ public final class TabColorService {
         }
         if (mace) {
             return Carried.MACE;
+        }
+        if (breach) {
+            return Carried.BREACH;
         }
         return upgrader ? Carried.UPGRADER : Carried.NONE;
     }
@@ -122,6 +127,7 @@ public final class TabColorService {
             case DRAGON_EGG -> "dragon-egg";
             case SWORD -> "swizz-sword";
             case MACE -> "swizz-mace";
+            case BREACH -> "breach-mace";
             case UPGRADER -> "upgrader";
             case NONE -> "default";
         };

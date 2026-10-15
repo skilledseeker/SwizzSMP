@@ -14,6 +14,7 @@ public final class ItemIds {
     public static final String UPGRADER = "upgrader";
     public static final String SWORD = "swizz_sword";
     public static final String MACE = "swizz_mace";
+    public static final String BREACH_MACE = "breach_mace";
 
     private ItemIds() {
     }
@@ -28,6 +29,7 @@ public final class ItemIds {
         ids.add(UPGRADER);
         ids.add(SWORD);
         ids.add(MACE);
+        ids.add(BREACH_MACE);
         return ids;
     }
 
@@ -44,8 +46,8 @@ public final class ItemIds {
         return Optional.empty();
     }
 
-    /** True for items with no vanilla use (everything except the sword and mace). */
+    /** True for items with no vanilla use (everything except the sword and the maces). */
     public static boolean isToken(String id) {
-        return id != null && !SWORD.equals(id) && !MACE.equals(id);
+        return id != null && !SWORD.equals(id) && !MACE.equals(id) && !BREACH_MACE.equals(id);
     }
 }

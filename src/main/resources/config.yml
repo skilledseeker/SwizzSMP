@@ -118,11 +118,12 @@ resource-pack:
 
 tab-colors:
   # Name colour in the tab list, by the special item a player carries.
-  # Priority: dragon egg > swizz sword > swizz mace > upgrader > default.
+  # Priority: dragon egg > swizz sword > swizz mace > breach mace > upgrader > default.
   enabled: true
   dragon-egg: "#AA00AA"     # purple
   swizz-sword: "#FFFF55"    # yellow
   swizz-mace: "#AA0000"     # dark red
+  breach-mace: "#5555FF"    # blue
   upgrader: "#FFFFFF"       # white
   default: "#AAAAAA"        # gray
 
@@ -135,6 +136,9 @@ hud:
 combo:
   # A combo breaks if this many seconds pass between hits.
   timeout-seconds: 2.5
+  # Only hits with the attack bar at least this full (0-1) count for combos (Gleam,
+  # Confusion), so spam-clicking builds nothing. 0.9 = nearly full.
+  min-attack-charge: 0.9
 
 trust:
   max-trusted: 20
@@ -179,6 +183,19 @@ dragon-egg:
 swizz-mace:
   disable-seconds: 60
   cooldown-seconds: 180
+
+breach-mace:
+  # Press F holding the Breach Swizz Mace: you and the players you trust within the radius
+  # get their ability cooldowns multiplied by cooldown-multiplier (0.5 = half) for a while.
+  radius: 15
+  duration-minutes: 5
+  cooldown-minutes: 10
+  cooldown-multiplier: 0.5
+
+double-energy-event:
+  # /doubleenergyevent: while it runs, every kill that earns energy earns this much extra.
+  duration-minutes: 120
+  extra-energy-per-kill: 1
 
 storage:
   autosave-minutes: 5

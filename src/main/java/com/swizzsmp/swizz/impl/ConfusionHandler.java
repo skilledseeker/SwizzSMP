@@ -254,7 +254,7 @@ public final class ConfusionHandler extends BaseHandler implements Listener, Com
             for (UUID id : participants) {
                 Player player = Bukkit.getPlayer(id);
                 if (player != null && canHarm(caster, player, TargetFilter.Mode.PLAYERS)) {
-                    inverter.invert(player, dome.duration, v.upgradedNum("invert-strength"));
+                    inverter.invert(player, dome.duration, v.upgradedNum("invert-strength"), v.upgradedNum("invert-sprint-multiplier"));
                 }
             }
         }

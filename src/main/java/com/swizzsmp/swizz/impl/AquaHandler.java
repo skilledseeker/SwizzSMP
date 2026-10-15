@@ -78,15 +78,19 @@ public final class AquaHandler extends BaseHandler implements Listener {
         final double radius;
         final double pull;
         final int duration;
+        final double playerPull;
+        final int playerInterval;
         BukkitTask task;
         int age;
 
-        Whirlpool(UUID caster, Location center, double radius, double pull, int duration) {
+        Whirlpool(UUID caster, Location center, double radius, double pull, int duration, double playerPull, int playerInterval) {
             this.caster = caster;
             this.center = center;
             this.radius = radius;
             this.pull = pull;
             this.duration = duration;
+            this.playerPull = playerPull;
+            this.playerInterval = Math.max(1, playerInterval);
         }
     }
 
@@ -349,7 +353,7 @@ public final class AquaHandler extends BaseHandler implements Listener {
         }
         Location center = hit.getHitPosition().toLocation(caster.getWorld()).add(0, 1.0, 0);
         Whirlpool pool = new Whirlpool(caster.getUniqueId(), center, v.up("radius", up), v.num("pull-speed"),
-                Time.secondsToTicks(v.up("duration", up)));
+                Time.secondsToTicks(v.up("duration", up)), v.num("player-pull"), v.integer("player-pull-interval"));
         whirlpools.add(pool);
         caster.getWorld().playSound(center, Sound.ENTITY_PLAYER_SPLASH_HIGH_SPEED, 2f, 0.5f);
         caster.getWorld().playSound(center, Sound.ITEM_BUCKET_EMPTY, 2f, 0.6f);
@@ -389,6 +393,22 @@ public final class AquaHandler extends BaseHandler implements Listener {
         }
         Vector dir = toCenter.multiply(1.0 / dist);
         Vector swirl = new Vector(-dir.getZ(), 0, dir.getX()).multiply(0.12);
+        if (entity instanceof Player) {
+            // Players get a tug every few ticks instead of a constant pull, so between tugs
+            // they can still walk, turn and fight; sprinting out is possible but hard.
+            if (pool.age % pool.playerInterval != 0) {
+                return;
+            }
+            Vector tug = dir.clone().setY(0).multiply(Math.min(pool.playerPull, dist * 0.5)).add(swirl.clone().multiply(2));
+            boolean webbed = pos.getBlock().getType() == Material.COBWEB || entity.getEyeLocation().getBlock().getType() == Material.COBWEB;
+            if (webbed) {
+                entity.teleport(pos.clone().add(tug.multiply(0.5)), TeleportFlag.Relative.VELOCITY_X, TeleportFlag.Relative.VELOCITY_Y,
+                        TeleportFlag.Relative.VELOCITY_Z);
+            } else {
+                entity.setVelocity(tug.setY(Math.max(-0.1, entity.getVelocity().getY())));
+            }
+            return;
+        }
         Vector move = dir.clone().setY(dir.getY() * 0.5).multiply(Math.min(pool.pull, dist)).add(swirl);
         boolean inWeb = pos.getBlock().getType() == Material.COBWEB
                 || entity.getEyeLocation().getBlock().getType() == Material.COBWEB;

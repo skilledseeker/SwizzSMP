@@ -88,9 +88,13 @@ commands:
     description: Play the aura showcase cinematic around a player
     usage: /aura [player]
     permission: swizz.admin
+  doubleenergyevent:
+    description: Start or stop the double energy event (every kill gives extra energy)
+    usage: /doubleenergyevent [start [minutes] | stop]
+    permission: swizz.admin
   cinematic:
     description: Play a showcase cinematic around a player
-    usage: /cinematic <aura|matrix|singularity|timestop|finale> [player]
+    usage: /cinematic <aura|matrix|singularity|timestop|meteor|phoenix|finale> [player]
     permission: swizz.admin
 
 permissions:

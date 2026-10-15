@@ -1,6 +1,7 @@
 package com.swizzsmp.combat;
 
 import com.swizzsmp.SwizzPlugin;
+import io.papermc.paper.event.player.PrePlayerAttackEntityEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -23,8 +24,9 @@ import java.util.UUID;
 
 /**
  * Melee combos (DESIGN.md §6.4). A combo is consecutive melee hits by one player on one
- * player. It breaks when the victim hits back, the attacker hits someone else, or the
- * timeout passes. Listeners get each counted hit (at MONITOR) and each break.
+ * player. Only charged hits count (attack bar at least {@code combo.min-attack-charge}), so
+ * spam-clicking builds nothing. It breaks when the victim hits back, the attacker hits
+ * someone else, or the timeout passes. Listeners get each counted hit (at MONITOR) and each break.
  */
 public final class ComboTracker implements Listener {
 
@@ -49,6 +51,8 @@ public final class ComboTracker implements Listener {
 
     private final SwizzPlugin plugin;
     private final Map<UUID, Combo> combos = new HashMap<>();
+    /** The attack bar of each player's swing in progress (read before the swing resets it). */
+    private final Map<UUID, Float> swingCharge = new HashMap<>();
     private final List<ComboListener> listeners = new ArrayList<>();
     private BukkitTask task;
 
@@ -75,8 +79,23 @@ public final class ComboTracker implements Listener {
         return Math.round(plugin.settings().comboTimeoutSeconds * 1000);
     }
 
-    /** The count this hit would reach if it lands (used before MONITOR to change damage). */
+    /** Remembers how charged the attack bar is as a swing starts. */
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onSwing(PrePlayerAttackEntityEvent event) {
+        swingCharge.put(event.getPlayer().getUniqueId(), event.getPlayer().getAttackCooldown());
+    }
+
+    /** True if the attacker's current swing was charged enough to count for a combo. */
+    public boolean isCharged(Player attacker) {
+        Float charge = swingCharge.get(attacker.getUniqueId());
+        return charge == null || charge >= plugin.settings().comboMinAttackCharge;
+    }
+
+    /** The count this hit would reach if it lands (used before MONITOR to change damage); 0 for a weak hit. */
     public int peekNext(Player attacker, Player victim) {
+        if (!isCharged(attacker)) {
+            return 0;
+        }
         Combo combo = combos.get(attacker.getUniqueId());
         if (combo == null || !combo.victim.equals(victim.getUniqueId())
                 || System.currentTimeMillis() - combo.lastHit > timeoutMillis()) {
@@ -119,6 +138,9 @@ public final class ComboTracker implements Listener {
         if (!(event.getEntity() instanceof Player victim)) {
             reset(attacker);
             return;
+        }
+        if (!isCharged(attacker)) {
+            return; // a spam click neither counts nor breaks the combo
         }
         long now = System.currentTimeMillis();
         Combo combo = combos.get(attacker.getUniqueId());
@@ -185,5 +207,6 @@ public final class ComboTracker implements Listener {
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         combos.remove(event.getPlayer().getUniqueId());
+        swingCharge.remove(event.getPlayer().getUniqueId());
     }
 }

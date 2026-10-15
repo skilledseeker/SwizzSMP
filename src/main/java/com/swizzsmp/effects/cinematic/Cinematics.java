@@ -34,6 +34,8 @@ public final class Cinematics implements Listener {
         types.put("matrix", MatrixCinematic::new);
         types.put("singularity", SingularityCinematic::new);
         types.put("timestop", TimeStopCinematic::new);
+        types.put("meteor", MeteorCinematic::new);
+        types.put("phoenix", PhoenixCinematic::new);
         types.put("finale", FinaleCinematic::new);
     }
 

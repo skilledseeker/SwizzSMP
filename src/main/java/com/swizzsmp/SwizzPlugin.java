@@ -37,6 +37,8 @@ import com.swizzsmp.items.TokenListener;
 import com.swizzsmp.items.UpgraderGuardListener;
 import com.swizzsmp.passive.PassiveService;
 import com.swizzsmp.ritual.RitualService;
+import com.swizzsmp.energy.DoubleEnergyEvent;
+import com.swizzsmp.special.BreachMaceService;
 import com.swizzsmp.special.DragonEggService;
 import com.swizzsmp.special.SwizzMaceListener;
 import com.swizzsmp.special.SwizzSwordService;
@@ -98,6 +100,8 @@ public final class SwizzPlugin extends JavaPlugin {
     private DragonEggService dragonEgg;
     private TabColorService tabColors;
     private LocatorService locator;
+    private BreachMaceService breachMace;
+    private DoubleEnergyEvent doubleEnergy;
     private BukkitTask autosave;
 
     @Override
@@ -138,6 +142,8 @@ public final class SwizzPlugin extends JavaPlugin {
         swords = new SwizzSwordService(this);
         tabColors = new TabColorService(this);
         locator = new LocatorService(this, serverState);
+        breachMace = new BreachMaceService(this);
+        doubleEnergy = new DoubleEnergyEvent(this, serverState);
         guide = new GuideBook(this, guideFile);
 
         registerHandlers();
@@ -154,6 +160,8 @@ public final class SwizzPlugin extends JavaPlugin {
         dragonEgg = new DragonEggService(this, serverState);
         listen(dragonEgg);
         listen(new SwizzMaceListener(this));
+        listen(breachMace);
+        listen(doubleEnergy);
         listen(freeze);
         listen(combos);
         listen(damage);
@@ -178,6 +186,8 @@ public final class SwizzPlugin extends JavaPlugin {
         swords.start();
         tabColors.start();
         locator.start();
+        breachMace.start();
+        doubleEnergy.start();
         startAutosave();
         resourcePack.load();
 
@@ -212,6 +222,12 @@ public final class SwizzPlugin extends JavaPlugin {
         }
         if (locator != null) {
             locator.stop();
+        }
+        if (breachMace != null) {
+            breachMace.stop();
+        }
+        if (doubleEnergy != null) {
+            doubleEnergy.stop();
         }
         if (swizz != null) {
             swizz.shutdown();
@@ -398,6 +414,14 @@ public final class SwizzPlugin extends JavaPlugin {
 
     public ConfigFile itemsConfig() {
         return itemsFile;
+    }
+
+    public BreachMaceService breachMace() {
+        return breachMace;
+    }
+
+    public DoubleEnergyEvent doubleEnergy() {
+        return doubleEnergy;
     }
 
     public LocatorService locator() {

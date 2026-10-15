@@ -32,6 +32,7 @@ public final class Commands {
         bind(plugin, "jumpscare", new JumpscareCommand(plugin));
         bind(plugin, "aura", new CinematicCommand(plugin, "aura"));
         bind(plugin, "cinematic", new CinematicCommand(plugin, null));
+        bind(plugin, "doubleenergyevent", new DoubleEnergyEventCommand(plugin));
     }
 
     private static void bind(SwizzPlugin plugin, String name, CommandBase command) {

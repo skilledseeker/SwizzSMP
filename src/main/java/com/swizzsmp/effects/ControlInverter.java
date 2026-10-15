@@ -22,11 +22,11 @@ import java.util.UUID;
 /**
  * Reversed WASD (Confusion upgraded dome, DESIGN.md §7.1). The player's own movement
  * speed is set to 0, and every tick we read their keys and push them the opposite way.
- * Jumping is unchanged.
+ * Holding sprint pushes harder, so sprinting still works. Jumping is unchanged.
  */
 public final class ControlInverter implements Listener {
 
-    private record State(long untilTick, double strength) {
+    private record State(long untilTick, double strength, double sprintMultiplier) {
     }
 
     private final SwizzPlugin plugin;
@@ -55,8 +55,9 @@ public final class ControlInverter implements Listener {
         inverted.clear();
     }
 
-    public void invert(Player player, int ticks, double strength) {
-        inverted.put(player.getUniqueId(), new State(tick + ticks, strength));
+    /** Reverses the player's keys for {@code ticks}; holding sprint pushes {@code sprintMultiplier} times harder. */
+    public void invert(Player player, int ticks, double strength, double sprintMultiplier) {
+        inverted.put(player.getUniqueId(), new State(tick + ticks, strength, Math.max(1, sprintMultiplier)));
         Attrs.apply(player, Attribute.MOVEMENT_SPEED, Keys.MOD_INVERT_SPEED, -1.0, AttributeModifier.Operation.MULTIPLY_SCALAR_1);
     }
 
@@ -91,7 +92,8 @@ public final class ControlInverter implements Listener {
             Vector left = new Vector(Math.cos(yaw), 0, Math.sin(yaw));
             // Reversed: forward pushes back, left pushes right.
             Vector move = facing.multiply(-forward).add(left.multiply(-strafe));
-            move.normalize().multiply(entry.getValue().strength());
+            State state = entry.getValue();
+            move.normalize().multiply(state.strength() * (input.isSprint() ? state.sprintMultiplier() : 1));
             Vector velocity = player.getVelocity();
             player.setVelocity(new Vector(move.getX(), velocity.getY(), move.getZ()));
         }
