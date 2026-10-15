@@ -71,7 +71,14 @@ public final class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onDeath(PlayerDeathEvent event) {
-        plugin.cleanupPlayer(event.getPlayer(), false);
+        Player player = event.getPlayer();
+        plugin.cleanupPlayer(player, false);
+        // Dying costs the upgrade (owner rule; DESIGN.md §8). Passives update on respawn.
+        PlayerData data = plugin.store().get(player);
+        if (data.upgraded() && plugin.settings().upgradeLostOnDeath) {
+            data.setUpgraded(false);
+            plugin.messages().send(player, "swizz.upgrade-lost");
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

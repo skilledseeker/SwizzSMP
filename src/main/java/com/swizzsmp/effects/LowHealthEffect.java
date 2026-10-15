@@ -92,7 +92,8 @@ public final class LowHealthEffect implements Listener {
         WorldBorder real = player.getWorld().getWorldBorder();
         WorldBorder red = Bukkit.createWorldBorder();
         red.setCenter(real.getCenter());
-        red.setSize(real.getSize());
+        // Some worlds report a border bigger than a player border may be; clamp it.
+        red.setSize(Math.max(1.0, Math.min(real.getSize(), 5.9999968E7)));
         red.setWarningDistance(Integer.MAX_VALUE);
         player.setWorldBorder(red);
     }

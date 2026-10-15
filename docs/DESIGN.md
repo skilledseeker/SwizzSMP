@@ -502,6 +502,8 @@ hearts)** of thorns damage when they grab, and after the pull the victims stay *
 
 ## 8. Upgrader and ritual
 
+- **Losing it (owner rule):** any death removes the upgrade (`upgrade.lost-on-death: true`);
+  you need a new ritual. A Fortune save is not a death, so it keeps the upgrade.
 - **Start:** right-click a block with an upgrader. A confirm step (D-22) follows: "Right-click
   again within 5 s to start. Your coordinates will be broadcast." The ritual's anchor is
   the top face of the clicked block.
@@ -980,7 +982,7 @@ cleanup path that runs on **expiry, quit, death, world change and disable**.
 | R2 | Disguise via `setPlayerProfile` | A brief re-spawn flicker for viewers; clashes with other nametag plugins (e.g. TAB) | Turn off nametag hiding in config |
 | R3 | Reversed WASD | Jitter from the server pushing the player | Tune `invert.strength`; can be turned off |
 | R4 | Powder-snow walking lift | Rubber-banding on big powder snow fields | Tune the lift |
-| R5 | `EntityResurrectEvent` un-cancel without a totem | Paper's behaviour may differ | Fall back to a damage-event-based save |
+| R5 | `EntityResurrectEvent` un-cancel without a totem | Confirmed broken on Paper 26.3 (animation, then death) | Done: the save is decided on the lethal damage event |
 
 ---
 

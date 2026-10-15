@@ -153,6 +153,10 @@ assign-random-on-first-join: false
 reroller:
   keeps-upgrade: true
 
+upgrade:
+  # Dying (any death) removes your swizz's upgrade; you need a new Upgrader ritual.
+  lost-on-death: true
+
 ritual:
   duration-minutes: 20
   leak-interval-minutes: 5

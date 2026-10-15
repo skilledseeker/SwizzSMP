@@ -73,6 +73,7 @@ public final class Settings {
     public final boolean swizzCraftRequiresNoSwizz;
     public final boolean assignRandomOnFirstJoin;
     public final boolean rerollKeepsUpgrade;
+    public final boolean upgradeLostOnDeath;
 
     public final double ritualDurationMinutes;
     public final double ritualLeakIntervalMinutes;
@@ -174,6 +175,7 @@ public final class Settings {
         swizzCraftRequiresNoSwizz = c.getBoolean("swizz-items.craft-requires-no-swizz");
         assignRandomOnFirstJoin = c.getBoolean("assign-random-on-first-join");
         rerollKeepsUpgrade = c.getBoolean("reroller.keeps-upgrade");
+        upgradeLostOnDeath = c.getBoolean("upgrade.lost-on-death");
 
         ritualDurationMinutes = c.getDouble("ritual.duration-minutes");
         ritualLeakIntervalMinutes = c.getDouble("ritual.leak-interval-minutes");

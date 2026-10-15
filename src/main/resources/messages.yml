@@ -28,6 +28,7 @@ swizz:
   hud-toggled: "<prefix><gray>Action bar HUD: <state>"
   controls-toggled: "<prefix><gray>Key combos (Sneak+F / Sneak+Q): <state>"
   heartbeat-toggled: "<prefix><gray>Low-health heartbeat and red screen: <state>"
+  upgrade-lost: "<prefix><red>You died and lost your <gold>★ upgrade</gold><red>. <gray>Complete a new Upgrader ritual to get it back."
   state-on: "<green>ON"
   state-off: "<red>OFF"
 
