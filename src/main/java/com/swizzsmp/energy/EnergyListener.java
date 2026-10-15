@@ -44,10 +44,15 @@ public final class EnergyListener implements Listener {
             return;
         }
         PlayerData killerData = plugin.store().get(killer);
-        // During the double energy event every kill earns extra (DESIGN.md §5.3).
-        int extra = plugin.doubleEnergy().extraPerKill();
+        // During the double energy event every kill earns extra (DESIGN.md §5.3), but only
+        // when the victim actually lost energy: a victim at the minimum never feeds the event.
+        int extra = lost > 0 ? plugin.doubleEnergy().extraPerKill() : 0;
         if (plugin.energy().isAtMax(killerData)) {
-            plugin.energy().drop(deathLoc, Math.max(1, lost) + extra);
+            // Only energy the victim really lost (plus the event bonus) ever hits the ground,
+            // so killing someone at the minimum never creates energy.
+            if (lost > 0) {
+                plugin.energy().drop(deathLoc, lost + extra);
+            }
             plugin.messages().send(killer, "energy.at-max");
             return;
         }

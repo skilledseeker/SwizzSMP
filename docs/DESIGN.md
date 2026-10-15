@@ -156,8 +156,9 @@ point wasted, as the spec says).
 ### 5.3 Double energy event (owner request)
 `/doubleenergyevent [start [minutes] | stop]` (admin). For `double-energy-event.duration-minutes`
 (120) every kill that earns energy earns `extra-energy-per-kill` (1) more, so 2 instead of 1.
-The same rules apply as for a normal kill (nothing for killing someone at 1 energy); anything
-over the maximum drops as an item at the victim. The end time is in `server-state.yml`, so a
+The same rules apply as for a normal kill: killing someone at the minimum (1) gives nothing
+and drops nothing, event or not, whatever `kill-requires-victim-loss` says. Anything over the
+killer's maximum drops as an item at the victim. The end time is in `server-state.yml`, so a
 restart doesn't end it. Everyone sees a boss bar counting down; start and end are broadcast.
 
 ---
